@@ -27,10 +27,16 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/@liuk123/insui-icons/src",
+                "output": "assets/icons"
               }
             ],
             "styles": [
-              "src/styles.less"
+              "src/styles.less",
+              "node_modules/@liuk123/insui/styles/ins-ui-global.less"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",

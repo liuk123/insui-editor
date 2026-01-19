@@ -1,0 +1,46 @@
+
+<a class="logo-wrap" href="/">
+  <img [src]="logo" alt="logo" class="logo-image">
+  InsUI doc
+</a>
+<nav class="main-nav" role="menu">
+
+</nav>
+
+
+<!-- [insAppearanceState]="themeOpen() ? 'hover' : null" -->
+<button
+  appearance="flat"
+  [iconStart]="curThemeIcon()"
+  insIconButton
+  
+  type="button"
+  [size]="size"
+  [insAppearanceState]="themeOpen() ? 'hover' : null"
+  [insDropdown]="themeContent"
+  [(insDropdownOpen)]="themeOpen"
+  aria-haspopup="menu"
+  [attr.aria-expanded]="themeOpen()"
+  >theme</button>
+<ng-template #themeContent>
+  <ins-data-list role="menu">
+    @for (item of themeBtns; track item) {
+      <button
+        insOption
+        role="menuitem"
+        class="menu-item-flex"
+        (click)="changeTheme(item.code)"
+      >
+        <span class="label">
+          {{item.label}}
+        </span>
+        @if (item.code === curTheme()) {
+          <ins-icon
+            icon="check"
+            aria-hidden="true"
+          ></ins-icon>
+        }
+      </button>
+    }
+  </ins-data-list>
+</ng-template>

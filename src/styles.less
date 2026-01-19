@@ -1,1 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root {
+  --ins-sticky-header-height: 3.6rem;
+  
+  --min-vw: 1024px;
+  --max-vw: 2560px;
+  --min-font: 13px;
+  --max-font: 16px;
+  --base-font-size: clamp(var(--min-font), calc(var(--min-font) + (var(--max-font) - var(--min-font)) * ((100vw - var(--min-vw)) / (var(--max-vw) - var(--min-vw)))), var(--max-font));
+}
+
+html {
+    font-size: var(--base-font-size, 14px);
+    letter-spacing: 0.125px;
+    scroll-padding-top: var(--ins-sticky-header-height);
+}
+
+body {
+    min-block-size: 100%;
+    scroll-padding-top: var(--ins-sticky-header-height);
+}
