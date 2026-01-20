@@ -1,0 +1,167 @@
+import {
+    ChangeDetectorRef,
+    computed,
+    DestroyRef,
+    Directive,
+    inject,
+    Input,
+    type OnInit,
+    signal,
+} from '@angular/core';
+import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
+import {
+    BehaviorSubject,
+    distinctUntilChanged,
+    EMPTY,
+    of,
+    shareReplay,
+    startWith,
+    switchMap,
+} from 'rxjs';
+import { AbstractInsEditor } from '../common/editor-adapter';
+import { InsTiptapEditorService } from '../directives/tiptap-editor/tiptap-editor.service';
+import { INS_EDITOR_OPTIONS } from '../common/editor-options';
+import { INS_EDITOR_TOOLBAR_TEXTS } from '../common/i18n';
+
+export interface ToolbarTools {
+        attach: string;
+        backColor: string;
+        bold: string;
+        cellColor: string;
+        clear: string;
+        code: string;
+        font: string;
+        fontSize: string;
+        fontStyle: string;
+        foreColor: string;
+        hiliteColor: string;
+        hiliteGroup: string;
+        image: string;
+        indent: string;
+        insertAnchor: string;
+        insertGroup: string;
+        insertHorizontalRule: string;
+        insertTable: string;
+        italic: string;
+        justify: string;
+        justifyCenter: string;
+        justifyFull: string;
+        justifyLeft: string;
+        justifyRight: string;
+        link: string;
+        list: string;
+        mergeCells: string;
+        orderedList: string;
+        outdent: string;
+        quote: string;
+        redo: string;
+        removeDetails: string;
+        removeGroup: string;
+        rowsColumnsManaging: string;
+        setDetails: string;
+        splitCells: string;
+        strikeThrough: string;
+        subscript: string;
+        superscript: string;
+        tex: string;
+        underline: string;
+        undo: string;
+        unorderedList: string;
+    };
+
+@Directive()
+export abstract class InsToolbarTool implements OnInit {
+    private editorInstance: AbstractInsEditor | null = inject(InsTiptapEditorService, {
+        optional: true,
+    });
+
+    private readonly editor$ = new BehaviorSubject(this.editorInstance);
+
+    protected readonly cd = inject(ChangeDetectorRef);
+    protected readonly destroy$ = inject(DestroyRef);
+    // protected readonly isMobile = inject(IS_MOBILE);
+    protected readonly options = inject(INS_EDITOR_OPTIONS);
+
+    protected readonly texts = toSignal(inject(INS_EDITOR_TOOLBAR_TEXTS));
+    protected readonly readOnly = signal(false);
+    protected readonly activeOnly = signal(false);
+    protected readonly isFocused = signal(false);
+
+    // protected readonly disabled = insDirectiveBinding(
+    //     InsToolbarButtonTool,
+    //     'disabled',
+    //     computed(() => this.readOnly()),
+    // );
+
+    // protected readonly active = insDirectiveBinding(
+    //     InsAppearance,
+    //     'insAppearanceState',
+    //     computed(() => (this.activeOnly() && this.isFocused() ? 'active' : null)),
+    // );
+
+    // protected readonly iconStart = insDirectiveBinding(
+    //     InsIcons,
+    //     'iconStart',
+    //     this.getIcon(this.options.icons),
+    // );
+
+    // protected readonly insHint = insDirectiveBinding(
+    //     InsHintDirective,
+    //     'insHint',
+    //     computed((texts = this.texts()) => this.getHint(texts)),
+    // );
+
+    // protected readonly insHintManual = insDirectiveBinding(
+    //     InsHintManual,
+    //     'insHintManual',
+    //     !this.isMobile && null,
+    // );
+
+    protected getDisableState?(): boolean;
+
+    protected isActive?(): boolean;
+
+    protected abstract getIcon(icons: string): string;
+
+    protected abstract getHint(options?: ToolbarTools): string;
+
+    @Input()
+    public set editor(editor: AbstractInsEditor | null) {
+        this.editorInstance = editor;
+        this.editor$.next(editor);
+    }
+
+    public get editor(): AbstractInsEditor | null {
+        return this.editorInstance;
+    }
+
+    public ngOnInit(): void {
+        this.editor$
+            .pipe(
+                distinctUntilChanged(),
+                switchMap((editor) => {
+                    this.updateSignals();
+
+                    return editor
+                        ? editor.valueChange$.pipe(
+                              startWith(null),
+                              shareReplay({bufferSize: 1, refCount: true}),
+                              takeUntilDestroyed(this.destroy$),
+                              // insWatch(this.cd),
+                          )
+                        : of(null);
+                }),
+                takeUntilDestroyed(this.destroy$),
+            )
+            .subscribe(() => this.updateSignals());
+    }
+
+    protected updateSignals(): void {
+        this.isFocused.set(this.editor?.isFocused ?? false);
+        this.readOnly.set(this.getDisableState?.() ?? false);
+        this.activeOnly.set(this.isActive?.() ?? false);
+
+        // caretaker note: trigger computed effect
+        this.cd.detectChanges();
+    }
+}
