@@ -20,54 +20,10 @@ import {
 } from 'rxjs';
 import { AbstractInsEditor } from '../common/editor-adapter';
 import { InsTiptapEditorService } from '../directives/tiptap-editor/tiptap-editor.service';
-import { INS_EDITOR_OPTIONS } from '../common/editor-options';
+import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../common/editor-options';
 import { INS_EDITOR_TOOLBAR_TEXTS } from '../common/i18n';
+import { InsLanguageEditor } from '@liuk123/insui';
 
-export interface ToolbarTools {
-        attach: string;
-        backColor: string;
-        bold: string;
-        cellColor: string;
-        clear: string;
-        code: string;
-        font: string;
-        fontSize: string;
-        fontStyle: string;
-        foreColor: string;
-        hiliteColor: string;
-        hiliteGroup: string;
-        image: string;
-        indent: string;
-        insertAnchor: string;
-        insertGroup: string;
-        insertHorizontalRule: string;
-        insertTable: string;
-        italic: string;
-        justify: string;
-        justifyCenter: string;
-        justifyFull: string;
-        justifyLeft: string;
-        justifyRight: string;
-        link: string;
-        list: string;
-        mergeCells: string;
-        orderedList: string;
-        outdent: string;
-        quote: string;
-        redo: string;
-        removeDetails: string;
-        removeGroup: string;
-        rowsColumnsManaging: string;
-        setDetails: string;
-        splitCells: string;
-        strikeThrough: string;
-        subscript: string;
-        superscript: string;
-        tex: string;
-        underline: string;
-        undo: string;
-        unorderedList: string;
-    };
 
 @Directive()
 export abstract class InsToolbarTool implements OnInit {
@@ -117,13 +73,18 @@ export abstract class InsToolbarTool implements OnInit {
     //     !this.isMobile && null,
     // );
 
+    protected readonly insHint = computed(() => this.getHint(this.texts()));
+    protected readonly iconStart = computed(() => this.getIcon(this.options.icons));
+    protected readonly active =computed(() => (this.activeOnly() && this.isFocused() ? 'active' : null))
+    protected readonly disabled = computed(() => this.readOnly());
+
     protected getDisableState?(): boolean;
 
     protected isActive?(): boolean;
 
-    protected abstract getIcon(icons: string): string;
+    protected abstract getIcon(icons: InsEditorOptions['icons']): string;
 
-    protected abstract getHint(options?: ToolbarTools): string;
+    protected abstract getHint(options?: InsLanguageEditor['toolbarTools']): string;
 
     @Input()
     public set editor(editor: AbstractInsEditor | null) {
@@ -140,7 +101,7 @@ export abstract class InsToolbarTool implements OnInit {
             .pipe(
                 distinctUntilChanged(),
                 switchMap((editor) => {
-                    this.updateSignals();
+                    // this.updateSignals();
 
                     return editor
                         ? editor.valueChange$.pipe(

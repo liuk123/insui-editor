@@ -1,8 +1,8 @@
 import {AsyncPipe} from '@angular/common';
 import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import { InsDataList, InsDropdownDirective, InsOptGroup, InsOption, InsTextfield, InsWithDropdownOpen } from '@liuk123/insui';
+import { InsDataList, InsDropdownDirective, InsLanguageEditor, InsOptGroup, InsOption, InsTextfield, InsWithDropdownOpen } from '@liuk123/insui';
 import { InsToolbarButtonTool } from '../tool-button';
-import { InsToolbarTool, ToolbarTools } from '../tool';
+import { InsToolbarTool } from '../tool';
 import { INS_EDITOR_TABLE_COMMANDS } from '../../common/i18n';
 
 export const InsTableCommands = {
@@ -19,7 +19,7 @@ export const InsTableCommands = {
     selector: 'button[insAddRowTableTool]',
     imports: [AsyncPipe, InsDataList, InsOptGroup, InsOption, InsTextfield],
     template: `
-        {{ getHint() }}
+        {{ insHint() }}
 
         <ng-container *insTextfieldDropdown>
             <ins-data-list>
@@ -53,7 +53,7 @@ export class InsAddRowTableButtonTool extends InsToolbarTool {
         return icons.addRowTable;
     }
 
-    protected getHint(texts?: ToolbarTools): string {
+    protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
         return texts?.rowsColumnsManaging ?? '';
     }
 

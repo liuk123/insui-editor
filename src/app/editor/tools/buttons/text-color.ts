@@ -1,0 +1,52 @@
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import { InsToolbarButtonTool } from '../tool-button';
+import { InsToolbarTool } from '../tool';
+import { InsEditorOptions } from '../../common/editor-options';
+import { InsLanguageEditor } from '@liuk123/insui';
+
+@Component({
+    standalone: true,
+    selector: 'button[insTextColorTool]',
+    imports: [InsPaletteModule, InsTextfield],
+    template: `
+        {{ insHint() }}
+
+        <ng-container *insTextfieldDropdown>
+            <ins-palette
+                insPalette
+                [colors]="colors"
+                (selectedColor)="editor?.setFontColor($event)"
+            />
+        </ng-container>
+    `,
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
+    host: {
+        '[attr.automation-id]': '"toolbar__color-button"',
+    },
+})
+export class InsTextColorButtonTool extends InsToolbarTool {
+    protected readonly dropdown = insDropdown(null);
+    protected readonly open = insDropdownOpen();
+
+    @Input()
+    public colors: ReadonlyMap<string, string> =
+        this.options.textColors ?? this.options.colors;
+
+    @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
+    protected set template(template: PolymorpheusContent) {
+        this.dropdown.set(template);
+    }
+
+    protected override isActive(): boolean {
+        return this.editor?.getFontColor() !== EDITOR_BLANK_COLOR;
+    }
+
+    protected getIcon(icons: InsEditorOptions['icons']): string {
+        return icons.textColor;
+    }
+
+    protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
+        return this.open() ? '' : (texts?.foreColor ?? '');
+    }
+}
