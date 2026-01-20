@@ -1,8 +1,13 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, TemplateRef, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsLanguageEditor } from '@liuk123/insui';
+import { InsDropdownDirective, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import { InsIndentButtonTool } from './indent';
+import { InsOrderedListButtonTool } from './ordered-list';
+import { InsOutdentButtonTool } from './outdent';
+import { InsTaskListButtonTool } from './task-list';
+import { InsUnorderedListButtonTool } from './unordered-list';
 
 @Component({
     standalone: true,

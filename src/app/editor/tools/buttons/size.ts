@@ -1,8 +1,12 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsLanguageEditor } from '@liuk123/insui';
+import { InsDataList, InsDropdownDirective, InsItem, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import { AsyncPipe, LowerCasePipe, NgClass, NgForOf, NgStyle } from '@angular/common';
+import { map } from 'rxjs';
+import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
+import { InsEditorFontOption } from '../../common/editor-font-option';
 
 @Component({
     standalone: true,
@@ -51,7 +55,7 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
     protected readonly dropdown = insDropdown(null);
     protected readonly open = insDropdownOpen();
 
-    protected readonly fontsOptions$ = inject(TUI_EDITOR_FONT_OPTIONS).pipe(
+    protected readonly fontsOptions$ = inject(INS_EDITOR_FONT_OPTIONS).pipe(
         map((texts) => this.options.fontOptions(texts)),
     );
 
@@ -76,7 +80,7 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
         if (headingLevel) {
             this.editor?.setHeading(headingLevel);
         } else {
-            this.editor?.setParagraph({fontSize: insPx(px ?? 0)});
+            this.editor?.setParagraph({fontSize: (px ?? 0) + 'px'});
         }
 
         if (color !== EDITOR_BLANK_COLOR) {

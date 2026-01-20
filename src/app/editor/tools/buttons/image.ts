@@ -1,8 +1,10 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
 import { InsLanguageEditor } from '@liuk123/insui';
+import { take } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     standalone: true,
@@ -26,7 +28,7 @@ import { InsLanguageEditor } from '@liuk123/insui';
 })
 export class InsImageButtonTool extends InsToolbarTool {
     private readonly destroyRef = inject(DestroyRef);
-    private readonly imageLoader = inject(TUI_IMAGE_LOADER);
+    private readonly imageLoader = inject(INS_IMAGE_LOADER);
 
     @ViewChild('image')
     protected image?: ElementRef<HTMLInputElement>;

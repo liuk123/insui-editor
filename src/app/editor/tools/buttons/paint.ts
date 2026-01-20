@@ -1,13 +1,14 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, Input, TemplateRef, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsLanguageEditor } from '@liuk123/insui';
+import { InsDropdown, InsDropdownDirective, InsDropdownOpen, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     standalone: true,
     selector: 'button[insPaintTool]',
-    imports: [AsyncPipe, NgIf, InsPaletteModule, InsTextfield],
+    imports: [AsyncPipe, InsPaletteModule, InsTextfield],
     template: `
         {{ insHint() }}
 
@@ -34,8 +35,8 @@ import { InsLanguageEditor } from '@liuk123/insui';
     },
 })
 export class InsPaintButtonTool extends InsToolbarTool {
-    protected readonly dropdown = insDropdown(null);
-    protected readonly open = insDropdownOpen();
+    protected readonly dropdown = InsDropdown(null);
+    protected readonly open = InsDropdownOpen();
 
     @Input()
     public colors: ReadonlyMap<string, string> =
