@@ -1,0 +1,26 @@
+import {InsEditorTool} from './editor-tool';
+
+export const INS_EDITOR_DEFAULT_TOOLS = new Set([
+    InsEditorTool.Align,
+    InsEditorTool.Anchor,
+    InsEditorTool.Bold,
+    InsEditorTool.CellColor,
+    InsEditorTool.Clear,
+    InsEditorTool.Code,
+    InsEditorTool.Color,
+    InsEditorTool.Details,
+    InsEditorTool.Hilite,
+    InsEditorTool.HR,
+    InsEditorTool.Img,
+    InsEditorTool.Italic,
+    InsEditorTool.Link,
+    InsEditorTool.List,
+    InsEditorTool.Quote,
+    InsEditorTool.Size,
+    InsEditorTool.Strikethrough,
+    InsEditorTool.Sub,
+    InsEditorTool.Sup,
+    InsEditorTool.Table,
+    InsEditorTool.Underline,
+    InsEditorTool.Undo,
+]);
