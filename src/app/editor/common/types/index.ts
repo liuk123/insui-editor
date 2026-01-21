@@ -23,6 +23,7 @@ import type Underline from '@tiptap/extension-underline';
 
 import type StarterKit from '@tiptap/starter-kit';
 import { InsEditableImage } from '../image';
+import { InsEditorAttachedFile } from '../attached';
 
 export type {
     BulletList,
@@ -116,9 +117,9 @@ declare module '@tiptap/core' {
     }
 
     interface Commands<ReturnType> {
-        // fileLink: {
-        //     setFileLink(preview: InsEditorAttachedFile): ReturnType;
-        // };
+        fileLink: {
+            setFileLink(preview: InsEditorAttachedFile): ReturnType;
+        };
     }
 
     interface Commands<ReturnType> {

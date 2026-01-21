@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, Input, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, inject, Input, TemplateRef, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
@@ -35,8 +35,8 @@ import { AsyncPipe } from '@angular/common';
     },
 })
 export class InsPaintButtonTool extends InsToolbarTool {
-    protected readonly dropdown = InsDropdown(null);
-    protected readonly open = InsDropdownOpen();
+  private readonly dropdown = inject(InsDropdownDirective)
+  protected readonly open = inject(InsDropdownOpen);
 
     @Input()
     public colors: ReadonlyMap<string, string> =
@@ -44,7 +44,7 @@ export class InsPaintButtonTool extends InsToolbarTool {
 
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
-        this.dropdown.set(template);
+        this.dropdown.insDropdown = template;
     }
 
     protected override isActive(): boolean {
@@ -64,7 +64,7 @@ export class InsPaintButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open()
+        return this.open.insDropdownOpen()
             ? ''
             : (this.editor?.isActive('group') && (texts?.hiliteGroup ?? '')) ||
                   (this.editor?.isActive('table') && (texts?.cellColor ?? '')) ||

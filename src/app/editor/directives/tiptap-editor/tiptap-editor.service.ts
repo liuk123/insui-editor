@@ -11,6 +11,7 @@ import { EDITOR_BLANK_COLOR } from "../../common/default-editor-colors";
 import { InsEditableImage } from "../../common/image";
 import { INS_EDITOR_OPTIONS } from "../../common/editor-options";
 import { insGetMarkRange } from "./utils/get-mark-range";
+import { InsEditorAttachedFile } from "../../common/attached";
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
 type Attrs = Record<string, unknown>;
@@ -421,9 +422,9 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.commands.removeAnchor();
   }
 
-  // public setFileLink(preview: TuiEditorAttachedFile): void {
-  //   this.editor?.commands.setFileLink(preview);
-  // }
+  public setFileLink(preview: InsEditorAttachedFile): void {
+    this.editor?.commands.setFileLink(preview);
+  }
 
   // public setYoutubeVideo(options: TuiYoutubeOptions): void {
   //   this.editor?.commands.setYoutubeVideo(options as any);

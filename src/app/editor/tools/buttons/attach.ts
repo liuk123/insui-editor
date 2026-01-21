@@ -5,6 +5,8 @@ import { InsEditorOptions } from '../../common/editor-options';
 import { InsLanguageEditor } from '@liuk123/insui';
 import { take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { INS_ATTACH_FILES_LOADER, INS_ATTACH_FILES_OPTIONS } from '../../common/files-loader';
+import { InsEditorAttachedFile } from '../../common/attached';
 
 @Component({
     standalone: true,
@@ -54,13 +56,6 @@ export class InsAttachButtonTool extends InsToolbarTool {
 
         if (files.length === 0) {
             return;
-        }
-
-        if (ngDevMode) {
-            console.assert(
-                !!this.filesLoader,
-                'Please provide INS_ATTACH_FILES_LOADER, more: https://taiga-family.github.io/editor/starter-kit/Options',
-            );
         }
 
         this.filesLoader?.(files)

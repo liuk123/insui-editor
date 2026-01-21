@@ -15,11 +15,11 @@ import { INS_EDITOR_CODE_OPTIONS } from '../../common/i18n';
 
         <ng-container *insTextfieldDropdown>
             <ins-data-list>
-              @for (item of codeOptionsTexts$ | async; let index = index) {
+              @for (item of codeOptionsTexts$ | async; track index) {
                 <button
                     insOption
                     type="button"
-                    (click)="onCode(!!index)"
+                    (click)="onCode(!!$index)"
                 >
                     {{ item }}
                 </button>
@@ -32,12 +32,12 @@ import { INS_EDITOR_CODE_OPTIONS } from '../../common/i18n';
 })
 export class InsCodeButtonTool extends InsToolbarTool {
     protected readonly codeOptionsTexts$ = inject(INS_EDITOR_CODE_OPTIONS);
-    protected readonly dropdown = insDropdown(null);
-    protected readonly open = InsDropdownOpen();
+  private readonly dropdown = inject(InsDropdownDirective)
+  protected readonly open = inject(InsDropdownOpen);
 
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
-        this.dropdown.set(template);
+        this.dropdown.insDropdown = template;
     }
 
     protected override isActive(): boolean {
@@ -51,7 +51,7 @@ export class InsCodeButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open() ? '' : (texts?.code ?? '');
+        return this.open.insDropdownOpen() ? '' : (texts?.code ?? '');
     }
 
     protected onCode(isCodeBlock: boolean): void {

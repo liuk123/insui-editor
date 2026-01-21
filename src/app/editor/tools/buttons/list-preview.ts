@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, forwardRef, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDropdownDirective, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import { InsDropdownDirective, InsDropdownOpen, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
 import { InsIndentButtonTool } from './indent';
 import { InsOrderedListButtonTool } from './ordered-list';
 import { InsOutdentButtonTool } from './outdent';
@@ -55,12 +55,12 @@ import { InsUnorderedListButtonTool } from './unordered-list';
     },
 })
 export class InsListButtonTool extends InsToolbarTool {
-    protected readonly dropdown = insDropdown(null);
-    protected readonly open = insDropdownOpen();
+  private readonly dropdown = inject(InsDropdownDirective)
+  protected readonly open = inject(InsDropdownOpen);
 
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
-        this.dropdown.set(template);
+        this.dropdown.insDropdown = template;
     }
 
     protected override isActive(): boolean {
@@ -77,6 +77,6 @@ export class InsListButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open() ? '' : (texts?.list ?? '');
+        return this.open.insDropdownOpen() ? '' : (texts?.list ?? '');
     }
 }

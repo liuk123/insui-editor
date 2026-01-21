@@ -2,9 +2,7 @@ import {ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, Vie
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDropdownDirective, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent, WINDOW } from '@liuk123/insui';
-import { take } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { getViewportWidth, InsDropdownDirective, InsDropdownOpen, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent, WINDOW } from '@liuk123/insui';
 
 const MAX_COLS_NUMBER = 15;
 const MAX_ROWS_NUMBER = 15;
@@ -76,8 +74,8 @@ const MIN_DISTANCE_PX = 70;
 })
 export class InsInsertTableButtonTool extends InsToolbarTool {
     private readonly win = inject(WINDOW);
-    protected readonly dropdown = insDropdown(null);
-    protected readonly open = insDropdownOpen();
+  private readonly dropdown = inject(InsDropdownDirective)
+  protected readonly open = inject(InsDropdownOpen);
 
     protected tableSize = {
         rows: 1,
@@ -86,7 +84,7 @@ export class InsInsertTableButtonTool extends InsToolbarTool {
 
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
-        this.dropdown.set(template);
+        this.dropdown.insDropdown = template;
     }
 
     protected get columnsNumber(): number {
@@ -102,7 +100,7 @@ export class InsInsertTableButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open() ? '' : (texts?.insertTable ?? '');
+        return this.open.insDropdownOpen() ? '' : (texts?.insertTable ?? '');
     }
 
     protected addTable({rows, cols}: {cols: number; rows: number}): void {
@@ -125,7 +123,7 @@ export class InsInsertTableButtonTool extends InsToolbarTool {
     }
 
     protected updateCurrentSize(rows: number, cols: number, event: MouseEvent): void {
-        if (insGetViewportWidth(this.win) - event.clientX > MIN_DISTANCE_PX) {
+        if (getViewportWidth(this.win) - event.clientX > MIN_DISTANCE_PX) {
             this.tableSize = {rows, cols};
             this.cd.detectChanges();
         }

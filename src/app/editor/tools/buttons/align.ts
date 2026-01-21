@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild} from '@angular/core';
 import { InsEditorOptions } from '../../common/editor-options';
 import { InsDropdown, InsDropdownDirective, InsDropdownOpen, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
 
@@ -50,12 +50,12 @@ import {InsAlignRightButtonTool} from './align-right';
     },
 })
 export class InsAlignButtonTool extends InsToolbarTool {
-    protected readonly dropdown = InsDropdown(null);
-    protected readonly open = InsDropdownOpen();
+  private readonly dropdown = inject(InsDropdownDirective)
+  protected readonly open = inject(InsDropdownOpen);
 
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
-        this.dropdown.set(template);
+        this.dropdown.insDropdown = template;
     }
 
     protected override isActive(): boolean {
@@ -73,6 +73,6 @@ export class InsAlignButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open() ? '' : (texts?.justify ?? '');
+        return this.open.insDropdownOpen() ? '' : (texts?.justify ?? '');
     }
 }
