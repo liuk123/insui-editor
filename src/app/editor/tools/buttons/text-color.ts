@@ -8,16 +8,17 @@ import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
 @Component({
     standalone: true,
     selector: 'button[insTextColorTool]',
-    imports: [InsPaletteModule, InsTextfield],
+    imports: [InsTextfield], //InsPaletteModule, 
     template: `
         {{ insHint() }}
 
         <ng-container *insTextfieldDropdown>
-            <ins-palette
+          color
+            <!-- <ins-palette
                 insPalette
                 [colors]="colors"
                 (selectedColor)="editor?.setFontColor($event)"
-            />
+            /> -->
         </ng-container>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,

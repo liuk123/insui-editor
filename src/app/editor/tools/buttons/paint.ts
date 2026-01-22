@@ -8,16 +8,17 @@ import { AsyncPipe } from '@angular/common';
 @Component({
     standalone: true,
     selector: 'button[insPaintTool]',
-    imports: [AsyncPipe, InsPaletteModule, InsTextfield],
+    imports: [AsyncPipe, InsTextfield], // InsPaletteModule
     template: `
         {{ insHint() }}
 
         <ng-container *insTextfieldDropdown>
-            <ins-palette
+          color
+            <!-- <ins-palette
                 insPalette
                 [colors]="colors"
                 (selectedColor)="setCellColor($event)"
-            />
+            /> -->
         </ng-container>
 
         <div

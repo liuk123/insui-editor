@@ -94,17 +94,17 @@ export class InsToolbar {
         optional: true,
     });
 
-    /**
-     * @deprecated use provideInsEditorOptions({ textColors, backgroundColors })
-     */
-    @Input()
-    public colors: ReadonlyMap<string, string> = this.options.colors;
+    // /**
+    //  * @deprecated use provideInsEditorOptions({ textColors, backgroundColors })
+    //  */
+    // @Input()
+    // public colors: ReadonlyMap<string, string> = this.options.colors;
 
-    /**
-     * @deprecated
-     */
-    @Input()
-    public disabled = false;
+    // /**
+    //  * @deprecated
+    //  */
+    // @Input()
+    // public disabled = false;
 
     @Output()
     public readonly linkAdded = new EventEmitter<string>();

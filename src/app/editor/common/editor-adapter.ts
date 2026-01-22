@@ -3,6 +3,7 @@ import {type Editor, type Range} from '@tiptap/core';
 import {type MarkType} from '@tiptap/pm/model';
 import {type EditorState} from '@tiptap/pm/state';
 import {BehaviorSubject, type Observable, Subject} from 'rxjs';
+import { InsEditorAttachedFile } from './attached';
 
 // import {type InsEditorAttachedFile} from './attached';
 // import {type InsEditableIframe} from './iframe';
@@ -190,7 +191,7 @@ export abstract class AbstractInsEditor {
 
     public abstract removeAnchor(): void;
 
-    // public abstract setFileLink(preview: InsEditorAttachedFile): void;
+    public abstract setFileLink(preview: InsEditorAttachedFile): void;
 
     // public abstract setYoutubeVideo(options: InsYoutubeOptions): void;
 

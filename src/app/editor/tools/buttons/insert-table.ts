@@ -11,24 +11,24 @@ const MIN_DISTANCE_PX = 70;
 @Component({
     standalone: true,
     selector: 'button[insInsertTableTool]',
-    imports: [InsRepeatTimes, InsTextfield],
+    imports: [InsTextfield],
     template: `
         {{ insHint() }}
 
         <ng-container *insTextfieldDropdown>
             <div class="t-size-selector">
-                <div
-                    *insRepeatTimes="let x of columnsNumber"
-                    class="t-column"
-                >
+                @for (item of columnsNumber; let colIndex = $index; track colIndex) {
+                  <div class="t-column">
+                    @for (item of rowsNumber; let rowIndex = $index; track rowIndex) {
                     <div
-                        *insRepeatTimes="let y of rowsNumber"
                         class="t-cell"
-                        [class.t-cell_hovered]="tableSelectHovered(y, x)"
+                        [class.t-cell_hovered]="tableSelectHovered(rowIndex, colIndex)"
                         (click)="addTable(tableSize)"
-                        (mouseenter)="updateCurrentSize(y + 1, x + 1, $event)"
+                        (mouseenter)="updateCurrentSize(rowIndex + 1, colIndex + 1, $event)"
                     ></div>
-                </div>
+                    }
+                  </div>
+                }
                 <div class="t-description">
                     {{ tableSize.cols }}&#215;{{ tableSize.rows }}
                 </div>
@@ -87,12 +87,12 @@ export class InsInsertTableButtonTool extends InsToolbarTool {
         this.dropdown.insDropdown = template;
     }
 
-    protected get columnsNumber(): number {
-        return Math.min(Math.max(3, this.tableSize.cols + 1), MAX_COLS_NUMBER);
+    protected get columnsNumber(): number[] {
+        return new Array(Math.min(Math.max(3, this.tableSize.cols + 1), MAX_COLS_NUMBER));
     }
 
-    protected get rowsNumber(): number {
-        return Math.min(Math.max(3, this.tableSize.rows + 1), MAX_ROWS_NUMBER);
+    protected get rowsNumber(): number[] {
+        return new Array(Math.min(Math.max(3, this.tableSize.rows + 1), MAX_ROWS_NUMBER));
     }
 
     protected getIcon(icons: InsEditorOptions['icons']): string {

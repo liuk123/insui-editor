@@ -1,0 +1,24 @@
+
+@if(!disabled){
+  <button
+      type="button"
+      [style.display]="'none'"
+  >
+      <!-- @note: this is a html hack to avoid autofocus, if the parent element is a label  -->
+  </button>
+  <div
+      [tabIndex]="focusable ? 0 : -1"
+      (focus)="onTopFocus()"
+  ></div>
+  <div
+      [tabIndex]="focusable ? 0 : -1"
+      (focus)="onBottomFocus()"
+  ></div>
+}
+<ng-container *ngIf="editor?.valueChange$ | async" />
+<fieldset
+    insToolbarNavigationManager
+    [disabled]="disabled"
+>
+    <ng-content />
+</fieldset>
