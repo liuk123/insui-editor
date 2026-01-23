@@ -1,0 +1,32 @@
+
+
+@if(!floatingToolbar && editorLoaded()){
+  <ins-toolbar-host [disabled]="!interactive()">
+    <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
+      <ng-content select="tools" />
+    </ins-toolbar>
+  </ins-toolbar-host>
+}
+
+<div
+  insDropdownDirection="bottom"
+  insDropdownLimitWidth="auto"
+  insTiptapEditor
+  class="ins-editor-socket"
+  [attr.data-contenteditable]="interactive()"
+  [editable]="interactive()"
+  [insDropdown]="dropdownTemp"
+  [insDropdownSelectionPosition]="floatingToolbar ? 'selection' : 'tag'"
+  [insDropdownSelection]="dropdownSelectionHandler"
+  (valueChange)="onModelChange($event)"
+
+></div>
+<ng-template #dropdownTemp>
+  @if(floatingToolbar){
+    <ins-toolbar-host [disabled]="!interactive()">
+      <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
+        <ng-content select="tools" />
+      </ins-toolbar>
+    </ins-toolbar-host>
+  }
+</ng-template>
