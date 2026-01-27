@@ -11,7 +11,7 @@ import { InsToolbarHost } from "../toolbar-host";
 import { InsToolbar } from "../toolbar";
 import { InsTiptapEditor } from "../../directives/tiptap-editor/tiptap-editor.directive";
 import { AbstractInsEditor } from "../../common/editor-adapter";
-import { INS_EDITOR_EXTENSIONS } from "../../common/editor-extensions";
+import { provideInsEditor } from "../../providers/provide-ins-editor";
 import { INS_EDITOR_PROVIDERS } from "./editor.providers";
 
 
@@ -33,10 +33,7 @@ import { INS_EDITOR_PROVIDERS } from "./editor.providers";
       provide: INS_APPEARANCE_OPTIONS,
       useValue: { appearance: 'textfield' },
     },
-    {
-      provide: INS_EDITOR_EXTENSIONS,
-      useValue: [],
-    },
+    provideInsEditor({}),
     INS_EDITOR_PROVIDERS
   ],
   hostDirectives: [

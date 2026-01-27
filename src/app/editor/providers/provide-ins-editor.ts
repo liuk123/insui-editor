@@ -32,8 +32,10 @@ import {type PlaceholderOptions} from '@tiptap/extension-placeholder';
 import {type StrikeOptions} from '@tiptap/extension-strike';
 import {type SubscriptExtensionOptions} from '@tiptap/extension-subscript';
 import {type SuperscriptExtensionOptions} from '@tiptap/extension-superscript';
+import {type TableOptions} from '@tiptap/extension-table';
+import {type TableCellOptions} from '@tiptap/extension-table-cell';
 import {type TableHeaderOptions} from '@tiptap/extension-table-header';
-// import {type TableRowOptions} from '@tiptap/extension-table-row/src/table-row';
+import {type TableRowOptions} from '@tiptap/extension-table-row';
 import {type TaskItemOptions} from '@tiptap/extension-task-item';
 import {type TaskListOptions} from '@tiptap/extension-task-list';
 import {type TextAlignOptions} from '@tiptap/extension-text-align';
@@ -78,9 +80,9 @@ interface Options {
     // jumpAnchor: Partial<Record<string, unknown>> | boolean;
     // fileLink: Partial<Record<string, unknown>> | boolean;
     // backgroundColor: Partial<InsBackgroundColorOptions> | boolean;
-    // table: Partial<Record<string, unknown>> | boolean;
-    // tableCell: Partial<Record<string, unknown>> | boolean;
-    // tableRow: Partial<TableRowOptions> | boolean;
+    table: Partial<TableOptions> | boolean;
+    tableCell: Partial<TableCellOptions> | boolean;
+    tableRow: Partial<TableRowOptions> | boolean;
     tableHeader: Partial<TableHeaderOptions> | boolean;
     // tableCellBackground: Partial<Record<string, unknown>> | boolean;
     // tab: Partial<Record<string, unknown>> | boolean;
@@ -423,33 +425,33 @@ const EXTENSIONS = [
     //         return InsBackgroundColor.configure(options);
     //     },
     // },
-    // {
-    //     key: 'table',
-    //     default: true,
-    //     async loader(options: Partial<Record<string, unknown>>) {
-    //         const {InsTable} = await import('@taiga-ui/editor/extensions/table');
+    {
+        key: 'table',
+        default: true,
+        async loader(options: Partial<TableOptions>) {
+            const {Table} = await import('@tiptap/extension-table');
 
-    //         return InsTable.configure(options);
-    //     },
-    // },
-    // {
-    //     key: 'tableCell',
-    //     default: true,
-    //     async loader(options: Partial<Record<string, unknown>>) {
-    //         const {InsTableCell} = await import('@taiga-ui/editor/extensions/table-cell');
+            return Table.configure({resizable: true, ...options});
+        },
+    },
+    {
+        key: 'tableCell',
+        default: true,
+        async loader(options: Partial<TableCellOptions>) {
+            const {TableCell} = await import('@tiptap/extension-table-cell');
 
-    //         return InsTableCell.configure(options);
-    //     },
-    // },
-    // {
-    //     key: 'tableRow',
-    //     default: true,
-    //     async loader(options: Partial<TableRowOptions>) {
-    //         const {TableRow} = await import('@tiptap/extension-table-row');
+            return TableCell.configure(options);
+        },
+    },
+    {
+        key: 'tableRow',
+        default: true,
+        async loader(options: Partial<TableRowOptions>) {
+            const {TableRow} = await import('@tiptap/extension-table-row');
 
-    //         return TableRow.configure(options);
-    //     },
-    // },
+            return TableRow.configure(options);
+        },
+    },
     {
         key: 'tableHeader',
         default: true,
