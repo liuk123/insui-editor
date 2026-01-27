@@ -35,8 +35,14 @@ export class InsTextColorButtonTool extends InsToolbarTool {
     public colors: ReadonlyMap<string, string> =
         this.options.textColors ?? this.options.colors;
 
+    private _currentTemplate: PolymorpheusContent | null = null;
+
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
+        if (template === this._currentTemplate) {
+            return;
+        }
+        this._currentTemplate = template;
         this.dropdown.insDropdown = template;
     }
 

@@ -35,8 +35,14 @@ export class InsCodeButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective)
   protected readonly open = inject(InsDropdownOpen);
 
+    private _currentTemplate: PolymorpheusContent | null = null;
+
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
+        if (template === this._currentTemplate) {
+            return;
+        }
+        this._currentTemplate = template;
         this.dropdown.insDropdown = template;
     }
 

@@ -1,0 +1,40 @@
+@import '@liuk123/insui/styles/ins-ui-global.less';
+
+a:not([data-type='jump-anchor']) {
+    color: var(--ins-text-action);
+    text-decoration: none;
+    outline: none;
+
+    &:hover {
+        color: var(--ins-text-action-hover);
+        text-decoration: underline;
+    }
+
+    &:active {
+        color: var(--ins-background-accent-1-pressed);
+    }
+}
+
+.ProseMirror {
+    a[data-type='jump-anchor'] {
+        text-decoration: underline;
+        text-decoration-color: var(--ins-text-action);
+
+        &::before {
+            content: '#';
+        }
+
+        &:hover {
+            color: var(--ins-text-action);
+        }
+    }
+
+    a:hover img[contenteditable='false'] {
+        cursor: pointer;
+        outline: 0.25rem solid var(--ins-text-action);
+    }
+}
+
+p > a + br.ProseMirror-trailingBreak {
+    display: none;
+}

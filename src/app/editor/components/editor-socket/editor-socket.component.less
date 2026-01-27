@@ -1,0 +1,52 @@
+.ins-editor-socket {
+    display: block;
+    margin: 0;
+    color: var(--ins-text-primary);
+    font: var(--ins-font-text-m);
+
+    &::after {
+        content: '';
+        display: table;
+        clear: both;
+    }
+
+    &[insTiptapEditor] {
+        overflow: hidden;
+    }
+
+    .ProseMirror {
+        min-block-size: 100%;
+        margin: 0.2rem 1rem;
+        outline: 1px solid transparent;
+        white-space: pre-wrap;
+    }
+
+    .resize-cursor {
+        cursor: ew-resize;
+        cursor: col-resize;
+    }
+
+    .ProseMirror-gapcursor {
+        margin-block-start: 0.83rem;
+    }
+
+    .ProseMirror .ProseMirror-gapcursor:first-child {
+        margin-block-start: 0;
+    }
+
+    img.ProseMirror-separator + .ProseMirror-trailingBreak,
+    img.ProseMirror-separator {
+        display: none !important;
+    }
+
+    @import './styles/text.less';
+    @import './styles/link.less';
+    @import './styles/list.less';
+    @import './styles/checkbox.less';
+    @import './styles/media.less';
+    @import './styles/placeholder.less';
+    @import './styles/table.less';
+    @import './styles/details.less';
+    @import './styles/code-blocks.less';
+    @import './styles/groups.less';
+}

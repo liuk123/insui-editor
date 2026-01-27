@@ -1,0 +1,146 @@
+@import '@liuk123/insui/styles/ins-ui-global.less';
+
+summary {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-block-size: 3.5rem;
+    inline-size: 100%;
+    box-sizing: border-box;
+    border-radius: var(--ins-radius-l);
+    outline: none;
+    word-break: break-word;
+    padding: 0 4.6875rem 0 1.25rem;
+    transition: transform var(--ins-duration, 0.3s);
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: 0.125rem solid var(--ins-text-action);
+    }
+
+    p {
+        min-inline-size: 0.0625rem;
+        margin: 0;
+    }
+
+    &::-webkit-details-marker {
+        display: none;
+    }
+}
+
+details[open] summary {
+    border-radius: var(--ins-radius-l) var(--ins-radius-l) 0 0;
+}
+
+summary::after,
+.t-details-arrow {
+    content: '';
+    position: absolute;
+    top: 1.5rem;
+    right: 1.25rem;
+    block-size: 0.575rem;
+    inline-size: 0.575rem;
+    border: 0.0625rem solid var(--ins-text-tertiary);
+    border-width: 0 0.125rem 0.125rem 0;
+    transform: rotate(45deg);
+    appearance: none;
+    box-sizing: border-box;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    outline: none;
+}
+
+details:hover summary::after,
+.t-details-arrow:hover {
+    border-color: var(--ins-text-secondary);
+}
+
+.t-details-delete {
+    position: absolute;
+    top: 1.4rem;
+    right: 2.7rem;
+    block-size: 1.125rem;
+    inline-size: 1.25rem;
+    appearance: none;
+    box-sizing: border-box;
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    border: none;
+
+    &:hover::after {
+        color: var(--ins-text-secondary);
+    }
+
+    &::after {
+        content: '\00d7';
+        display: inline-block;
+        font: inherit;
+        font-size: 1.5rem;
+        color: var(--ins-text-tertiary);
+        block-size: 100%;
+        inline-size: 100%;
+        line-height: 0.8rem;
+    }
+}
+
+details {
+    inline-size: 100%;
+    border: 0.0625rem solid var(--ins-border-normal);
+    border-radius: var(--ins-radius-l);
+    box-sizing: border-box;
+}
+
+div[data-type='details-content'] {
+    padding: 1.25rem;
+    min-block-size: 3rem;
+    border: 0.0625rem solid var(--ins-border-normal);
+    border-width: 0.0625rem 0 0;
+
+    // Prevents extra margin between
+    // top border of details and content
+    h1:first-child,
+    h2:first-child,
+    pre:first-child,
+    ul:first-child,
+    ol:first-child,
+    ol li:first-child,
+    ul li:first-child {
+        margin-block-start: 0;
+    }
+}
+
+.t-details-wrapper {
+    position: relative;
+    display: flex;
+}
+
+details:not(:last-child) {
+    margin-block-end: 1rem;
+}
+
+details[open] summary::after,
+details[open] + .t-details-arrow {
+    top: 1.75rem;
+    transform: rotate(225deg);
+}
+
+&[insTiptapEditor][data-contenteditable='false'] .t-details-delete,
+&[insTiptapEditor][data-contenteditable='false'] .t-details-arrow {
+    display: none;
+}
+
+ins-editor & summary,
+.t-details-arrow {
+    pointer-events: none;
+}
+
+ins-editor & summary::after {
+    content: none;
+}
+
+ins-editor & .t-details-arrow {
+    pointer-events: auto;
+}

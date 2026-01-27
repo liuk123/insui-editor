@@ -1,0 +1,9 @@
+@import '@liuk123/insui/styles/ins-ui-global.less';
+
+.t-editor-placeholder:not(tr):not(th):not(td):not(ul):not(ol):not(li):first-child::before {
+    content: attr(data-placeholder);
+    position: absolute;
+    float: inline-start;
+    color: var(--ins-border-hover);
+    pointer-events: none;
+}

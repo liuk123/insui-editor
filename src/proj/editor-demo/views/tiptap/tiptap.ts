@@ -12,7 +12,6 @@ import { provideInsEditor } from '../../../../app/editor/providers';
   templateUrl: './tiptap.html',
   styleUrl: './tiptap.less',
   providers: [
-    provideInsEditor()
   ]
 })
 export class Tiptap {

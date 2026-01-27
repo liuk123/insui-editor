@@ -13,6 +13,7 @@ import { InsTiptapEditor } from "../../directives/tiptap-editor/tiptap-editor.di
 import { AbstractInsEditor } from "../../common/editor-adapter";
 import { provideInsEditor } from "../../providers/provide-ins-editor";
 import { INS_EDITOR_PROVIDERS } from "./editor.providers";
+import { InsEditorSocket } from "../editor-socket";
 
 
 @Component({
@@ -24,6 +25,7 @@ import { INS_EDITOR_PROVIDERS } from "./editor.providers";
     InsToolbar,
     InsTiptapEditor,
     InsDropdown,
+    InsEditorSocket,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -134,8 +136,10 @@ public get editor(): AbstractInsEditor | null {
     this.predicate(range) ||
     Boolean(this.insDropdownOpen?.insDropdownOpen);
 
-  protected predicate: InsBooleanHandler<Range> = (value) => 
-    String(insGetWordRange(value)).startsWith('@')
+  protected predicate: InsBooleanHandler<Range> = (value) => {
+    console.log(String(insGetWordRange(value)).startsWith('@'))
+    return String(insGetWordRange(value)).startsWith('@')
+  }
   
 
 

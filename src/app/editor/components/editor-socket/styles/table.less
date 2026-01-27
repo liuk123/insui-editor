@@ -1,0 +1,90 @@
+@import '@liuk123/insui/styles/ins-ui-global.less';
+
+table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    inline-size: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* stylelint-disable-next-line */
+table .tableWrapper {
+    overflow-x: auto;
+}
+
+/* stylelint-disable-next-line */
+.tableWrapper,
+.ins-table-wrapper {
+    overflow-x: auto;
+}
+
+table td {
+    position: relative;
+    min-inline-size: 1em;
+    block-size: 2rem;
+    padding: 0.1875rem 0.3125rem;
+    vertical-align: top;
+    box-sizing: border-box;
+    word-break: break-word;
+}
+
+table th {
+    position: relative;
+    min-inline-size: 1em;
+    block-size: 2rem;
+    padding: 0.1875rem 0.3125rem;
+    vertical-align: top;
+    box-sizing: border-box;
+    word-break: break-word;
+    font-weight: bold;
+    text-align: start;
+    background-color: var(--ins-background-base-alt);
+    min-block-size: 2rem;
+}
+
+table td,
+table th {
+    border: 0.125rem solid rgb(233, 233, 231);
+
+    [insTheme='dark'] & {
+        border: 0.125rem solid rgb(47, 47, 47);
+    }
+}
+
+/* stylelint-disable-next-line */
+table .column-resize-handle {
+    position: absolute;
+    right: -0.125rem;
+    top: 0;
+    bottom: -0.125rem;
+    inline-size: 0.25rem;
+    background-color: #adf;
+    pointer-events: none;
+}
+
+table td > * {
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
+
+table th > * {
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
+
+/* stylelint-disable-next-line */
+.selectedCell {
+    outline: 0.0625rem solid rgb(131, 180, 215);
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--ins-service-selected-text);
+        pointer-events: none;
+    }
+}

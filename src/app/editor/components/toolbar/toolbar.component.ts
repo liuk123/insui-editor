@@ -120,7 +120,24 @@ export class InsToolbar {
 
     @Input()
     public set tools(value: Set<InsEditorToolType> | readonly InsEditorToolType[]) {
-        this.toolsSet = new Set(value);
+        const newSet = new Set(value);
+
+        if (this.toolsSet.size === newSet.size) {
+            let equal = true;
+
+            for (const tool of newSet) {
+                if (!this.toolsSet.has(tool)) {
+                    equal = false;
+                    break;
+                }
+            }
+
+            if (equal) {
+                return;
+            }
+        }
+
+        this.toolsSet = newSet;
     }
 
     protected get formatEnabled(): boolean {

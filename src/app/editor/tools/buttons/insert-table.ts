@@ -82,8 +82,14 @@ export class InsInsertTableButtonTool extends InsToolbarTool {
         cols: 1,
     };
 
+    private _currentTemplate: PolymorpheusContent | null = null;
+
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
+        if (template === this._currentTemplate) {
+            return;
+        }
+        this._currentTemplate = template;
         this.dropdown.insDropdown = template;
     }
 

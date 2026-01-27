@@ -75,15 +75,38 @@ export class InsFontStyleButtonTool extends InsToolbarTool {
 
   @Input()
   public set enabledTools(value: Tools) {
-    this.toolsSet = new Set(value);
+    const newSet = new Set(value);
+
+    if (this.toolsSet.size === newSet.size) {
+      let equal = true;
+
+      for (const tool of newSet) {
+        if (!this.toolsSet.has(tool)) {
+          equal = false;
+          break;
+        }
+      }
+
+      if (equal) {
+        return;
+      }
+    }
+
+    this.toolsSet = newSet;
   }
 
   public isEnabled(tool: InsEditorToolType): boolean {
     return this.toolsSet.has(tool);
   }
 
+  private _currentTemplate: PolymorpheusContent | null = null;
+
   @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), { read: TemplateRef })
   protected set template(template: PolymorpheusContent) {
+    if (template === this._currentTemplate) {
+      return;
+    }
+    this._currentTemplate = template;
     this.dropdown.insDropdown = template;
   }
 
