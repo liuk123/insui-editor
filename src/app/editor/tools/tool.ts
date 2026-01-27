@@ -22,10 +22,13 @@ import { AbstractInsEditor } from '../common/editor-adapter';
 import { InsTiptapEditorService } from '../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../common/editor-options';
 import { INS_EDITOR_TOOLBAR_TEXTS } from '../common/i18n';
-import { InsLanguageEditor } from '@liuk123/insui';
+import { InsAppearance, InsIcon, InsIcons, InsLanguageEditor } from '@liuk123/insui';
+import { InsToolbarButtonTool } from './tool-button';
 
 
-@Directive()
+@Directive({
+
+})
 export abstract class InsToolbarTool implements OnInit {
     private editorInstance: AbstractInsEditor | null = inject(InsTiptapEditorService, {
         optional: true,
@@ -72,6 +75,20 @@ export abstract class InsToolbarTool implements OnInit {
     //     'insHintManual',
     //     !this.isMobile && null,
     // );
+    private iconDir = inject(InsIcons, {optional: true})
+    private appearance = inject(InsAppearance, {optional: true})
+    private insToolbarButtonTool = inject(InsToolbarButtonTool, {optional: true})
+    constructor(){
+      if(this.iconDir){
+        this.iconDir.iconStart=(this.getIcon(this.options.icons));
+      }
+      if(this.appearance){
+        this.appearance.insAppearanceState.set(this.active());
+      }
+      if(this.insToolbarButtonTool){
+        this.insToolbarButtonTool.disabled.set(this.readOnly())
+      }
+    }
 
     protected readonly insHint = computed(() => this.getHint(this.texts()));
     protected readonly iconStart = computed(() => this.getIcon(this.options.icons));

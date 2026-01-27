@@ -15,7 +15,7 @@
       (focus)="onBottomFocus()"
   ></div>
 }
-<ng-container *ngIf="editor?.valueChange$ | async" />
+@if(editor?.valueChange$ | async){}
 <fieldset
     insToolbarNavigationManager
     [disabled]="disabled"

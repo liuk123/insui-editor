@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, inject, OnDestroy, Output, signal, ViewChild, ViewEncapsulation, Input } from "@angular/core";
-import { injectElement, INS_APPEARANCE_OPTIONS, InsAppearance, InsControl, InsValueTransformer, insGetWordRange, InsBooleanHandler, InsDropdown, InsDropdownOpen } from "@liuk123/insui";
+import { injectElement, INS_APPEARANCE_OPTIONS, InsAppearance, InsControl, InsValueTransformer, insGetWordRange, InsBooleanHandler, InsDropdown, InsDropdownOpen, InsDropdownDirective } from "@liuk123/insui";
 import { INS_EDITOR_OPTIONS } from "../../common/editor-options";
 import { InsEditorAttachedFile } from "../../common/attached";
 import { TIPTAP_EDITOR } from "../../common/tiptap-editor";
@@ -11,6 +11,8 @@ import { InsToolbarHost } from "../toolbar-host";
 import { InsToolbar } from "../toolbar";
 import { InsTiptapEditor } from "../../directives/tiptap-editor/tiptap-editor.directive";
 import { AbstractInsEditor } from "../../common/editor-adapter";
+import { INS_EDITOR_EXTENSIONS } from "../../common/editor-extensions";
+import { INS_EDITOR_PROVIDERS } from "./editor.providers";
 
 
 @Component({
@@ -21,15 +23,21 @@ import { AbstractInsEditor } from "../../common/editor-adapter";
     InsToolbarHost,
     InsToolbar,
     InsTiptapEditor,
-    InsDropdown
+    InsDropdown,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
+    InsDropdownDirective,
     {
       provide: INS_APPEARANCE_OPTIONS,
       useValue: { appearance: 'textfield' },
     },
+    {
+      provide: INS_EDITOR_EXTENSIONS,
+      useValue: [],
+    },
+    INS_EDITOR_PROVIDERS
   ],
   hostDirectives: [
     InsAppearance,

@@ -20,14 +20,14 @@ import { AsyncPipe } from '@angular/common';
                 (selectedColor)="setCellColor($event)"
             /> -->
         </ng-container>
-
+        @if(!isBlankColor()){
         <div
-            *ngIf="!isBlankColor()"
             insPlate
             [style.background]="editor?.getCellColor() ?? editor?.getGroupColor()"
         >
-            <ng-container *ngIf="editor?.valueChange$ | async" />
+            @if(editor?.valueChange$ | async){}
         </div>
+        }
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
     hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
