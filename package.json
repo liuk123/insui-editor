@@ -31,7 +31,7 @@
     "@angular/platform-server": "^20.3.0",
     "@angular/router": "^20.3.0",
     "@angular/ssr": "^20.3.9",
-    "@liuk123/insui": "^0.0.1-alpha.1",
+    "@liuk123/insui": "^0.0.1-alpha.2",
     "@liuk123/insui-icons": "^0.0.1-alpha.1",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
