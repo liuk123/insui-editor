@@ -16,12 +16,13 @@
   [attr.data-contenteditable]="interactive()"
   [editable]="interactive()"
   [insDropdown]="dropdownTemp"
-  [insDropdownSelectionPosition]="floatingToolbar ? 'selection' : 'tag'"
-  [insDropdownSelection]="dropdownSelectionHandler"
+  [insToolbarDropdown]="dropdownSelectionHandler"
+  [insToolbarDropdownPosition]="floatingToolbar ? 'selection' : 'tag'"
   (valueChange)="onModelChange($event)"
 
 ></div>
 <ng-template #dropdownTemp>
+  1222222222222222222222222222
   @if(floatingToolbar){
     <ins-toolbar-host [disabled]="!interactive()">
       <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
