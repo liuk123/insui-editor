@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, inject, OnDestroy, Output, signal, ViewChild, ViewEncapsulation, Input, Inject, DOCUMENT } from "@angular/core";
-import { injectElement, INS_APPEARANCE_OPTIONS, InsAppearance, InsControl, InsValueTransformer, insGetWordRange, InsBooleanHandler, InsDropdown, InsDropdownOpen, InsDropdownDirective } from "@liuk123/insui";
+import { injectElement, INS_APPEARANCE_OPTIONS, InsAppearance, InsControl, InsValueTransformer, insGetWordRange, InsBooleanHandler, InsDropdown, InsDropdownOpen, InsDropdownDirective, InsPopup } from "@liuk123/insui";
 import { INS_EDITOR_OPTIONS } from "../../common/editor-options";
 import { InsEditorAttachedFile } from "../../common/attached";
 import { TIPTAP_EDITOR } from "../../common/tiptap-editor";
@@ -28,6 +28,7 @@ import { insIsSafeLinkRange } from "../../directives/tiptap-editor/utils/safe-li
     InsToolbar,
     InsTiptapEditor,
     InsDropdown,
+    InsPopup,
     InsEditorSocket,
     InsEditorDropdownToolbar
   ],
@@ -40,7 +41,7 @@ import { insIsSafeLinkRange } from "../../directives/tiptap-editor/utils/safe-li
       useValue: { appearance: 'textfield' },
     },
     provideInsEditor({}),
-    INS_EDITOR_PROVIDERS
+    INS_EDITOR_PROVIDERS,
   ],
   hostDirectives: [
     InsAppearance,
@@ -175,7 +176,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
 
 
   public get isMentionMode(): boolean {
+    // console.log('isMentionMode', this.hasMentionPlugin, this.selectionState.before.startsWith('@'))
     return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
+    // return this.selectionState.before.startsWith('@');
   }
 
   public get selectionState(): InsSelectionState {

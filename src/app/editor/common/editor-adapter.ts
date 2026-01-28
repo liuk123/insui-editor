@@ -30,9 +30,10 @@ export abstract class AbstractInsEditor {
     //  * @deprecated use valueChange$ instead
     //  */
     // public readonly stateChange$ = new Subject<void>();
-
+ 
     public readonly valueChange$ = new BehaviorSubject<string>('');
-
+    public readonly selectionChange$ = new Subject<void>();
+ 
     public abstract get state(): EditorState | null;
 
     public abstract isActive$(attributes: Attrs): Observable<boolean>;

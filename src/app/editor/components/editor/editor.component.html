@@ -19,7 +19,6 @@
   [insToolbarDropdown]="dropdownSelectionHandler"
   [insToolbarDropdownPosition]="floatingToolbar ? 'selection' : 'tag'"
   (valueChange)="onModelChange($event)"
-
 ></div>
 <ng-template #dropdownTemp>
   1222222222222222222222222222
@@ -30,4 +29,7 @@
       </ins-toolbar>
     </ins-toolbar-host>
   }
+</ng-template>
+<ng-template [insPopup]="true">
+33333333333333333333333
 </ng-template>
