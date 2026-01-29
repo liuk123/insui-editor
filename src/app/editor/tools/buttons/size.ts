@@ -3,7 +3,7 @@ import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
 import { InsDataList, InsDropdownDirective, InsDropdownOpen, InsItem, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
-import { AsyncPipe, LowerCasePipe, NgClass, NgForOf, NgStyle } from '@angular/common';
+import { AsyncPipe, LowerCasePipe, NgClass, NgStyle } from '@angular/common';
 import { map } from 'rxjs';
 import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
 import { InsEditorFontOption } from '../../common/editor-font-option';
@@ -16,7 +16,6 @@ import { INS_EDITOR_FONT_OPTIONS } from '../../common/i18n';
         AsyncPipe,
         LowerCasePipe,
         NgClass,
-        NgForOf,
         NgStyle,
         InsDataList,
         InsItem,
@@ -28,8 +27,8 @@ import { INS_EDITOR_FONT_OPTIONS } from '../../common/i18n';
 
         <ng-container *insTextfieldDropdown>
             <ins-data-list>
+              @for(item of fontsOptions$ | async; track item){
                 <button
-                    *ngFor="let item of fontsOptions$ | async"
                     insItem
                     insOption
                     type="button"
@@ -43,6 +42,7 @@ import { INS_EDITOR_FONT_OPTIONS } from '../../common/i18n';
                 >
                     {{ item.name }}
                 </button>
+              }
             </ins-data-list>
         </ng-container>
     `,

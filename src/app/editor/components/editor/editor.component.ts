@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, inject, OnDestroy, Output, signal, ViewChild, ViewEncapsulation, Input, Inject, DOCUMENT } from "@angular/core";
-import { injectElement, INS_APPEARANCE_OPTIONS, InsAppearance, InsControl, InsValueTransformer, insGetWordRange, InsBooleanHandler, InsDropdown, InsDropdownOpen, InsDropdownDirective, InsPopup } from "@liuk123/insui";
+import { injectElement, INS_APPEARANCE_OPTIONS, InsAppearance, InsControl, InsValueTransformer, insGetWordRange, InsBooleanHandler, InsDropdown, InsDropdownOpen, InsDropdownDirective, InsPopup, InsButton } from "@liuk123/insui";
 import { INS_EDITOR_OPTIONS } from "../../common/editor-options";
 import { InsEditorAttachedFile } from "../../common/attached";
 import { TIPTAP_EDITOR } from "../../common/tiptap-editor";
@@ -201,5 +201,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     } else {
       this.focusOut.emit();
     }
+  }
+
+  onclick(){
+    console.log('click')
   }
 }

@@ -32,12 +32,10 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       }
       this.editor = editor
       editor.on('transaction', () => {
-        // const content = editor.getHTML()
         const json = editor.getJSON().content
         const value: string = insIsEmptyParagraph(json) ? '' : editor.getHTML()
         this.valueChange$.next(value)
       })
-      editor.on('selectionUpdate', () => this.selectionChange$.next())
       editor.on('blur', () => this.triggerTransaction())
     })
   }

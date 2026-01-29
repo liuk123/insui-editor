@@ -1,5 +1,3 @@
-
-
 @if(!floatingToolbar && editorLoaded()){
   <ins-toolbar-host [disabled]="!interactive()">
     <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
@@ -21,7 +19,6 @@
   (valueChange)="onModelChange($event)"
 ></div>
 <ng-template #dropdownTemp>
-  1222222222222222222222222222
   @if(floatingToolbar){
     <ins-toolbar-host [disabled]="!interactive()">
       <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">

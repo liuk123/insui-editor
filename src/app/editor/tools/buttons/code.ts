@@ -1,66 +1,77 @@
-import {ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  forwardRef,
+  inject,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDataList, InsDropdownDirective, InsDropdownOpen, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import {
+  InsDataList,
+  InsDropdownDirective,
+  InsDropdownOpen,
+  InsLanguageEditor,
+  InsOption,
+  InsTextfield,
+  InsTextfieldDropdownDirective,
+  InsWithDropdownOpen,
+  PolymorpheusContent,
+} from '@liuk123/insui';
 import { AsyncPipe } from '@angular/common';
 import { INS_EDITOR_CODE_OPTIONS } from '../../common/i18n';
 
 @Component({
-    standalone: true,
-    selector: 'button[insCodeTool]',
-    imports: [AsyncPipe, InsDataList, InsOption, InsTextfield],
-    template: `
-        {{ insHint() }}
+  standalone: true,
+  selector: 'button[insCodeTool]',
+  imports: [AsyncPipe, InsDataList, InsOption, InsTextfield],
+  template: `
+    {{ insHint() }}
 
-        <ng-container *insTextfieldDropdown>
-            <ins-data-list>
-              @for (item of codeOptionsTexts$ | async; track index) {
-                <button
-                    insOption
-                    type="button"
-                    (click)="onCode(!!$index)"
-                >
-                    {{ item }}
-                </button>
-              }
-            </ins-data-list>
-        </ng-container>
-    `,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
+    <ng-container *insTextfieldDropdown>
+      <ins-data-list>
+        @for (item of codeOptionsTexts$ | async; track index) {
+          <button insOption type="button" (click)="onCode(!!$index)">
+            {{ item }}
+          </button>
+        }
+      </ins-data-list>
+    </ng-container>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
 })
 export class InsCodeButtonTool extends InsToolbarTool {
-    protected readonly codeOptionsTexts$ = inject(INS_EDITOR_CODE_OPTIONS);
-  private readonly dropdown = inject(InsDropdownDirective)
+  protected readonly codeOptionsTexts$ = inject(INS_EDITOR_CODE_OPTIONS);
+  private readonly dropdown = inject(InsDropdownDirective);
   protected readonly open = inject(InsDropdownOpen);
 
-    private _currentTemplate: PolymorpheusContent | null = null;
+  private _currentTemplate: PolymorpheusContent | null = null;
 
-    @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
-    protected set template(template: PolymorpheusContent) {
-        if (template === this._currentTemplate) {
-            return;
-        }
-        this._currentTemplate = template;
-        this.dropdown.insDropdown = template;
+  @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), { read: TemplateRef })
+  protected set template(template: PolymorpheusContent) {
+    if (template === this._currentTemplate) {
+      return;
     }
+    this._currentTemplate = template;
+    this.dropdown.insDropdown = template;
+  }
 
-    protected override isActive(): boolean {
-        return (
-            (this.editor?.isActive('code') || this.editor?.isActive('codeBlock')) ?? false
-        );
-    }
+  protected override isActive(): boolean {
+    return (this.editor?.isActive('code') || this.editor?.isActive('codeBlock')) ?? false;
+  }
 
-    protected getIcon(icons: InsEditorOptions['icons']): string {
-        return icons.code;
-    }
+  protected getIcon(icons: InsEditorOptions['icons']): string {
+    return icons.code;
+  }
 
-    protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open.insDropdownOpen() ? '' : (texts?.code ?? '');
-    }
+  protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
+    return this.open.insDropdownOpen() ? '' : (texts?.code ?? '');
+  }
 
-    protected onCode(isCodeBlock: boolean): void {
-        this.editor?.[isCodeBlock ? 'toggleCodeBlock' : 'toggleCode']();
-    }
+  protected onCode(isCodeBlock: boolean): void {
+    this.editor?.[isCodeBlock ? 'toggleCodeBlock' : 'toggleCode']();
+  }
 }

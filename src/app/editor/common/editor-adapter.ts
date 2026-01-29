@@ -32,7 +32,6 @@ export abstract class AbstractInsEditor {
     // public readonly stateChange$ = new Subject<void>();
  
     public readonly valueChange$ = new BehaviorSubject<string>('');
-    public readonly selectionChange$ = new Subject<void>();
  
     public abstract get state(): EditorState | null;
 

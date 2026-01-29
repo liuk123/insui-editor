@@ -44,6 +44,7 @@ import {type UnderlineOptions} from '@tiptap/extension-underline';
 import {type StarterKitOptions} from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import { HistoryOptions } from '@tiptap/extension-history';
+import { type ImageOptions } from '@tiptap/extension-image';
 
 interface Options {
     starterKit: Partial<StarterKitOptions> | boolean;
@@ -58,7 +59,7 @@ interface Options {
     hardBreak: Partial<HardBreakOptions> | boolean;
     heading: Partial<HeadingOptions> | boolean;
     history: Partial<HistoryOptions> | boolean;
-    // horizontalRule: Partial<HorizontalRuleOptions> | boolean;
+    horizontalRule: Partial<HorizontalRuleOptions> | boolean;
     italic: Partial<ItalicOptions> | boolean;
     taskList: Partial<TaskListOptions> | boolean;
     taskItem: Partial<TaskItemOptions> | boolean;
@@ -76,7 +77,8 @@ interface Options {
     subscript: Partial<SubscriptExtensionOptions> | boolean;
     superscript: Partial<SuperscriptExtensionOptions> | boolean;
     // fontColor: Partial<InsFontColorOptions> | boolean;
-    // link: Partial<LinkOptions> | boolean;
+    link: Partial<LinkOptions> | boolean;
+    image: Partial<ImageOptions> | boolean;
     // jumpAnchor: Partial<Record<string, unknown>> | boolean;
     // fileLink: Partial<Record<string, unknown>> | boolean;
     // backgroundColor: Partial<InsBackgroundColorOptions> | boolean;
@@ -216,16 +218,16 @@ const EXTENSIONS = [
             return History.configure(options);
         },
     },
-    // {
-    //     key: 'horizontalRule',
-    //     default: true,
-    //     async loader(options: Partial<HorizontalRuleOptions>) {
-    //         const {InsHorizontalRule} =
-    //             await import('@taiga-ui/editor/extensions/horizontal');
+    {
+        key: 'horizontalRule',
+        default: true,
+        async loader(options: Partial<HorizontalRuleOptions>) {
+            const {HorizontalRule} =
+                await import('@tiptap/extension-horizontal-rule');
 
-    //         return InsHorizontalRule.configure(options);
-    //     },
-    // },
+            return HorizontalRule.configure(options);
+        },
+    },
     {
         key: 'italic',
         default: true,
@@ -319,7 +321,6 @@ const EXTENSIONS = [
     //     default: true,
     //     async loader(options: Partial<Record<string, unknown>>) {
     //         const {InsCustomEnter} = await import('@taiga-ui/editor/extensions/enter');
-
     //         return InsCustomEnter.configure(options);
     //     },
     // },
@@ -387,15 +388,22 @@ const EXTENSIONS = [
     //         return InsFontColor.configure(options);
     //     },
     // },
-    // {
-    //     key: 'link',
-    //     default: true,
-    //     async loader(options: Partial<LinkOptions>) {
-    //         const {InsLink} = await import('@taiga-ui/editor/extensions/link');
-
-    //         return InsLink.configure(options);
-    //     },
-    // },
+    {
+        key: 'link',
+        default: true,
+        async loader(options: Partial<LinkOptions>) {
+            const {Link} = await import('@tiptap/extension-link');
+            return Link.configure(options);
+        },
+    },
+    {
+        key: 'image',
+        default: true,
+        async loader(options: Partial<ImageOptions>) {
+            const { Image } = await import('@tiptap/extension-image');
+            return Image.configure(options);
+        },
+    },
     // {
     //     key: 'jumpAnchor',
     //     default: true,

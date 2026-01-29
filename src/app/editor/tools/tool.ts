@@ -1,145 +1,139 @@
 import {
-    ChangeDetectorRef,
-    computed,
-    DestroyRef,
-    Directive,
-    inject,
-    Input,
-    type OnInit,
-    signal,
+  ChangeDetectorRef,
+  computed,
+  DestroyRef,
+  Directive,
+  effect,
+  inject,
+  Input,
+  type OnInit,
+  signal,
 } from '@angular/core';
-import {takeUntilDestroyed, toSignal} from '@angular/core/rxjs-interop';
-import {
-    BehaviorSubject,
-    distinctUntilChanged,
-    EMPTY,
-    of,
-    shareReplay,
-    startWith,
-    switchMap,
-} from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { BehaviorSubject, distinctUntilChanged, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
 import { AbstractInsEditor } from '../common/editor-adapter';
 import { InsTiptapEditorService } from '../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../common/editor-options';
 import { INS_EDITOR_TOOLBAR_TEXTS } from '../common/i18n';
-import { InsAppearance, InsIcon, InsIcons, InsLanguageEditor } from '@liuk123/insui';
+import { InsAppearance, InsIcons, InsLanguageEditor } from '@liuk123/insui';
 import { InsToolbarButtonTool } from './tool-button';
 
-
-@Directive({
-
-})
+@Directive()
 export abstract class InsToolbarTool implements OnInit {
-    private editorInstance: AbstractInsEditor | null = inject(InsTiptapEditorService, {
-        optional: true,
+  private editorInstance: AbstractInsEditor | null = inject(InsTiptapEditorService, {
+    optional: true,
+  });
+
+  private readonly editor$ = new BehaviorSubject(this.editorInstance);
+
+  protected readonly cd = inject(ChangeDetectorRef);
+  protected readonly destroy$ = inject(DestroyRef);
+  // protected readonly isMobile = inject(IS_MOBILE);
+  protected readonly options = inject(INS_EDITOR_OPTIONS);
+
+  protected readonly texts = toSignal(inject(INS_EDITOR_TOOLBAR_TEXTS));
+  protected readonly readOnly = signal(false);
+  protected readonly activeOnly = signal(false);
+  protected readonly isFocused = signal(false);
+
+  // protected readonly disabled = insDirectiveBinding(
+  //     InsToolbarButtonTool,
+  //     'disabled',
+  //     computed(() => this.readOnly()),
+  // );
+
+  // protected readonly active = insDirectiveBinding(
+  //     InsAppearance,
+  //     'insAppearanceState',
+  //     computed(() => (this.activeOnly() && this.isFocused() ? 'active' : null)),
+  // );
+
+  // protected readonly iconStart = insDirectiveBinding(
+  //     InsIcons,
+  //     'iconStart',
+  //     this.getIcon(this.options.icons),
+  // );
+
+  // protected readonly insHint = insDirectiveBinding(
+  //     InsHintDirective,
+  //     'insHint',
+  //     computed((texts = this.texts()) => this.getHint(texts)),
+  // );
+
+  // protected readonly insHintManual = insDirectiveBinding(
+  //     InsHintManual,
+  //     'insHintManual',
+  //     !this.isMobile && null,
+  // );
+  private iconDir = inject(InsIcons, { optional: true });
+  private appearance = inject(InsAppearance);
+  private insToolbarButtonTool = inject(InsToolbarButtonTool, { optional: true });
+  constructor() {
+    if (this.iconDir) {
+      this.iconDir.iconStart = this.getIcon(this.options.icons);
+    }
+    effect(() => {
+      this.appearance.insAppearanceState.set(this.active());
     });
-
-    private readonly editor$ = new BehaviorSubject(this.editorInstance);
-
-    protected readonly cd = inject(ChangeDetectorRef);
-    protected readonly destroy$ = inject(DestroyRef);
-    // protected readonly isMobile = inject(IS_MOBILE);
-    protected readonly options = inject(INS_EDITOR_OPTIONS);
-
-    protected readonly texts = toSignal(inject(INS_EDITOR_TOOLBAR_TEXTS));
-    protected readonly readOnly = signal(false);
-    protected readonly activeOnly = signal(false);
-    protected readonly isFocused = signal(false);
-
-    // protected readonly disabled = insDirectiveBinding(
-    //     InsToolbarButtonTool,
-    //     'disabled',
-    //     computed(() => this.readOnly()),
-    // );
-
-    // protected readonly active = insDirectiveBinding(
-    //     InsAppearance,
-    //     'insAppearanceState',
-    //     computed(() => (this.activeOnly() && this.isFocused() ? 'active' : null)),
-    // );
-
-    // protected readonly iconStart = insDirectiveBinding(
-    //     InsIcons,
-    //     'iconStart',
-    //     this.getIcon(this.options.icons),
-    // );
-
-    // protected readonly insHint = insDirectiveBinding(
-    //     InsHintDirective,
-    //     'insHint',
-    //     computed((texts = this.texts()) => this.getHint(texts)),
-    // );
-
-    // protected readonly insHintManual = insDirectiveBinding(
-    //     InsHintManual,
-    //     'insHintManual',
-    //     !this.isMobile && null,
-    // );
-    private iconDir = inject(InsIcons, {optional: true})
-    private appearance = inject(InsAppearance, {optional: true})
-    private insToolbarButtonTool = inject(InsToolbarButtonTool, {optional: true})
-    constructor(){
-      if(this.iconDir){
-        this.iconDir.iconStart=(this.getIcon(this.options.icons));
+    effect(() => {
+      if (this.insToolbarButtonTool) {
+        this.insToolbarButtonTool.disabled.set(this.readOnly());
       }
-      if(this.appearance){
-        this.appearance.insAppearanceState.set(this.active());
-      }
-      if(this.insToolbarButtonTool){
-        this.insToolbarButtonTool.disabled.set(this.readOnly())
-      }
-    }
+    });
+  }
 
-    protected readonly insHint = computed(() => this.getHint(this.texts()));
-    protected readonly iconStart = computed(() => this.getIcon(this.options.icons));
-    protected readonly active =computed(() => (this.activeOnly() && this.isFocused() ? 'active' : null))
-    protected readonly disabled = computed(() => this.readOnly());
+  protected readonly insHint = computed(() => this.getHint(this.texts()));
+  protected readonly iconStart = computed(() => this.getIcon(this.options.icons));
+  protected readonly active = computed(() =>
+    this.activeOnly() && this.isFocused() ? 'active' : null,
+  );
+  protected readonly disabled = computed(() => this.readOnly());
 
-    protected getDisableState?(): boolean;
+  protected getDisableState?(): boolean;
 
-    protected isActive?(): boolean;
+  protected isActive?(): boolean;
 
-    protected abstract getIcon(icons: InsEditorOptions['icons']): string;
+  protected abstract getIcon(icons: InsEditorOptions['icons']): string;
 
-    protected abstract getHint(options?: InsLanguageEditor['toolbarTools']): string;
+  protected abstract getHint(options?: InsLanguageEditor['toolbarTools']): string;
 
-    @Input()
-    public set editor(editor: AbstractInsEditor | null) {
-        this.editorInstance = editor;
-        this.editor$.next(editor);
-    }
+  @Input()
+  public set editor(editor: AbstractInsEditor | null) {
+    this.editorInstance = editor;
+    this.editor$.next(editor);
+  }
 
-    public get editor(): AbstractInsEditor | null {
-        return this.editorInstance;
-    }
+  public get editor(): AbstractInsEditor | null {
+    return this.editorInstance;
+  }
 
-    public ngOnInit(): void {
-        this.editor$
-            .pipe(
-                distinctUntilChanged(),
-                switchMap((editor) => {
-                    // this.updateSignals();
+  public ngOnInit(): void {
+    this.editor$
+      .pipe(
+        distinctUntilChanged(),
+        switchMap((editor) => {
+          // this.updateSignals();
 
-                    return editor
-                        ? editor.valueChange$.pipe(
-                              startWith(null),
-                              shareReplay({bufferSize: 1, refCount: true}),
-                              takeUntilDestroyed(this.destroy$),
-                              // insWatch(this.cd),
-                          )
-                        : of(null);
-                }),
+          return editor
+            ? editor.valueChange$.pipe(
+                startWith(null),
+                shareReplay({ bufferSize: 1, refCount: true }),
                 takeUntilDestroyed(this.destroy$),
-            )
-            .subscribe(() => this.updateSignals());
-    }
+                // insWatch(this.cd),
+              )
+            : of(null);
+        }),
+        takeUntilDestroyed(this.destroy$),
+      )
+      .subscribe(() => this.updateSignals());
+  }
 
-    protected updateSignals(): void {
-        this.isFocused.set(this.editor?.isFocused ?? false);
-        this.readOnly.set(this.getDisableState?.() ?? false);
-        this.activeOnly.set(this.isActive?.() ?? false);
+  protected updateSignals(): void {
+    this.isFocused.set(this.editor?.isFocused ?? false);
+    this.readOnly.set(this.getDisableState?.() ?? false);
+    this.activeOnly.set(this.isActive?.() ?? false);
 
-        // caretaker note: trigger computed effect
-        this.cd.detectChanges();
-    }
+    // caretaker note: trigger computed effect
+    this.cd.detectChanges();
+  }
 }

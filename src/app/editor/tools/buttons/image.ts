@@ -53,6 +53,8 @@ export class InsImageButtonTool extends InsToolbarTool {
 
         this.imageLoader(file)
             .pipe(take(1), takeUntilDestroyed(this.destroyRef))
-            .subscribe((image) => this.editor?.setImage(image));
+            .subscribe((image) => {
+              this.editor?.setImage(image)
+            });
     }
 }
