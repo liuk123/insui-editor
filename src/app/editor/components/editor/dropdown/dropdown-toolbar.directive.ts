@@ -9,7 +9,7 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 import { EMPTY_CLIENT_RECT, INS_SELECTION_STREAM, insAsDriver, insAsRectAccessor, InsBooleanHandler, InsDriver, insGetWordRange, InsRectAccessor, isElement, isTextNode, WINDOW } from '@liuk123/insui';
-import {BehaviorSubject, combineLatest, map} from 'rxjs';
+import {BehaviorSubject, combineLatest, debounceTime, map} from 'rxjs';
 import { INS_EDITOR_PM_SELECTED_NODE } from '../../../common/pm-css-classes';
 
 interface ServerSideGlobal extends Global {
@@ -48,17 +48,16 @@ export class InsEditorDropdownToolbar
         this.handler$,
         this.selection$.pipe(map(() => this.getRange())),
     ]).pipe(
+        debounceTime(80),
         map(([handler, range]) => {
             const contained =
                 this.el.nativeElement.contains(range.commonAncestorContainer) ||
                 range.commonAncestorContainer.parentElement?.closest('ins-dropdown');
-
             this.range =
                 (contained && isTextNode(range.commonAncestorContainer)) ||
                 range.commonAncestorContainer.nodeName === 'P'
                     ? range
                     : this.range;
-
             return contained && handler(this.range);
         }),
     );
