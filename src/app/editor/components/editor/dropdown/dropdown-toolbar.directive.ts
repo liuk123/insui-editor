@@ -83,23 +83,7 @@ export class InsEditorDropdownToolbar
     public getClientRect(): DOMRect {
         switch (this.position) {
             case 'tag': {
-                const {commonAncestorContainer} = this.range;
-                const element = isElement(commonAncestorContainer)
-                    ? commonAncestorContainer
-                    : commonAncestorContainer.parentNode;
-
-                if (element?.parentElement?.closest('ins-dropdown')) {
-                    return this.previousTagPosition ?? EMPTY_CLIENT_RECT;
-                }
-
-                this.previousTagPosition =
-                    element && isElement(element)
-                        ? this.doc
-                              ?.querySelector(`.${INS_EDITOR_PM_SELECTED_NODE}`)
-                              ?.getBoundingClientRect() || element.getBoundingClientRect()
-                        : EMPTY_CLIENT_RECT;
-
-                return this.previousTagPosition;
+                return this.getTagRect()
             }
             case 'word':
                 return insGetWordRange(this.range).getBoundingClientRect();
@@ -112,9 +96,10 @@ export class InsEditorDropdownToolbar
                     rect.width === 0 &&
                     rect.height === 0
                 ) {
-                    return (
-                        this.el.nativeElement.querySelector('p') ?? this.el.nativeElement
-                    ).getBoundingClientRect();
+                  return this.getTagRect()
+                    // return (
+                    //     this.el.nativeElement.querySelector('p') ?? this.el.nativeElement
+                    // ).getBoundingClientRect();
                 }
 
                 return rect;
@@ -133,5 +118,24 @@ export class InsEditorDropdownToolbar
         const range = selection?.rangeCount ? selection.getRangeAt(0) : this.range;
 
         return range.cloneRange();
+    }
+    private getTagRect(){
+      const {commonAncestorContainer} = this.range;
+                const element = isElement(commonAncestorContainer)
+                    ? commonAncestorContainer
+                    : commonAncestorContainer.parentNode;
+
+                if (element?.parentElement?.closest('ins-dropdown')) {
+                    return this.previousTagPosition ?? EMPTY_CLIENT_RECT;
+                }
+
+                this.previousTagPosition =
+                    element && isElement(element)
+                        ? this.doc
+                              ?.querySelector(`.${INS_EDITOR_PM_SELECTED_NODE}`)
+                              ?.getBoundingClientRect() || element.getBoundingClientRect()
+                        : EMPTY_CLIENT_RECT;
+
+                return this.previousTagPosition;
     }
 }
