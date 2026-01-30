@@ -10,7 +10,6 @@ import {
   ViewChild,
   ViewEncapsulation,
   Input,
-  DOCUMENT,
   effect,
   computed,
 } from '@angular/core';
@@ -25,6 +24,7 @@ import {
   InsDropdownOpen,
   InsDropdownDirective,
   InsPopup,
+  WINDOW,
 } from '@liuk123/insui';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorAttachedFile } from '../../common/attached';
@@ -46,6 +46,10 @@ import {
 } from '../../directives/tiptap-editor/utils/get-selection-state';
 import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-link-range';
 
+interface ServerSideGlobal extends Global {
+    document: Document | undefined;
+}
+
 @Component({
   selector: 'ins-editor',
   templateUrl: './editor.component.html',
@@ -55,7 +59,6 @@ import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-li
     InsToolbar,
     InsTiptapEditor,
     InsDropdown,
-    InsPopup,
     InsEditorSocket,
     InsEditorDropdownToolbar,
   ],
@@ -94,7 +97,8 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   );
 
   protected readonly insDropdownOpen = inject(InsDropdownOpen, { optional: true });
-  private readonly doc: Document | null = inject(DOCUMENT);
+  private readonly doc: Document | null =
+        inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
   private el = injectElement();
 
   @ViewChild(InsTiptapEditor, { read: ElementRef })

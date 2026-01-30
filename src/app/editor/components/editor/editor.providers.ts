@@ -89,7 +89,6 @@ export const INS_EDITOR_PROVIDERS = [
                             extensions,
                         });
                     } catch(err) {
-                        console.log(err)
                         return null;
                     }
                 }),

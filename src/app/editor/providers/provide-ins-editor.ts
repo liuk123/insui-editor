@@ -45,6 +45,7 @@ import {type StarterKitOptions} from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import {type HistoryOptions } from '@tiptap/extension-history';
 import { type ImageOptions } from '@tiptap/extension-image';
+import {type TypographyOptions} from '@tiptap/extension-typography'
 
 interface Options {
     starterKit: Partial<StarterKitOptions> | boolean;
@@ -98,7 +99,7 @@ interface Options {
     // iframe: Partial<Record<string, unknown>> | boolean;
 
 
-    // typography: Partial<TypographyOptions> | boolean;
+    typography: Partial<TypographyOptions> | boolean;
 }
 
 const EXTENSIONS = [
@@ -190,6 +191,14 @@ const EXTENSIONS = [
             const {HardBreak} = await import('@tiptap/extension-hard-break');
 
             return HardBreak.configure(options);
+        },
+    },
+    {
+        key: 'typography',
+        default: true,
+        async loader(options: Partial<TypographyOptions>) {
+            const {Typography} = await import('@tiptap/extension-typography');
+            return Typography.configure(options);
         },
     },
     {

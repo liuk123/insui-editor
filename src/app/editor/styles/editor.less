@@ -9,6 +9,9 @@ ins-editor {
     box-sizing: border-box;
     overflow: auto;
 }
+ins-editor[data-state='disabled']{
+  pointer-events: none;
+}
 
 ins-editor::after {
     content: '';

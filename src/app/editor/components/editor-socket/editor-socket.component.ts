@@ -1,7 +1,7 @@
-import {DOCUMENT} from '@angular/common';
 import {
     ChangeDetectionStrategy,
     Component,
+    DOCUMENT,
     ElementRef,
     inject,
     Input,
@@ -13,7 +13,7 @@ import {
 import {type SafeHtml} from '@angular/platform-browser';
 import { InsTiptapEditor } from '../../directives/tiptap-editor/tiptap-editor.directive';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
-import { isElement } from '@liuk123/insui';
+import { isElement, WINDOW } from '@liuk123/insui';
 import { INS_EDITOR_SANITIZER } from '../../common/editor-sanitizer';
 
 @Component({
