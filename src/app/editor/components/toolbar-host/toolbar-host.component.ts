@@ -33,15 +33,15 @@ import { AbstractInsEditor } from '../../common/editor-adapter';
         role: 'toolbar',
         insToolbarHost: '',
         '[class._disabled]': 'disabled',
-        // '(mousedown)': 'onMouseDown($event, $event.target)',
+        '(mousedown)': 'onMouseDown($event, $event.target)',
     },
 })
 export class InsToolbarHost {
-    // @ViewChild(InsToolbarNavigationManager)
-    // private readonly navigationManager?: InsToolbarNavigationManager;
+    @ViewChild(InsToolbarNavigationManager)
+    private readonly navigationManager?: InsToolbarNavigationManager;
 
-    // @ViewChildren('dropdown', {read: ElementRef})
-    // private readonly dropdowns: QueryList<ElementRef<HTMLElement>> = EMPTY_QUERY;
+    @ViewChildren('dropdown', {read: ElementRef})
+    private readonly dropdowns: QueryList<ElementRef<HTMLElement>> = EMPTY_QUERY;
 
     protected readonly injectionEditor = inject(InsTiptapEditorService, {optional: true});
 
@@ -51,46 +51,46 @@ export class InsToolbarHost {
     @Input()
     public disabled = false;
 
-    // public readonly el: HTMLElement | null =
-    //     inject(ElementRef, {optional: true})?.nativeElement ?? null;
+    public readonly el: HTMLElement | null =
+        inject(ElementRef, {optional: true})?.nativeElement ?? null;
 
     protected get editor(): AbstractInsEditor | null {
         return this.injectionEditor ?? this.inputEditor;
     }
 
-    // protected get focused(): boolean {
-    //     return (
-    //         isNativeFocusedIn(this.el) ||
-    //         !!this.dropdowns.find(({nativeElement}) => isNativeFocusedIn(nativeElement))
-    //     );
-    // }
+    protected get focused(): boolean {
+        return (
+            isNativeFocusedIn(this.el) ||
+            !!this.dropdowns.find(({nativeElement}) => isNativeFocusedIn(nativeElement))
+        );
+    }
 
-    // protected get focusable(): boolean {
-    //     return !this.focused && !this.disabled;
-    // }
+    protected get focusable(): boolean {
+        return !this.focused && !this.disabled;
+    }
 
-    // protected onTopFocus(): void {
-    //     this.focusFirst();
-    // }
+    protected onTopFocus(): void {
+        this.focusFirst();
+    }
 
-    // protected onBottomFocus(): void {
-    //     this.focusLast();
-    // }
+    protected onBottomFocus(): void {
+        this.focusLast();
+    }
 
-    // protected onMouseDown(event: MouseEvent, target: HTMLElement): void {
-    //     if (target.closest('button')) {
-    //         return;
-    //     }
+    protected onMouseDown(event: MouseEvent, target: HTMLElement): void {
+        if (target.closest('button')) {
+            return;
+        }
 
-    //     event.preventDefault();
-    //     this.editor?.focus();
-    // }
+        event.preventDefault();
+        this.editor?.focus();
+    }
 
-    // private focusFirst(): void {
-    //     this.navigationManager?.findFirstFocusableTool()?.focus();
-    // }
+    private focusFirst(): void {
+        this.navigationManager?.findFirstFocusableTool()?.focus();
+    }
 
-    // private focusLast(): void {
-    //     this.navigationManager?.findFirstFocusableTool(true)?.focus();
-    // }
+    private focusLast(): void {
+        this.navigationManager?.findFirstFocusableTool(true)?.focus();
+    }
 }

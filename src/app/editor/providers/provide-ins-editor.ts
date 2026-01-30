@@ -43,7 +43,7 @@ import {type TextStyleOptions} from '@tiptap/extension-text-style';
 import {type UnderlineOptions} from '@tiptap/extension-underline';
 import {type StarterKitOptions} from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
-import { HistoryOptions } from '@tiptap/extension-history';
+import {type HistoryOptions } from '@tiptap/extension-history';
 import { type ImageOptions } from '@tiptap/extension-image';
 
 interface Options {
@@ -96,6 +96,9 @@ interface Options {
     // audio: Partial<Record<string, unknown>> | boolean;
     // source: Partial<Record<string, unknown>> | boolean;
     // iframe: Partial<Record<string, unknown>> | boolean;
+
+
+    // typography: Partial<TypographyOptions> | boolean;
 }
 
 const EXTENSIONS = [

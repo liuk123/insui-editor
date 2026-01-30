@@ -134,6 +134,6 @@ export abstract class InsToolbarTool implements OnInit {
     this.activeOnly.set(this.isActive?.() ?? false);
 
     // caretaker note: trigger computed effect
-    this.cd.detectChanges();
+    // this.cd.detectChanges();
   }
 }

@@ -1,10 +1,10 @@
 
-<!-- @if(!disabled){
+@if(!disabled){
   <button
       type="button"
       [style.display]="'none'"
   >
-      @note: this is a html hack to avoid autofocus, if the parent element is a label
+      <!-- @note: this is a html hack to avoid autofocus, if the parent element is a label -->
   </button>
   <div
       [tabIndex]="focusable ? 0 : -1"
@@ -14,7 +14,7 @@
       [tabIndex]="focusable ? 0 : -1"
       (focus)="onBottomFocus()"
   ></div>
-} -->
+}
 @if(editor?.valueChange$ | async){}
 <fieldset
     insToolbarNavigationManager

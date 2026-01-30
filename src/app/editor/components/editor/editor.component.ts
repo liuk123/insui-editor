@@ -186,7 +186,10 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     }
     return this.floatingToolbar
       ? (range) =>
-          (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
+          (this.value().trim() !== '' &&
+            this.editor?.state?.selection.empty === false 
+            // && !range.collapsed
+          ) ||
           this.openDropdownWhen(range)
       : this.openDropdownWhen;
   }

@@ -41,7 +41,7 @@ export class InsEditorDropdownToolbar
     private readonly vcr = inject(ViewContainerRef);
 
     private readonly handler$ = new BehaviorSubject<InsBooleanHandler<Range>>(
-        ()=>true,
+        ()=>false,
     );
 
     private readonly stream$ = combineLatest([
