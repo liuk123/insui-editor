@@ -404,8 +404,8 @@ const EXTENSIONS = [
         key: 'link',
         default: true,
         async loader(options: Partial<LinkOptions>) {
-            const {Link} = await import('@tiptap/extension-link');
-            return Link.configure(options);
+            const {InsLink} = await import('../extensions/link');
+            return InsLink.configure(options);
         },
     },
     {

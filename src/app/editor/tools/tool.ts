@@ -87,7 +87,7 @@ export abstract class InsToolbarTool implements OnInit {
   protected readonly active = computed(() =>
     this.activeOnly() && this.isFocused() ? 'active' : null,
   );
-  protected readonly disabled = computed(() => this.readOnly());
+  // protected readonly disabled = computed(() => this.readOnly());
 
   protected getDisableState?(): boolean;
 
@@ -134,6 +134,6 @@ export abstract class InsToolbarTool implements OnInit {
     this.activeOnly.set(this.isActive?.() ?? false);
 
     // caretaker note: trigger computed effect
-    // this.cd.detectChanges();
+    this.cd.detectChanges();
   }
 }

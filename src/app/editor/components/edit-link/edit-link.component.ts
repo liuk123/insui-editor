@@ -1,8 +1,10 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { InsButton, InsTextfield, WINDOW } from '@liuk123/insui';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import { InsButton, InsTextfield, isElement, WINDOW } from '@liuk123/insui';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { AbstractInsEditor } from '../../common/editor-adapter';
+import { FormsModule } from '@angular/forms';
+import { InsFilterAnchorsPipe } from './pipe/filter-anchors.pipe';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -12,19 +14,21 @@ interface ServerSideGlobal extends Global {
   selector: 'ins-edit-link',
   templateUrl: './edit-link.component.html',
   styleUrls: ['./edit-link.component.less'],
-  imports: [InsButton, InsTextfield],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [InsButton, InsTextfield, FormsModule, InsFilterAnchorsPipe],
   host: {
     '(document:selectionchange)': 'onSelectionChange()',
+     '(mousedown.capture)': 'onMouseDown($event)',
   },
 })
-export class InsEditLink implements OnInit {
+export class InsEditLink implements AfterViewInit {
   private readonly injectionEditor = inject(InsTiptapEditorService, { optional: true });
-  private readonly doc: Document | null =
-    inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
+  private readonly doc: Document | null = inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
 
   protected readonly options = inject(INS_EDITOR_OPTIONS);
   protected url = this.getHrefOrAnchorId();
   protected prefix = 'http://';
+  protected anchorIds = this.getAllAnchorsIds();
 
   protected edit = true;
 
@@ -32,10 +36,13 @@ export class InsEditLink implements OnInit {
   public readonly addLink = new EventEmitter<string>();
   @Output()
   public readonly removeLink = new EventEmitter<void>();
+
   @Input('editor')
   public inputEditor: AbstractInsEditor | null = null;
   @Input('anchorMode')
   public anchorMode = this.detectAnchorMode();
+  @ViewChild('inputRef')
+  private inputRef: ElementRef<HTMLInputElement> | null = null;
 
   protected get href(): string {
     return this.url;
@@ -43,8 +50,13 @@ export class InsEditLink implements OnInit {
   protected get editor(): AbstractInsEditor | null {
     return this.injectionEditor ?? this.inputEditor;
   }
+  protected get showAnchors(): boolean {
+    return !this.anchorMode && this.edit && this.anchorIds.length > 0;
+  }
 
-  ngOnInit() {}
+  ngAfterViewInit(): void {
+    this.inputRef?.nativeElement.focus();
+  }
 
   protected onClear(): void {
     this.url = '';
@@ -56,6 +68,9 @@ export class InsEditLink implements OnInit {
       this.removeLink.emit();
     }
   }
+  protected onRemove(): void {
+        this.removeLink.emit();
+    }
   protected onBlur(url: string): void {
     const range = this.editor?.getSelectionSnapshot();
     if (range && !url && !this.url) {
@@ -94,9 +109,20 @@ export class InsEditLink implements OnInit {
 
     return !a?.href && (!!a?.getAttribute('id') || a?.getAttribute('data-type') === 'jump-anchor');
   }
-  // protected onMouseDown(event: MouseEvent): void {
-  //   if (isElement(event.target) && !event.target.matches('a, button, input')) {
-  //     event.preventDefault();
-  //   }
-  // }
+  protected onMouseDown(event: MouseEvent): void {
+    if (isElement(event.target) && !event.target.matches('a, button, input')) {
+      event.preventDefault();
+    }
+  }
+  private getAllAnchorsIds(): string[] {
+        const nodes: Element[] = Array.from(
+            this.editor
+                ?.getOriginTiptapEditor()
+                ?.view.dom.querySelectorAll('[data-type="jump-anchor"]') ?? [],
+        );
+
+        return Array.from(nodes)
+            .map((node) => node.getAttribute('id') ?? '')
+            .filter(Boolean);
+    }
 }

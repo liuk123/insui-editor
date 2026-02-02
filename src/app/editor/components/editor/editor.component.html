@@ -31,7 +31,14 @@
       </ins-toolbar>
     </ins-toolbar-host>
   }
-  <ins-edit-link></ins-edit-link>
+  @if(isLinkSelected){
+    <ins-edit-link
+      #link
+      insEditorRootEditLink
+      (addLink)="link.anchorMode ? addAnchor($event) : addLink($event); closeDropdown()"
+      (removeLink)="link.anchorMode ? removeAnchor() : removeLink(); closeDropdown()"
+    ></ins-edit-link>
+  }
 </ng-template>
 <!-- <ng-template [insPopup]="true">
 33333333333333333333333

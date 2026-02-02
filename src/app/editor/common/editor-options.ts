@@ -83,7 +83,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly translate: 'no' | 'yes';
     readonly tools: Set<InsEditorToolType> | readonly InsEditorToolType[];
     readonly floatingToolbar: boolean;
-   
+
     readonly placeholder: string;
     readonly editorProps?: EditorProps;
 }
@@ -122,7 +122,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
         popupLinkSave: 'save',
         popupLinkRemove: 'x',
         popupPreviewLinkEdit: 'pencil',
-        popupPreviewLinkClear: 'x',
+        popupPreviewLinkClear: 'trash',
         paint: 'paint-bucket',
         hash: 'hash',
         externalLink: 'external-link',

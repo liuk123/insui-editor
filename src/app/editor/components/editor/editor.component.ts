@@ -12,6 +12,7 @@ import {
   Input,
   effect,
   computed,
+  forwardRef,
 } from '@angular/core';
 import {
   injectElement,
@@ -48,7 +49,7 @@ import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-li
 import { InsEditLink } from '../edit-link/edit-link.component';
 
 interface ServerSideGlobal extends Global {
-    document: Document | undefined;
+  document: Document | undefined;
 }
 
 @Component({
@@ -62,7 +63,7 @@ interface ServerSideGlobal extends Global {
     InsDropdown,
     InsEditorSocket,
     InsEditorDropdownToolbar,
-    InsEditLink
+    InsEditLink,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,7 +73,7 @@ interface ServerSideGlobal extends Global {
       provide: INS_APPEARANCE_OPTIONS,
       useValue: { appearance: 'textfield' },
     },
-    INS_EDITOR_PROVIDERS
+    INS_EDITOR_PROVIDERS,
   ],
   hostDirectives: [
     InsAppearance,
@@ -100,12 +101,15 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
 
   protected readonly insDropdownOpen = inject(InsDropdownOpen, { optional: true });
   private readonly doc: Document | null =
-        inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
+    inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
   private el = injectElement();
 
   @ViewChild(InsTiptapEditor, { read: ElementRef })
   private readonly editorEl?: ElementRef<HTMLElement>;
   public readonly rootEl = injectElement();
+
+  @ViewChild(forwardRef(() => InsDropdownDirective))
+  private readonly ownDropdown?: InsDropdownDirective;
 
   public readonly focused = signal(false);
   private readonly appearance = inject(InsAppearance);
@@ -120,7 +124,6 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   public readonly focusIn = new EventEmitter<void>();
   @Output()
   public readonly focusOut = new EventEmitter<void>();
-
 
   private hasMentionPlugin = false;
   protected readonly $ = this.editorLoaded$.pipe(delay(0), takeUntilDestroyed()).subscribe(() => {
@@ -151,9 +154,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     effect(() => {
       this.appearance.insAppearanceMode.set(this.mode());
     });
-    effect(()=>{
+    effect(() => {
       this.appearance.insAppearanceFocus.set(this.focused());
-    })
+    });
   }
   ngOnDestroy(): void {
     this.editor?.destroy();
@@ -192,10 +195,8 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     }
     return this.floatingToolbar
       ? (range) =>
-          (this.value().trim() !== '' &&
-            this.editor?.state?.selection.empty === false 
-            // && !range.collapsed
-          ) ||
+          (this.value().trim() !== '' && this.editor?.state?.selection.empty === false) ||
+          // && !range.collapsed
           this.openDropdownWhen(range)
       : this.openDropdownWhen;
   }
@@ -259,10 +260,39 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     }
   }
   private patchContentEditableElement(): void {
-        this.nativeFocusableElement?.setAttribute('translate', this.options.translate);
-        this.nativeFocusableElement?.setAttribute(
-            'spellcheck',
-            String(this.options.spellcheck),
-        );
-    }
+    this.nativeFocusableElement?.setAttribute('translate', this.options.translate);
+    this.nativeFocusableElement?.setAttribute('spellcheck', String(this.options.spellcheck));
+  }
+
+  public get isLinkSelected(): boolean {
+    const focusElement = this.doc?.getSelection()?.focusNode;
+    const parentFocusElement = focusElement?.parentNode;
+
+    return (
+      parentFocusElement?.nodeName.toLowerCase() === 'a' ||
+      parentFocusElement?.parentNode?.nodeName.toLowerCase() === 'a' ||
+      focusElement?.nodeName.toLowerCase() === 'a' ||
+      !!focusElement?.parentElement?.closest('a') ||
+      !!focusElement?.parentElement?.closest('[insEditorRootEditLink]') ||
+      !!focusElement?.parentElement?.closest('ins-dropdown')
+    );
+  }
+  protected closeDropdown(): void {
+    this.ownDropdown?.toggle(false);
+  }
+  protected addLink(link: string): void {
+    this.editor?.selectClosest();
+    this.editor?.setLink(link);
+  }
+
+  protected removeLink(): void {
+    this.editor?.unsetLink();
+  }
+  protected addAnchor(anchor: string): void {
+    this.editor?.setAnchor(anchor);
+  }
+
+  protected removeAnchor(): void {
+    this.editor?.removeAnchor();
+  }
 }

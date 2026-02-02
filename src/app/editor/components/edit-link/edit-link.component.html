@@ -1,19 +1,18 @@
 <div class="t-edit-link">
-  @if (edit) {
   <label class="t-label">
     <div class="t-label-properties">URL</div>
     <div class="t-url">
-      <div class="t-prefix">{{prefix}}</div>
-      <input 
+      <div class="t-prefix">{{ prefix }}</div>
+      <input
+        #inputRef
         class="t-input"
-        [(ngModel)]="url" 
+        [(ngModel)]="url"
         (blur)="onBlur(url)"
         (keydown.prevent.enter)="onSave()"
-        autofocus
-        />
+      />
     </div>
   </label>
-   <button
+  <button
     class="t-button"
     type="button"
     appearance="icon"
@@ -31,6 +30,22 @@
     [iconStart]="options.icons.popupLinkSave"
     (mousedown.prevent)="onSave()"
   ></button>
-}
-
+  <button
+    class="t-button"
+    type="button"
+    appearance="icon"
+    title="Remove link"
+    insIconButton
+    [iconStart]="options.icons.popupPreviewLinkClear"
+    (mousedown.prevent)="onRemove()"
+  ></button>
 </div>
+
+@if (showAnchors) {
+  <hr class="t-hr" />
+  <div class="t-anchor-list">
+    @for (id of anchorIds | insFilterAnchors: prefix ?? '' : url; track id) {
+      <button type="button" class="t-anchor" (mousedown)="setAnchor(id)">#{{ id }}</button>
+    }
+  </div>
+}
