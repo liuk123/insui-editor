@@ -55,7 +55,7 @@ export class InsEditLink implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.inputRef?.nativeElement.focus();
+    requestAnimationFrame(()=>this.inputRef?.nativeElement.focus())
   }
 
   protected onClear(): void {

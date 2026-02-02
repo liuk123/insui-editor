@@ -96,10 +96,10 @@ export class InsEditorDropdownToolbar
                     rect.width === 0 &&
                     rect.height === 0
                 ) {
-                  return this.getTagRect()
-                    // return (
-                    //     this.el.nativeElement.querySelector('p') ?? this.el.nativeElement
-                    // ).getBoundingClientRect();
+                //   return this.getTagRect()
+                    return (
+                        this.el.nativeElement.querySelector('p') ?? this.el.nativeElement
+                    ).getBoundingClientRect();
                 }
 
                 return rect;

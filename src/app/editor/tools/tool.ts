@@ -36,35 +36,6 @@ export abstract class InsToolbarTool implements OnInit {
   protected readonly activeOnly = signal(false);
   protected readonly isFocused = signal(false);
 
-  // protected readonly disabled = insDirectiveBinding(
-  //     InsToolbarButtonTool,
-  //     'disabled',
-  //     computed(() => this.readOnly()),
-  // );
-
-  // protected readonly active = insDirectiveBinding(
-  //     InsAppearance,
-  //     'insAppearanceState',
-  //     computed(() => (this.activeOnly() && this.isFocused() ? 'active' : null)),
-  // );
-
-  // protected readonly iconStart = insDirectiveBinding(
-  //     InsIcons,
-  //     'iconStart',
-  //     this.getIcon(this.options.icons),
-  // );
-
-  // protected readonly insHint = insDirectiveBinding(
-  //     InsHintDirective,
-  //     'insHint',
-  //     computed((texts = this.texts()) => this.getHint(texts)),
-  // );
-
-  // protected readonly insHintManual = insDirectiveBinding(
-  //     InsHintManual,
-  //     'insHintManual',
-  //     !this.isMobile && null,
-  // );
   private iconDir = inject(InsIcons, { optional: true });
   private appearance = inject(InsAppearance);
   private insToolbarButtonTool = inject(InsToolbarButtonTool, { optional: true });
@@ -87,7 +58,6 @@ export abstract class InsToolbarTool implements OnInit {
   protected readonly active = computed(() =>
     this.activeOnly() && this.isFocused() ? 'active' : null,
   );
-  // protected readonly disabled = computed(() => this.readOnly());
 
   protected getDisableState?(): boolean;
 
@@ -112,14 +82,14 @@ export abstract class InsToolbarTool implements OnInit {
       .pipe(
         distinctUntilChanged(),
         switchMap((editor) => {
-          // this.updateSignals();
+          this.updateSignals();
 
           return editor
             ? editor.valueChange$.pipe(
                 startWith(null),
                 shareReplay({ bufferSize: 1, refCount: true }),
                 takeUntilDestroyed(this.destroy$),
-                // insWatch(this.cd),
+                // tap(()=>this.cd.markForCheck())
               )
             : of(null);
         }),
@@ -134,6 +104,6 @@ export abstract class InsToolbarTool implements OnInit {
     this.activeOnly.set(this.isActive?.() ?? false);
 
     // caretaker note: trigger computed effect
-    this.cd.detectChanges();
+    // this.cd.detectChanges();
   }
 }

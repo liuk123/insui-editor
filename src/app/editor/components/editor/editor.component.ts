@@ -195,15 +195,16 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     }
     return this.floatingToolbar
       ? (range) =>
-          (this.value().trim() !== '' && this.editor?.state?.selection.empty === false) ||
-          // && !range.collapsed
+          (this.value().trim() !== '' &&
+            this.editor?.state?.selection.empty === false &&
+            !range.collapsed) ||
           this.openDropdownWhen(range)
       : this.openDropdownWhen;
   }
   private readonly openDropdownWhen = (range: Range): boolean =>
     this.currentFocusedNodeIsTextAnchor(range) ||
     this.isMentionMode ||
-    Boolean(this.insDropdownOpen?.insDropdownOpen);
+    Boolean(this.insDropdownOpen?.insDropdownOpen());
 
   private get focusNode(): Node | null {
     return this.doc?.getSelection()?.focusNode ?? null;
