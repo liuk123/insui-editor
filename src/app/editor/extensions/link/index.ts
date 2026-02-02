@@ -61,7 +61,7 @@ export const InsLink = Link.extend<LinkOptions>({
                         return toggleMark
                             .setTextSelection({
                                 from,
-                                to: to - from === 1 ? to : to - 1,
+                                to,
                             })
                             .run();
                     }

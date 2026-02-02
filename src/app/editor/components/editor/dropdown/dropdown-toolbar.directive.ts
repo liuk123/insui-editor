@@ -48,7 +48,7 @@ export class InsEditorDropdownToolbar
         this.handler$,
         this.selection$.pipe(map(() => this.getRange())),
     ]).pipe(
-        debounceTime(80),
+        // debounceTime(80),
         map(([handler, range]) => {
             const contained =
                 this.el.nativeElement.contains(range.commonAncestorContainer) ||

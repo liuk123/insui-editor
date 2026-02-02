@@ -15,7 +15,6 @@ import { provideInsEditor } from '../../../../app/editor/providers';
     provideInsEditor({
       placeholder: {placeholder: '请输入。。。'},
       heading: {levels: [1, 2, 3, 4, 5, 6]},
-      image: true,
       link: { autolink: true, openOnClick: false, linkOnPaste: true },
     }),
   ]

@@ -44,8 +44,8 @@ import {type UnderlineOptions} from '@tiptap/extension-underline';
 import {type StarterKitOptions} from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import {type HistoryOptions } from '@tiptap/extension-history';
-import { type ImageOptions } from '@tiptap/extension-image';
 import {type TypographyOptions} from '@tiptap/extension-typography'
+import { InsImageExtensionOptions } from '../extensions/image-editor/image-editor.extension';
 
 interface Options {
     starterKit: Partial<StarterKitOptions> | boolean;
@@ -79,7 +79,7 @@ interface Options {
     superscript: Partial<SuperscriptExtensionOptions> | boolean;
     // fontColor: Partial<InsFontColorOptions> | boolean;
     link: Partial<LinkOptions> | boolean;
-    image: Partial<ImageOptions> | boolean;
+    image: Partial<InsImageExtensionOptions> | boolean;
     // jumpAnchor: Partial<Record<string, unknown>> | boolean;
     // fileLink: Partial<Record<string, unknown>> | boolean;
     // backgroundColor: Partial<InsBackgroundColorOptions> | boolean;
@@ -92,7 +92,6 @@ interface Options {
     // details: Partial<InsDetailsExtensionOptions> | boolean;
     // detailsSummary: Partial<DetailsSummaryOptions> | boolean;
     // detailsContent: Partial<DetailsContentOptions> | boolean;
-    // image: Partial<InsImageExtensionOptions> | boolean;
     // video: Partial<Record<string, unknown>> | boolean;
     // audio: Partial<Record<string, unknown>> | boolean;
     // source: Partial<Record<string, unknown>> | boolean;
@@ -411,9 +410,9 @@ const EXTENSIONS = [
     {
         key: 'image',
         default: true,
-        async loader(options: Partial<ImageOptions>) {
-            const { Image } = await import('@tiptap/extension-image');
-            return Image.configure(options);
+        async loader(options: Partial<InsImageExtensionOptions>, injector: Injector) {
+            const { insCreateImageEditorExtension } = await import('../extensions/image-editor/index');
+            return insCreateImageEditorExtension({injector, ...options});
         },
     },
     // {
@@ -623,8 +622,7 @@ export function provideInsEditor<O, S>(
                     const config = options[key];
                     const extensionOptions = typeof config === 'boolean' ? {} : config;
 
-                    // return loader(extensionOptions, injector);
-                    return loader(extensionOptions) as AsyncExtension<O, S>;
+                    return loader(extensionOptions, injector) as AsyncExtension<O, S>;
                 })
                 .concat(ownExtensions.map(async (extension) => extension(injector)));
         },
