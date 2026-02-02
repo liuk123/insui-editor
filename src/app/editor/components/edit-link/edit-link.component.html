@@ -1,0 +1,36 @@
+<div class="t-edit-link">
+  @if (edit) {
+  <label class="t-label">
+    <div class="t-label-properties">URL</div>
+    <div class="t-url">
+      <div class="t-prefix">{{prefix}}</div>
+      <input 
+        class="t-input"
+        [(ngModel)]="url" 
+        (blur)="onBlur(url)"
+        (keydown.prevent.enter)="onSave()"
+        autofocus
+        />
+    </div>
+  </label>
+   <button
+    class="t-button"
+    type="button"
+    appearance="icon"
+    title="Clear"
+    insIconButton
+    [iconStart]="options.icons.popupLinkRemove"
+    (mousedown.prevent)="onClear()"
+  ></button>
+  <button
+    class="t-button"
+    type="button"
+    appearance="icon"
+    title="Save"
+    insIconButton
+    [iconStart]="options.icons.popupLinkSave"
+    (mousedown.prevent)="onSave()"
+  ></button>
+}
+
+</div>

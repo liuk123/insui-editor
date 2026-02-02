@@ -45,6 +45,7 @@ import {
   InsSelectionState,
 } from '../../directives/tiptap-editor/utils/get-selection-state';
 import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-link-range';
+import { InsEditLink } from '../edit-link/edit-link.component';
 
 interface ServerSideGlobal extends Global {
     document: Document | undefined;
@@ -61,6 +62,7 @@ interface ServerSideGlobal extends Global {
     InsDropdown,
     InsEditorSocket,
     InsEditorDropdownToolbar,
+    InsEditLink
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -70,7 +72,7 @@ interface ServerSideGlobal extends Global {
       provide: INS_APPEARANCE_OPTIONS,
       useValue: { appearance: 'textfield' },
     },
-    INS_EDITOR_PROVIDERS,
+    INS_EDITOR_PROVIDERS
   ],
   hostDirectives: [
     InsAppearance,
