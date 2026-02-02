@@ -531,16 +531,6 @@ const EXTENSIONS = [
     //     },
     // },
     // {
-    //     key: 'image',
-    //     default: false,
-    //     async loader(options: Partial<InsImageExtensionOptions>, injector: Injector) {
-    //         const {insCreateImageEditorExtension} =
-    //             await import('@taiga-ui/editor/extensions/image-editor');
-
-    //         return insCreateImageEditorExtension({injector, ...options});
-    //     },
-    // },
-    // {
     //     key: 'video',
     //     default: false,
     //     async loader(options: Partial<Record<string, unknown>>) {

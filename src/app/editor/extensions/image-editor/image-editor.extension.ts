@@ -5,21 +5,19 @@ import {
     mergeAttributes,
     type Node,
     type NodeViewRenderer,
-    type NodeViewRendererProps,
     type RawCommands,
 } from '@tiptap/core';
 import {Image} from '@tiptap/extension-image';
 import {isAllowedUri} from '@tiptap/extension-link';
 import {type DOMOutputSpec, type NodeSpec} from '@tiptap/pm/model';
 import {Plugin} from '@tiptap/pm/state';
-import {type EditorView, type NodeView} from '@tiptap/pm/view';
+import {type EditorView} from '@tiptap/pm/view';
 import {take, takeWhile} from 'rxjs';
 
 import {InsImageEditor} from './image-editor';
 import { InsEditableImage } from '../../common/image';
 import { INS_IMAGE_LOADER } from '../../common/image-loader';
 import { isPresent } from '@liuk123/insui';
-import { AngularRenderer } from '../tiptap-node-view/AngularRenderer';
 import { AngularNodeViewRenderer } from '../tiptap-node-view';
 
 export interface InsImageExtensionOptions {
@@ -235,8 +233,3 @@ export function insCreateImageEditorExtension<T, K>({
         },
     });
 }
-
-/**
- * @deprecated use {@link insCreateImageEditorExtension}
- */
-export const setup = insCreateImageEditorExtension;
