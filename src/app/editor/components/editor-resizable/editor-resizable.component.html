@@ -1,0 +1,22 @@
+<div #container insResizable class="t-resizable" [class.t-resizable-auto-height]="autoHeight">
+  <ng-content />
+  @if (isEditable) {
+    <div
+      class="t-handle t-handle-left-side"
+      [insResizer]="[-1, 0]"
+      (insSizeChange)="sizeChange.emit($event)"
+    ></div>
+    @if (!autoHeight) {
+      <div
+        class="t-handle t-handle-bottom-side"
+        [insResizer]="[0, 1]"
+        (insSizeChange)="sizeChange.emit($event)"
+      ></div>
+    }
+    <div
+      class="t-handle t-handle-right-side"
+      [insResizer]="[1, 0]"
+      (insSizeChange)="sizeChange.emit($event)"
+    ></div>
+  }
+</div>

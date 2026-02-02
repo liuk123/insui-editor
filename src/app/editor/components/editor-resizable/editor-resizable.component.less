@@ -1,0 +1,64 @@
+@import '@liuk123/insui/styles/ins-ui-global.less';
+
+:host {
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+
+    .t-resizable {
+        box-sizing: border-box;
+
+        &-auto-height {
+            block-size: auto !important;
+        }
+    }
+
+    iframe {
+        display: inline;
+        pointer-events: none;
+    }
+
+    &:hover .t-handle::after {
+        opacity: 1;
+    }
+}
+
+.t-handle {
+    position: absolute;
+    top: 0;
+    display: flex;
+    inline-size: 0.75rem;
+    cursor: col-resize;
+    justify-content: center;
+    align-items: center;
+    block-size: 100%;
+
+    &::after {
+        .transition(opacity);
+
+        content: '';
+        inline-size: 50%;
+        block-size: 33%;
+        box-sizing: border-box;
+        border-radius: var(--ins-radius-m);
+        background: var(--ins-background-accent-opposite-hover);
+        outline: 1px solid rgba(255, 255, 255, 0.5);
+        border: 0.0625rem solid var(--ins-background-neutral-1-hover);
+        opacity: 0;
+    }
+
+    &-left-side {
+        left: 0;
+    }
+
+    &-bottom-side {
+        top: unset;
+        bottom: 0.3125rem;
+        block-size: 0.95rem;
+        inline-size: 100%;
+    }
+
+    &-right-side {
+        right: 0;
+    }
+}
