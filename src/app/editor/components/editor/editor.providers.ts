@@ -92,7 +92,7 @@ export const INS_EDITOR_PROVIDERS = [
                             extensions,
                         });
                     } catch(err) {
-                        // console.error('Error initializing Tiptap editor:', err);
+                        console.warn('Error initializing Tiptap editor:', err);
                         return null;
                     }
                 }),

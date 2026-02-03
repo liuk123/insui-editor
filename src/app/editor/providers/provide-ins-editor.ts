@@ -46,6 +46,7 @@ import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import {type HistoryOptions } from '@tiptap/extension-history';
 import {type TypographyOptions} from '@tiptap/extension-typography'
 import { InsImageExtensionOptions } from '../extensions/image-editor/image-editor.extension';
+import { InsTableHandlesOptions } from '../extensions/table-handles/table-handles.extension';
 
 interface Options {
     starterKit: Partial<StarterKitOptions> | boolean;
@@ -82,8 +83,9 @@ interface Options {
     image: Partial<InsImageExtensionOptions> | boolean;
     // jumpAnchor: Partial<Record<string, unknown>> | boolean;
     // fileLink: Partial<Record<string, unknown>> | boolean;
-    // backgroundColor: Partial<InsBackgroundColorOptions> | boolean;
-    table: Partial<TableOptions> | boolean;
+    // backgroundCoInslor: HandlesPartial<InsBackgroundColorOptions> | boolean;
+    // table: Partial<TableOptions> | boolean;
+    table: Partial<InsTableHandlesOptions> | boolean;
     tableCell: Partial<TableCellOptions> | boolean;
     tableRow: Partial<TableRowOptions> | boolean;
     tableHeader: Partial<TableHeaderOptions> | boolean;
@@ -444,13 +446,22 @@ const EXTENSIONS = [
     //         return InsBackgroundColor.configure(options);
     //     },
     // },
+    // {
+    //     key: 'table',
+    //     default: true,
+    //     async loader(options: Partial<TableOptions>) {
+    //         const {Table} = await import('@tiptap/extension-table');
+
+    //         return Table.configure({resizable: true, ...options});
+    //     },
+    // },
     {
         key: 'table',
         default: true,
-        async loader(options: Partial<TableOptions>) {
-            const {Table} = await import('@tiptap/extension-table');
+        async loader(options: Partial<InsTableHandlesOptions>, injector: Injector) {
+            const {insCreateTableHandlesExtension} = await import('../extensions/table-handles/table-handles.extension');
 
-            return Table.configure({resizable: true, ...options});
+            return insCreateTableHandlesExtension({injector, ...options});
         },
     },
     {
@@ -480,6 +491,8 @@ const EXTENSIONS = [
             return TableHeader.configure(options);
         },
     },
+
+
     // {
     //     key: 'tableCellBackground',
     //     default: true,
