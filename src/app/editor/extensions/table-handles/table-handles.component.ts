@@ -21,8 +21,8 @@ import {
 } from 'prosemirror-tables';
 import { TextSelection } from '@tiptap/pm/state';
 import { Fragment, Node as PMNode } from '@tiptap/pm/model';
-import { InsButton, insButtonOptionsProvider, InsDropdown } from "@liuk123/insui";
-import { INS_EDITOR_DEFAULT_OPTIONS, INS_EDITOR_OPTIONS, InsEditorOptions } from '../../common/editor-options';
+import { InsButton, InsDataList, InsDropdown, InsOption } from '@liuk123/insui';
+import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 
 interface DraggingState {
   type: 'row' | 'col';
@@ -40,13 +40,8 @@ interface DropIndicator {
 @Component({
   selector: 'ins-table-handles',
   standalone: true,
-  imports: [CommonModule, InsDropdown, InsButton],
-  providers: [
-    // insButtonOptionsProvider({
-    //     size: 's',
-    //     appearance: 'icon',
-    // }),
-  ],
+  imports: [CommonModule, InsDropdown, InsButton, InsDataList, InsOption],
+  providers: [],
   template: `
     <div
       class="table-wrapper"
@@ -67,62 +62,64 @@ interface DropIndicator {
       }
 
       <!-- Column Handle -->
-
-          <!-- [style.width.px]="colHandleWidth" -->
-      <!-- @if (hoveredCol !== null) { -->
+      @if (hoveredCol !== null) {
         <div
           class="table-handle col-handle"
           [style.left.px]="colHandleLeft"
-          [insDropdown]="colHandleTemplate"
-          [(insDropdownOpen)]='colDropdownOpen'
+          [style.width.px]="colHandleWidth"
         >
           <button
             insIconButton
             appearance='icon'
             draggable="true"
+            [insDropdown]="colHandleTemplate"
+            [(insDropdownOpen)]="colDropdownOpen"
             (dragstart)="onDragStart($event, 'col', hoveredCol!)"
             (click)="selectCol(hoveredCol!)"
             [iconStart]="icons.dragHandle"
           >
           </button>
-
         </div>
-      <!-- } -->
-      <ng-template #colHandleTemplate>
-        <button insIconButton appearance='icon' (click)="addColBefore(hoveredCol!)">+</button>
-        <button insIconButton appearance='icon' (click)="addColAfter(hoveredCol!)">+</button>
-        <button insIconButton appearance='icon' (click)="deleteCol(hoveredCol!)">×</button>
-      </ng-template>
+      }
 
       <!-- Row Handle -->
-
-          <!-- [style.height.px]="rowHandleHeight" -->
-      <!-- @if (hoveredRow !== null) { -->
+      @if (hoveredRow !== null) {
         <div
           class="table-handle row-handle"
           [style.top.px]="rowHandleTop"
-          [insDropdown]="rowHandleTemplate"
-          [(insDropdownOpen)]='rowDropdownOpen'
+          [style.height.px]="rowHandleHeight"
         >
           <button
             draggable="true"
             insIconButton
             appearance='icon'
+            [insDropdown]="rowHandleTemplate"
+            [(insDropdownOpen)]="rowDropdownOpen"
             (dragstart)="onDragStart($event, 'row', hoveredRow!)"
             (click)="selectRow(hoveredRow!)"
             [iconStart]="icons.dragHandle"
           >
           </button>
-
         </div>
-      <!-- } -->
-      <ng-template #rowHandleTemplate>
-        <button insIconButton appearance='icon' (click)="addRowBefore(hoveredRow!)">+</button>
-        <button insIconButton appearance='icon' (click)="addRowAfter(hoveredRow!)">+</button>
-        <button insIconButton appearance='icon' (click)="deleteRow(hoveredRow!)">×</button>
-      </ng-template>
+      }
       <!-- The Table Content -->
       <table #tableRef (mousemove)="onMouseMove($event)" data-node-view-content></table>
+
+      <ng-template #colHandleTemplate>
+        <ins-data-list>
+          <button insOption (click)="addColBefore(hoveredCol!)">Add Column Before</button>
+          <button insOption (click)="addColAfter(hoveredCol!)">Add Column After</button>
+          <button insOption (click)="deleteCol(hoveredCol!)">Delete Column</button>
+        </ins-data-list>
+      </ng-template>
+
+      <ng-template #rowHandleTemplate>
+        <ins-data-list>
+          <button insOption (click)="addRowBefore(hoveredRow!)">Add Row Before</button>
+          <button insOption (click)="addRowAfter(hoveredRow!)">Add Row After</button>
+          <button insOption (click)="deleteRow(hoveredRow!)">Delete Row</button>
+        </ins-data-list>
+      </ng-template>
     </div>
   `,
   styles: [
@@ -148,67 +145,33 @@ interface DropIndicator {
 
       .table-handle {
         position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: transparent;
         z-index: 10;
         pointer-events: auto;
-        padding: 10px;
-        border: 1px solid #ddd;
       }
 
       .col-handle {
         top: -1.5rem;
         width: 2rem;
-        height: 2rem;
+        height: 1.5rem;
+        flex-direction: row;
       }
 
       .row-handle {
         left: -1.5rem;
-        width: 2rem;
+        width: 1.5rem;
         height: 2rem;
+        flex-direction: column;
       }
 
-      // .handle-button {
-      //   cursor: grab;
-      //   padding: 2px;
-      //   font-size: 10px;
-      //   flex: 1;
-      //   display: flex;
-      //   align-items: center;
-      //   justify-content: center;
-      // }
-
-      // .handle-button:hover {
-      //   background-color: #e0e0e0;
-      // }
-
-      // .handle-button:active {
-      //   cursor: grabbing;
-      // }
-
-      // .add-button,
-      // .remove-button {
-      //   width: 16px;
-      //   height: 16px;
-      //   font-size: 12px;
-      //   cursor: pointer;
-      //   display: flex;
-      //   align-items: center;
-      //   justify-content: center;
-      //   border-radius: 50%;
-      //   margin: 1px;
-      // }
-
-      // .add-button:hover {
-      //   background-color: #d0ffd0;
-      // }
-
-      // .remove-button:hover {
-      //   background-color: #ffd0d0;
-      // }
-
-      // .drag-handle {
-      //   color: #888;
-      //   font-weight: bold;
-      // }
+      .drag-handle {
+        color: #888;
+        font-weight: bold;
+        cursor: grab;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -224,7 +187,8 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
   colHandleWidth = 0;
   rowHandleTop = 0;
   rowHandleHeight = 0;
-  readonly rowDropdownOpen = signal(true);
+
+  readonly rowDropdownOpen = signal(false);
   readonly colDropdownOpen = signal(false);
 
   draggingState: DraggingState | null = null;
@@ -269,6 +233,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
 
   onMouseLeave() {
     if (this.draggingState) return;
+    if (this.colDropdownOpen() || this.rowDropdownOpen()) return;
     this.hoveredRow = null;
     this.hoveredCol = null;
     this.cdr.detectChanges();
@@ -427,9 +392,6 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
       rows.push(row.type.create(row.attrs, Fragment.from(cells)));
     });
 
-    // Handle column widths if they exist in attrs
-    // (Simplification: assuming standard tables for now)
-
     const newTable = tableNode.type.create(tableNode.attrs, Fragment.from(rows));
     const tr = state.tr.replaceWith(pos, pos + tableNode.nodeSize, newTable);
     view.dispatch(tr);
@@ -458,11 +420,12 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
 
   selectCol(colIndex: number) {
     this.setSelection(0, colIndex);
-    // Note: Real column selection usually requires prosemirror-tables utils or CellSelection
+    this.colDropdownOpen.set(true)
   }
 
   selectRow(rowIndex: number) {
     this.setSelection(rowIndex, 0);
+    this.rowDropdownOpen.set(true)
   }
 
   addColBefore(colIndex: number) {
