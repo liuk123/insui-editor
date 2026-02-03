@@ -2,7 +2,7 @@
 
 :root {
   --ins-sticky-header-height: 3.6rem;
-  
+
   --min-vw: 1024px;
   --max-vw: 2560px;
   --min-font: 13px;
@@ -19,4 +19,27 @@ html {
 body {
     min-block-size: 100%;
     scroll-padding-top: var(--ins-sticky-header-height);
+}
+
+[insAppearance][data-appearance='icon']{
+  color: var(--ins-text-primary);
+}
+[insAppearance][data-appearance='icon']::before,
+[insAppearance][data-appearance='icon']::after{
+  transition-property: color, transform;
+  color: var(--ins-text-secondary);
+}
+@media (hover: hover) and (pointer: fine) {
+  [insAppearance][data-appearance='icon']:is(a, button, select, textarea, input, label):not(:disabled):hover:not(:disabled):not([data-state]):before,
+  [insAppearance][data-appearance='icon']:is(a, button, select, textarea, input, label):not(:disabled):hover:not(:disabled):not([data-state]):after {
+    color: var(---ins-text-primary);
+  }
+}
+[insAppearance][data-appearance='icon'][data-state='hover']:before,
+[insAppearance][data-appearance='icon'][data-state='hover']:after{
+  color: var(--ins-text-primary);
+}
+[insAppearance][data-appearance='icon'][data-state='active']:before,
+[insAppearance][data-appearance='icon'][data-state='active']:after{
+  color: var(--ins-text-action);
 }

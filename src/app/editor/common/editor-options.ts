@@ -76,6 +76,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
             readonly alignLeft: string;
             readonly alignRight: string;
         };
+        readonly dragHandle: string;
     };
     readonly linkOptions?: InsEditorLinkOptions;
     readonly spellcheck: boolean;
@@ -162,6 +163,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
             alignLeft: 'align-left',
             alignRight: 'align-right',
         },
+        dragHandle: 'grip-vertical',
     },
 };
 
