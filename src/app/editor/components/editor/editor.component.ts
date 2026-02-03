@@ -273,8 +273,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
       parentFocusElement?.parentNode?.nodeName.toLowerCase() === 'a' ||
       focusElement?.nodeName.toLowerCase() === 'a' ||
       !!focusElement?.parentElement?.closest('a') ||
-      !!focusElement?.parentElement?.closest('[insEditorRootEditLink]') ||
-      !!focusElement?.parentElement?.closest('ins-dropdown')
+      !!focusElement?.parentElement?.closest('[insEditorRootEditLink]')
+      // ||
+      // !!focusElement?.parentElement?.closest('ins-dropdown')
     );
   }
   protected closeDropdown(): void {

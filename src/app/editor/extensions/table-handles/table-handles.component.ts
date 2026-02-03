@@ -5,6 +5,8 @@ import {
   ElementRef,
   ViewChild,
   inject,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { AngularNodeViewComponent } from '../tiptap-node-view';
 import { CommonModule } from '@angular/common';
@@ -17,43 +19,85 @@ import {
   deleteRow,
 } from 'prosemirror-tables';
 import { TextSelection } from '@tiptap/pm/state';
+import { Fragment, Node as PMNode } from '@tiptap/pm/model';
+
+interface DraggingState {
+  type: 'row' | 'col';
+  index: number; // Original index
+  mouseStart: number;
+}
+
+interface DropIndicator {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
 
 @Component({
   selector: 'ins-table-handles',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="table-wrapper" #wrapper (mouseleave)="onMouseLeave()">
+    <div
+      class="table-wrapper"
+      #wrapper
+      (mouseleave)="onMouseLeave()"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event)"
+    >
+      <!-- Drop Indicator -->
+      @if (dropIndicator) {
+        <div
+          class="drop-indicator"
+          [style.top.px]="dropIndicator.top"
+          [style.left.px]="dropIndicator.left"
+          [style.width.px]="dropIndicator.width"
+          [style.height.px]="dropIndicator.height"
+        ></div>
+      }
+
       <!-- Column Handle -->
-      <div
-        class="table-handle col-handle"
-        *ngIf="hoveredCol !== null"
-        [style.left.px]="colHandleLeft"
-        [style.width.px]="colHandleWidth"
-      >
-        <div class="handle-button" (click)="selectCol(hoveredCol!)">
-          <span class="drag-handle">::</span>
+      @if (hoveredCol !== null) {
+        <div
+          class="table-handle col-handle"
+          [style.left.px]="colHandleLeft"
+          [style.width.px]="colHandleWidth"
+        >
+          <button
+            insIconButton
+            draggable="true"
+            (dragstart)="onDragStart($event, 'col', hoveredCol!)"
+            (click)="selectCol(hoveredCol!)"
+          >
+            <span class="drag-handle">::</span>
+          </button>
+          <button insIconButton (click)="addColBefore(hoveredCol!)">+</button>
+          <button insIconButton (click)="addColAfter(hoveredCol!)">+</button>
+          <button insIconButton (click)="deleteCol(hoveredCol!)">×</button>
         </div>
-        <div class="add-button add-before" (click)="addColBefore(hoveredCol!)">+</div>
-        <div class="add-button add-after" (click)="addColAfter(hoveredCol!)">+</div>
-        <div class="remove-button" (click)="deleteCol(hoveredCol!)">×</div>
-      </div>
+      }
 
       <!-- Row Handle -->
-      <div
-        class="table-handle row-handle"
-        *ngIf="hoveredRow !== null"
-        [style.top.px]="rowHandleTop"
-        [style.height.px]="rowHandleHeight"
-      >
-        <div class="handle-button" (click)="selectRow(hoveredRow!)">
-          <span class="drag-handle">::</span>
+      @if (hoveredRow !== null) {
+        <div
+          class="table-handle row-handle"
+          [style.top.px]="rowHandleTop"
+          [style.height.px]="rowHandleHeight"
+        >
+          <button
+            draggable="true"
+            insIconButton
+            (dragstart)="onDragStart($event, 'row', hoveredRow!)"
+            (click)="selectRow(hoveredRow!)"
+          >
+            <span class="drag-handle">::</span>
+          </button>
+          <button insIconButton (click)="addRowBefore(hoveredRow!)">+</button>
+          <button insIconButton (click)="addRowAfter(hoveredRow!)">+</button>
+          <button insIconButton (click)="deleteRow(hoveredRow!)">×</button>
         </div>
-        <div class="add-button add-before" (click)="addRowBefore(hoveredRow!)">+</div>
-        <div class="add-button add-after" (click)="addRowAfter(hoveredRow!)">+</div>
-        <div class="remove-button" (click)="deleteRow(hoveredRow!)">×</div>
-      </div>
-
+      }
       <!-- The Table Content -->
       <table #tableRef (mousemove)="onMouseMove($event)" data-node-view-content></table>
     </div>
@@ -67,6 +111,13 @@ import { TextSelection } from '@tiptap/pm/state';
         margin-left: 20px;
       }
 
+      .drop-indicator {
+        position: absolute;
+        background-color: #3b82f6;
+        pointer-events: none;
+        z-index: 20;
+      }
+
       table {
         border-collapse: collapse;
         width: 100%;
@@ -77,7 +128,7 @@ import { TextSelection } from '@tiptap/pm/state';
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #f0f0f0;
+        background-color: #fff;
         border: 1px solid #ccc;
         border-radius: 4px;
         z-index: 10;
@@ -85,61 +136,67 @@ import { TextSelection } from '@tiptap/pm/state';
       }
 
       .col-handle {
-        top: -12px;
-        height: 24px;
+        top: -1.5rem;
+        width: 2rem;
+        height: 2rem;
         flex-direction: row;
       }
 
       .row-handle {
-        left: -12px;
-        width: 24px;
+        left: -1.5rem;
+        width: 2rem;
+        height: 2rem;
         flex-direction: column;
       }
 
-      .handle-button {
-        cursor: grab;
-        padding: 2px;
-        font-size: 10px;
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+      // .handle-button {
+      //   cursor: grab;
+      //   padding: 2px;
+      //   font-size: 10px;
+      //   flex: 1;
+      //   display: flex;
+      //   align-items: center;
+      //   justify-content: center;
+      // }
 
-      .handle-button:hover {
-        background-color: #e0e0e0;
-      }
+      // .handle-button:hover {
+      //   background-color: #e0e0e0;
+      // }
 
-      .add-button,
-      .remove-button {
-        width: 16px;
-        height: 16px;
-        font-size: 12px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        margin: 1px;
-      }
+      // .handle-button:active {
+      //   cursor: grabbing;
+      // }
 
-      .add-button:hover {
-        background-color: #d0ffd0;
-      }
+      // .add-button,
+      // .remove-button {
+      //   width: 16px;
+      //   height: 16px;
+      //   font-size: 12px;
+      //   cursor: pointer;
+      //   display: flex;
+      //   align-items: center;
+      //   justify-content: center;
+      //   border-radius: 50%;
+      //   margin: 1px;
+      // }
 
-      .remove-button:hover {
-        background-color: #ffd0d0;
-      }
+      // .add-button:hover {
+      //   background-color: #d0ffd0;
+      // }
 
-      .drag-handle {
-        color: #888;
-        font-weight: bold;
-      }
+      // .remove-button:hover {
+      //   background-color: #ffd0d0;
+      // }
+
+      // .drag-handle {
+      //   color: #888;
+      //   font-weight: bold;
+      // }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InsTableHandles extends AngularNodeViewComponent {
+export class InsTableHandles extends AngularNodeViewComponent implements OnInit, OnDestroy {
   @ViewChild('wrapper', { static: true }) wrapper!: ElementRef<HTMLElement>;
   @ViewChild('tableRef', { static: true }) tableRef!: ElementRef<HTMLTableElement>;
 
@@ -151,9 +208,23 @@ export class InsTableHandles extends AngularNodeViewComponent {
   rowHandleTop = 0;
   rowHandleHeight = 0;
 
+  draggingState: DraggingState | null = null;
+  dropIndicator: DropIndicator | null = null;
+  dropIndex: number | null = null;
+
   private readonly cdr = inject(ChangeDetectorRef);
 
+  ngOnInit() {
+    //
+  }
+
+  ngOnDestroy() {
+    //
+  }
+
   onMouseMove(event: MouseEvent) {
+    if (this.draggingState) return;
+
     const target = event.target as HTMLElement;
     const cell = target.closest('td, th') as HTMLTableCellElement;
 
@@ -164,9 +235,7 @@ export class InsTableHandles extends AngularNodeViewComponent {
     const row = cell.parentElement as HTMLTableRowElement;
     const tbody = row.parentElement as HTMLTableSectionElement;
 
-    // Calculate indices
-    // Note: This is DOM index. For complex tables with colspan/rowspan, this might be inaccurate for model operations.
-    // But for basic tables it works. Prosemirror-tables handles the model operations.
+    // Note: This is DOM index. For complex tables with colspan/rowspan, this might be inaccurate.
     const rowIndex = Array.from(tbody.children).indexOf(row);
     const colIndex = Array.from(row.children).indexOf(cell);
 
@@ -179,6 +248,7 @@ export class InsTableHandles extends AngularNodeViewComponent {
   }
 
   onMouseLeave() {
+    if (this.draggingState) return;
     this.hoveredRow = null;
     this.hoveredCol = null;
     this.cdr.detectChanges();
@@ -196,77 +266,183 @@ export class InsTableHandles extends AngularNodeViewComponent {
     this.rowHandleHeight = rowRect.height;
   }
 
-  // Commands
+  // --- Drag & Drop ---
+
+  onDragStart(event: DragEvent, type: 'row' | 'col', index: number) {
+    this.draggingState = {
+      type,
+      index,
+      mouseStart: type === 'row' ? event.clientY : event.clientX,
+    };
+
+    // Set drag image to transparent
+    const img = new Image();
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    event.dataTransfer?.setDragImage(img, 0, 0);
+
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+  }
+
+  onDragOver(event: DragEvent) {
+    if (!this.draggingState) return;
+    event.preventDefault(); // Allow drop
+
+    const target = event.target as HTMLElement;
+    const cell = target.closest('td, th') as HTMLTableCellElement;
+
+    if (!cell) {
+      this.dropIndicator = null;
+      this.dropIndex = null;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const row = cell.parentElement as HTMLTableRowElement;
+    const tbody = row.parentElement as HTMLTableSectionElement;
+    const wrapperRect = this.wrapper.nativeElement.getBoundingClientRect();
+
+    if (this.draggingState.type === 'row') {
+      const rowIndex = Array.from(tbody.children).indexOf(row);
+      const rowRect = row.getBoundingClientRect();
+
+      this.dropIndex = rowIndex;
+
+      const isAfter = this.dropIndex > this.draggingState.index;
+      const top = isAfter
+        ? rowRect.bottom - wrapperRect.top - 2
+        : rowRect.top - wrapperRect.top - 2;
+
+      this.dropIndicator = {
+        left: 0,
+        width: wrapperRect.width,
+        top: top,
+        height: 4,
+      };
+    } else {
+      const colIndex = Array.from(row.children).indexOf(cell);
+      const cellRect = cell.getBoundingClientRect();
+
+      this.dropIndex = colIndex;
+
+      const isAfter = this.dropIndex > this.draggingState.index;
+      const left = isAfter
+        ? cellRect.right - wrapperRect.left - 2
+        : cellRect.left - wrapperRect.left - 2;
+
+      const tableHeight = this.tableRef.nativeElement.getBoundingClientRect().height;
+
+      this.dropIndicator = {
+        left: left,
+        width: 4,
+        top: 0,
+        height: tableHeight,
+      };
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  onDrop(event: DragEvent) {
+    if (!this.draggingState || this.dropIndex === null) return;
+    event.preventDefault();
+
+    if (this.draggingState.index !== this.dropIndex) {
+      if (this.draggingState.type === 'row') {
+        this.reorderRows(this.draggingState.index, this.dropIndex);
+      } else {
+        this.reorderColumns(this.draggingState.index, this.dropIndex);
+      }
+    }
+
+    this.draggingState = null;
+    this.dropIndicator = null;
+    this.dropIndex = null;
+    this.cdr.detectChanges();
+  }
+
+  private reorderRows(from: number, to: number) {
+    const { state, view } = this.editor();
+    const pos = this.getPos()?.();
+    if (typeof pos !== 'number') return;
+    const tableNode = state.doc.nodeAt(pos);
+    if (!tableNode) return;
+
+    const rows: PMNode[] = [];
+    for (let i = 0; i < tableNode.childCount; i++) {
+      rows.push(tableNode.child(i));
+    }
+
+    const [row] = rows.splice(from, 1);
+    rows.splice(to, 0, row);
+
+    const newTable = tableNode.type.create(tableNode.attrs, Fragment.from(rows));
+    const tr = state.tr.replaceWith(pos, pos + tableNode.nodeSize, newTable);
+    view.dispatch(tr);
+    view.focus();
+  }
+
+  private reorderColumns(from: number, to: number) {
+    const { state, view } = this.editor();
+    const pos = this.getPos()?.();
+    if (typeof pos !== 'number') return;
+    const tableNode = state.doc.nodeAt(pos);
+    if (!tableNode) return;
+
+    const rows: PMNode[] = [];
+
+    // Iterate over each row and move the cell
+    tableNode.content.forEach((row) => {
+      const cells: PMNode[] = [];
+      row.content.forEach((cell) => {
+        cells.push(cell);
+      });
+
+      if (from < cells.length && to <= cells.length) {
+        const [cell] = cells.splice(from, 1);
+        cells.splice(to, 0, cell);
+      }
+
+      rows.push(row.type.create(row.attrs, Fragment.from(cells)));
+    });
+
+    // Handle column widths if they exist in attrs
+    // (Simplification: assuming standard tables for now)
+
+    const newTable = tableNode.type.create(tableNode.attrs, Fragment.from(rows));
+    const tr = state.tr.replaceWith(pos, pos + tableNode.nodeSize, newTable);
+    view.dispatch(tr);
+    view.focus();
+  }
+
+  // --- Commands ---
 
   private runCommand(fn: (state: any, dispatch: any) => boolean) {
     this.editor().view.focus();
     fn(this.editor().state, this.editor().view.dispatch);
   }
 
-  // We need to set selection to the specific cell before running commands
-  // because prosemirror-tables commands act on selection.
   private setSelection(row: number, col: number) {
     const { state, view } = this.editor();
     const tr = state.tr;
-    const tablePos = this.getPos();
 
-    if (typeof tablePos !== 'number') return;
-
-    // Resolve position of the table
-    const tableResolved = state.doc.resolve(tablePos + 1);
-
-    // This is complex because we need to map DOM row/col to model positions.
-    // For simplicity, we'll assume a basic grid for now.
-    // Or we can use CellSelection.create if we have the resolved positions.
-
-    // Let's try to find the cell node position.
-    // We can use the view.posAtDOM method?
-    // Or we can rely on the fact that we have the cell DOM element.
-
-    const cellDOM = this.tableRef.nativeElement.rows[row].cells[col];
+    // We can use the cell DOM to find the position
+    const cellDOM = this.tableRef.nativeElement.rows[row]?.cells[col];
     if (!cellDOM) return;
 
     const pos = view.posAtDOM(cellDOM, 0);
-    const $pos = state.doc.resolve(pos);
-
-    // Create a CellSelection
-    // We need to import CellSelection from prosemirror-tables
-    // But CellSelection constructor is not always public API in all versions?
-    // It is exported.
-
-    // However, standard text selection inside the cell is enough for some commands.
     tr.setSelection(TextSelection.create(state.doc, pos + 1));
     view.dispatch(tr);
   }
 
   selectCol(colIndex: number) {
-    // Implementation of column selection
-    // We need to select all cells in the column.
-    this.setSelection(0, colIndex); // Select top cell
-    this.runCommand((state, dispatch) => {
-      // We can use addColumnAfter etc. but to SELECT, we need CellSelection.colSelection
-      // But prosemirror-tables helper for that is not straightforward exposed as a command?
-      // Actually, clicking the handle usually selects the column.
-      // We can simulate it by creating a CellSelection.
-
-      // For now, let's just focus on add/remove.
-      return false;
-    });
-
-    // To select a column, we can try to use the `decorations` approach from BlockNote,
-    // or just construct a CellSelection.
-    const { state, view } = this.editor();
-    const tablePos = this.getPos();
-    if (typeof tablePos !== 'number') return;
-
-    const map = (window as any).prosemirror_tables?.TableMap?.get(this.node());
-    if (!map) return; // Need TableMap
-
-    // If we can't easily select, we skip for now.
+    this.setSelection(0, colIndex);
+    // Note: Real column selection usually requires prosemirror-tables utils or CellSelection
   }
 
   selectRow(rowIndex: number) {
-    // Similar to selectCol
+    this.setSelection(rowIndex, 0);
   }
 
   addColBefore(colIndex: number) {
@@ -282,7 +458,7 @@ export class InsTableHandles extends AngularNodeViewComponent {
   deleteCol(colIndex: number) {
     this.setSelection(this.hoveredRow || 0, colIndex);
     this.runCommand(deleteColumn);
-    this.onMouseLeave(); // Hide handles
+    this.onMouseLeave();
   }
 
   addRowBefore(rowIndex: number) {
