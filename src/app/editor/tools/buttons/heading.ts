@@ -13,7 +13,6 @@ import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
     selector: 'button[insHeadingTool]',
     imports: [
         InsDataList,
-        InsItem,
         InsOption,
         InsTextfield,
     ],
@@ -24,7 +23,6 @@ import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
             <ins-data-list>
               @for(item of headingOptions(); track item.name){
                 <button
-                    insItem
                     insOption
                     type="button"
                     (click)="setHeaderOption(item)"
@@ -70,23 +68,23 @@ export class InsHeadingButtonTool extends InsToolbarTool {
 
     protected setHeaderOption({headingLevel}: Partial<InsEditorFontOption>): void {
 
-        // this.clearPreviousTextStyles();
+        this.clearPreviousTextStyles();
         if (headingLevel) {
             this.editor?.setHeading(headingLevel);
         } else {
             this.editor?.setParagraph(undefined);
         }
     }
-    protected override isActive(): boolean {
-        return (
-            this.editor?.isActive('paragraph') ||
-            this.editor?.isActive('heading') ||
-            false
-        );
-    }
-
-    // private clearPreviousTextStyles(): void {
-    //     this.editor?.removeEmptyTextStyle();
-    //     this.editor?.toggleMark('textStyle');
+    // protected override isActive(): boolean {
+    //     return (
+    //         this.editor?.isActive('paragraph') ||
+    //         this.editor?.isActive('heading') ||
+    //         false
+    //     );
     // }
+
+    private clearPreviousTextStyles(): void {
+        this.editor?.removeEmptyTextStyle();
+        this.editor?.toggleMark('textStyle');
+    }
 }
