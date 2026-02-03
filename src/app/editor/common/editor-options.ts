@@ -3,6 +3,7 @@ import {InjectionToken, type Provider} from '@angular/core';
 import {type EditorOptions} from '@tiptap/core';
 import {type EditorProps} from '@tiptap/pm/view';
 import { insDefaultFontOptionsHandler } from './default-font-options-handler';
+import { insDefaultHeadingOptionsHandler } from './default-heading-options-handler';
 import { INS_DEFAULT_LINK_OPTIONS, InsEditorLinkOptions } from './default-link-options-handler';
 import { InsEditorToolType } from './editor-tool';
 import { provideOptions } from '@liuk123/insui';
@@ -16,6 +17,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly textColors: ReadonlyMap<string, string> | null;
     readonly backgroundColors: ReadonlyMap<string, string> | null;
     readonly fontOptions: typeof insDefaultFontOptionsHandler;
+    readonly headingOptions: typeof insDefaultHeadingOptionsHandler;
     readonly icons: {
         readonly addRowTable: string;
         readonly anchor: string;
@@ -76,7 +78,15 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
             readonly alignLeft: string;
             readonly alignRight: string;
         };
-        readonly dragHandle: string;
+        readonly dragVerticalHandle: string;
+        readonly dragHorizontalHandle: string;
+        readonly paragraph: string;
+        readonly heading1: string;
+        readonly heading2: string;
+        readonly heading3: string;
+        readonly heading4: string;
+        readonly heading5: string;
+        readonly heading6: string;
     };
     readonly linkOptions?: InsEditorLinkOptions;
     readonly spellcheck: boolean;
@@ -101,6 +111,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     blankColor: EDITOR_BLANK_COLOR,
     linkOptions: INS_DEFAULT_LINK_OPTIONS,
     fontOptions: insDefaultFontOptionsHandler,
+    headingOptions: insDefaultHeadingOptionsHandler,
     floatingToolbar: false,
     parseOptions: {},
     icons: {
@@ -163,7 +174,15 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
             alignLeft: 'align-left',
             alignRight: 'align-right',
         },
-        dragHandle: 'grip-vertical',
+        dragVerticalHandle: 'grip-vertical',
+        dragHorizontalHandle: 'grip-horizontal',
+        paragraph: 'pilcrow',
+        heading1: 'heading-1',
+        heading2: 'heading-2',
+        heading3: 'heading-3',
+        heading4: 'heading-4',
+        heading5: 'heading-5',
+        heading6: 'heading-6',
     },
 };
 

@@ -42,138 +42,8 @@ interface DropIndicator {
   standalone: true,
   imports: [CommonModule, InsDropdown, InsButton, InsDataList, InsOption],
   providers: [],
-  template: `
-    <div
-      class="table-wrapper"
-      #wrapper
-      (mouseleave)="onMouseLeave()"
-      (dragover)="onDragOver($event)"
-      (drop)="onDrop($event)"
-    >
-      <!-- Drop Indicator -->
-      @if (dropIndicator) {
-        <div
-          class="drop-indicator"
-          [style.top.px]="dropIndicator.top"
-          [style.left.px]="dropIndicator.left"
-          [style.width.px]="dropIndicator.width"
-          [style.height.px]="dropIndicator.height"
-        ></div>
-      }
-
-      <!-- Column Handle -->
-      @if (hoveredCol !== null) {
-        <div
-          class="table-handle col-handle"
-          [style.left.px]="colHandleLeft"
-          [style.width.px]="colHandleWidth"
-        >
-          <button
-            insIconButton
-            appearance='icon'
-            draggable="true"
-            [insDropdown]="colHandleTemplate"
-            [(insDropdownOpen)]="colDropdownOpen"
-            (dragstart)="onDragStart($event, 'col', hoveredCol!)"
-            (click)="selectCol(hoveredCol!)"
-            [iconStart]="icons.dragHandle"
-          >
-          </button>
-        </div>
-      }
-
-      <!-- Row Handle -->
-      @if (hoveredRow !== null) {
-        <div
-          class="table-handle row-handle"
-          [style.top.px]="rowHandleTop"
-          [style.height.px]="rowHandleHeight"
-        >
-          <button
-            draggable="true"
-            insIconButton
-            appearance='icon'
-            [insDropdown]="rowHandleTemplate"
-            [(insDropdownOpen)]="rowDropdownOpen"
-            (dragstart)="onDragStart($event, 'row', hoveredRow!)"
-            (click)="selectRow(hoveredRow!)"
-            [iconStart]="icons.dragHandle"
-          >
-          </button>
-        </div>
-      }
-      <!-- The Table Content -->
-      <table #tableRef (mousemove)="onMouseMove($event)" data-node-view-content></table>
-
-      <ng-template #colHandleTemplate>
-        <ins-data-list>
-          <button insOption (click)="addColBefore(hoveredCol!)">Add Column Before</button>
-          <button insOption (click)="addColAfter(hoveredCol!)">Add Column After</button>
-          <button insOption (click)="deleteCol(hoveredCol!)">Delete Column</button>
-        </ins-data-list>
-      </ng-template>
-
-      <ng-template #rowHandleTemplate>
-        <ins-data-list>
-          <button insOption (click)="addRowBefore(hoveredRow!)">Add Row Before</button>
-          <button insOption (click)="addRowAfter(hoveredRow!)">Add Row After</button>
-          <button insOption (click)="deleteRow(hoveredRow!)">Delete Row</button>
-        </ins-data-list>
-      </ng-template>
-    </div>
-  `,
-  styles: [
-    `
-      .table-wrapper {
-        position: relative;
-        display: inline-block;
-        margin-top: 20px;
-        margin-left: 20px;
-      }
-
-      .drop-indicator {
-        position: absolute;
-        background-color: #3b82f6;
-        pointer-events: none;
-        z-index: 20;
-      }
-
-      table {
-        border-collapse: collapse;
-        width: 100%;
-      }
-
-      .table-handle {
-        position: absolute;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: transparent;
-        z-index: 10;
-        pointer-events: auto;
-      }
-
-      .col-handle {
-        top: -1.5rem;
-        width: 2rem;
-        height: 1.5rem;
-        flex-direction: row;
-      }
-
-      .row-handle {
-        left: -1.5rem;
-        width: 1.5rem;
-        height: 2rem;
-        flex-direction: column;
-      }
-
-      .drag-handle {
-        color: #888;
-        font-weight: bold;
-        cursor: grab;
-      }
-    `,
-  ],
+  templateUrl: './table-handles.component.html',
+  styleUrls: ['./table-handles.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InsTableHandles extends AngularNodeViewComponent implements OnInit, OnDestroy {
@@ -420,12 +290,12 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
 
   selectCol(colIndex: number) {
     this.setSelection(0, colIndex);
-    this.colDropdownOpen.set(true)
+    this.colDropdownOpen.set(!this.colDropdownOpen())
   }
 
   selectRow(rowIndex: number) {
     this.setSelection(rowIndex, 0);
-    this.rowDropdownOpen.set(true)
+    this.rowDropdownOpen.set(!this.rowDropdownOpen())
   }
 
   addColBefore(colIndex: number) {

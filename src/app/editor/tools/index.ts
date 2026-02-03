@@ -39,5 +39,6 @@ export * from './buttons/text-color';
 export * from './buttons/underline';
 export * from './buttons/undo';
 export * from './buttons/unordered-list';
+export * from './buttons/heading';
 export * from './tool';
 export * from './tool-button';

@@ -15,6 +15,11 @@
         <button insFontSizeTool></button>
     </section>
 }
+@if (enabled(tool.Heading)) {
+    <section insToolbarBlock>
+        <button insHeadingTool></button>
+    </section>
+}
 @if (firstBigBlockEnabled) {
     <section insToolbarBlock>
         @if (formatEnabled) {

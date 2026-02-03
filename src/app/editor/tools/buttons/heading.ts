@@ -3,19 +3,15 @@ import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
 import { InsDataList, InsDropdownDirective, InsItem, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
-import { AsyncPipe, NgClass, NgStyle } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
 import { InsEditorFontOption } from '../../common/editor-font-option';
-import { INS_EDITOR_FONT_OPTIONS } from '../../common/i18n';
+import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
 
 @Component({
     standalone: true,
-    selector: 'button[insFontSizeTool]',
+    selector: 'button[insHeadingTool]',
     imports: [
-        AsyncPipe,
-        NgClass,
-        NgStyle,
         InsDataList,
         InsItem,
         InsOption,
@@ -26,17 +22,12 @@ import { INS_EDITOR_FONT_OPTIONS } from '../../common/i18n';
 
         <ng-container *insTextfieldDropdown>
             <ins-data-list>
-              @for(item of fontsOptions$ | async; track item.name){
+              @for(item of headingOptions(); track item.name){
                 <button
                     insItem
                     insOption
                     type="button"
-                    [ngClass]="item?.ngClass || {}"
-                    [ngStyle]="item?.ngStyle || {}"
-                    [style.font-family]="item.family"
-                    [style.font-size.px]="item.px"
-                    [style.font-weight]="item.weight"
-                    (click)="setFontOption(item)"
+                    (click)="setHeaderOption(item)"
                 >
                     {{ item.name }}
                 </button>
@@ -47,22 +38,22 @@ import { INS_EDITOR_FONT_OPTIONS } from '../../common/i18n';
     changeDetection: ChangeDetectionStrategy.OnPush,
     hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
     host: {
-        '[attr.automation-id]': '"toolbar__font-size-button"',
+        '[attr.automation-id]': '"toolbar__heading-button"',
     },
 })
-export class InsFontSizeButtonTool extends InsToolbarTool {
+export class InsHeadingButtonTool extends InsToolbarTool {
+  private readonly dropdown = inject(InsDropdownDirective)
   private _currentTemplate: PolymorpheusContent | null = null;
 
-  private readonly dropdown = inject(InsDropdownDirective)
-  // protected readonly open = inject(InsDropdownOpen);
-
-    protected readonly fontsOptions$ = inject(INS_EDITOR_FONT_OPTIONS).pipe(
-        map((texts) => this.options.fontOptions(texts)),
+    protected readonly headingOptions = toSignal(
+        inject(INS_EDITOR_HEADING_OPTIONS).pipe(
+            map((texts) => this.options.headingOptions(texts)),
+        )
     );
 
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
-         if (template === this._currentTemplate) {
+        if (template === this._currentTemplate) {
             return;
         }
         this._currentTemplate = template;
@@ -70,32 +61,32 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
     }
 
     protected getIcon(icons: InsEditorOptions['icons']): string {
-        return icons.fontSize;
+        return icons.paragraph;
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        // return this.open.insDropdownOpen() ? '' : (texts?.font ?? '');
-        return texts?.font ?? ''
+        return texts?.heading ?? ''
     }
 
-    protected setFontOption({headingLevel, px}: Partial<InsEditorFontOption>): void {
-        const color = this.editor?.getFontColor() ?? EDITOR_BLANK_COLOR;
+    protected setHeaderOption({headingLevel}: Partial<InsEditorFontOption>): void {
 
-        this.clearPreviousTextStyles();
-
+        // this.clearPreviousTextStyles();
         if (headingLevel) {
             this.editor?.setHeading(headingLevel);
         } else {
-            this.editor?.setParagraph({fontSize: (px ?? 0) + 'px'});
-        }
-
-        if (color !== EDITOR_BLANK_COLOR) {
-            this.editor?.setFontColor(color);
+            this.editor?.setParagraph(undefined);
         }
     }
-
-    private clearPreviousTextStyles(): void {
-        this.editor?.removeEmptyTextStyle();
-        this.editor?.toggleMark('textStyle');
+    protected override isActive(): boolean {
+        return (
+            this.editor?.isActive('paragraph') ||
+            this.editor?.isActive('heading') ||
+            false
+        );
     }
+
+    // private clearPreviousTextStyles(): void {
+    //     this.editor?.removeEmptyTextStyle();
+    //     this.editor?.toggleMark('textStyle');
+    // }
 }

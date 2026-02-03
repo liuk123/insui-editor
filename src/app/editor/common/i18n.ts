@@ -61,3 +61,10 @@ export const INS_EDITOR_FONT_OPTIONS = new InjectionToken(
         factory: insExtractI18n('editorFontOptions'),
     },
 );
+
+export const INS_EDITOR_HEADING_OPTIONS = new InjectionToken(
+    '',
+    {
+        factory: insExtractI18n('editorHeadingOptions'),
+    },
+);

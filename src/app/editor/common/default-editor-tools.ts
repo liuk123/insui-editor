@@ -23,4 +23,5 @@ export const INS_EDITOR_DEFAULT_TOOLS = new Set([
     InsEditorTool.Table,
     InsEditorTool.Underline,
     InsEditorTool.Undo,
+    InsEditorTool.Heading,
 ]);

@@ -27,6 +27,7 @@ export const InsEditorTool = {
     Tex: 'tex',
     Underline: 'underline',
     Undo: 'undo',
+    Heading: 'heading',
 } as const;
 
 export type InsEditorToolType = (typeof InsEditorTool)[keyof typeof InsEditorTool];

@@ -1,6 +1,6 @@
-import {AsyncPipe} from '@angular/common';
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import { InsDataList, InsDropdownDirective, InsLanguageEditor, InsOptGroup, InsOption, InsTextfield, InsWithDropdownOpen } from '@liuk123/insui';
+import { AsyncPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild } from '@angular/core';
+import { InsDataList, InsDropdownDirective, InsLanguageEditor, InsOptGroup, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { INS_EDITOR_TABLE_COMMANDS } from '../../common/i18n';
@@ -23,19 +23,21 @@ export const InsTableCommands = {
 
         <ng-container *insTextfieldDropdown>
             <ins-data-list>
-                <ins-opt-group
-                    *ngFor="let group of tableCommandTexts$ | async; let i = index"
-                >
+                @for (group of tableCommandTexts$ | async; let i=$index; track i) {
+                <ins-opt-group>
+                    @for(item of group; let j = $index; track item){
                     <!-- TODO: remove "magic" numbers i*2+@Directive({standalone: true, and make code more readable-->
                     <button
-                        *ngFor="let item of group; let j = index"
                         insOption
                         type="button"
                         (click)="onTableOption(i * 2 + j)"
                     >
                         {{ item }}
                     </button>
+                    }
+                    
                 </ins-opt-group>
+                }
             </ins-data-list>
         </ng-container>
     `,
@@ -44,6 +46,17 @@ export const InsTableCommands = {
 })
 export class InsAddRowTableButtonTool extends InsToolbarTool {
     protected readonly tableCommandTexts$ = inject(INS_EDITOR_TABLE_COMMANDS);
+    private readonly dropdown = inject(InsDropdownDirective);
+    private _currentTemplate: PolymorpheusContent | null = null;
+
+    @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), { read: TemplateRef })
+    protected set template(template: PolymorpheusContent) {
+        if (template === this._currentTemplate) {
+            return;
+        }
+        this._currentTemplate = template;
+        this.dropdown.insDropdown = template;
+    }
 
     protected override getDisableState(): boolean {
         return !(this.editor?.isActive('table') ?? false);

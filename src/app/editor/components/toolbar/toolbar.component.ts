@@ -21,6 +21,7 @@ import {
     InsDetailsRemoveButtonTool,
     InsFontSizeButtonTool,
     InsFontStyleButtonTool,
+    InsHeadingButtonTool,
     InsHighlightColorButtonTool,
     InsHrButtonTool,
     InsImageButtonTool,
@@ -76,6 +77,7 @@ import { InsEditorAttachedFile } from '../../common/attached';
         InsTexButtonTool,
         InsTextColorButtonTool,
         InsUndoButtonTool,
+        InsHeadingButtonTool
     ],
     templateUrl: './toolbar.template.html',
     encapsulation: ViewEncapsulation.None,

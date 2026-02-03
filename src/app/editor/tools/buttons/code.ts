@@ -12,7 +12,6 @@ import { InsEditorOptions } from '../../common/editor-options';
 import {
   InsDataList,
   InsDropdownDirective,
-  InsDropdownOpen,
   InsLanguageEditor,
   InsOption,
   InsTextfield,
