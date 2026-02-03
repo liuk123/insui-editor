@@ -86,7 +86,7 @@ interface ServerSideGlobal extends Global {
   host: {
     ngSkipHydration: 'true',
     '(insActiveZoneChange)': 'onActiveZone($event)',
-    '(click)': 'focus($event)',
+    // '(click)': 'focus($event)',
   },
 })
 export class InsEditor extends InsControl<string> implements OnDestroy {
