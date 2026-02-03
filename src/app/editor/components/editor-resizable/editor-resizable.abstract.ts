@@ -1,4 +1,4 @@
-import {type ChangeDetectorRef, Directive} from '@angular/core';
+import {type ChangeDetectorRef, Component, Directive} from '@angular/core';
 import { AngularNodeViewComponent } from '../../extensions/tiptap-node-view';
 
 export interface InsEditorResizableContainer {
@@ -6,7 +6,9 @@ export interface InsEditorResizableContainer {
     width?: number | string | null;
 }
 
-@Directive()
+@Component({
+  template: '',
+})
 export abstract class AbstractInsEditorResizable<
     T extends InsEditorResizableContainer,
 > extends AngularNodeViewComponent {

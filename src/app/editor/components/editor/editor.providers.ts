@@ -48,7 +48,10 @@ export const INS_EDITOR_PROVIDERS = [
 
                     extensions$.next(extensionsWithoutDuplicates);
                 })
-                .catch(() => extensions$.next([]));
+                .catch((error) => {
+                    console.error('Error loading extensions:', error);
+                    extensions$.next([]);
+                });
 
             return extensions$;
         },
@@ -89,6 +92,7 @@ export const INS_EDITOR_PROVIDERS = [
                             extensions,
                         });
                     } catch(err) {
+                        // console.error('Error initializing Tiptap editor:', err);
                         return null;
                     }
                 }),

@@ -22,6 +22,7 @@ import { InsEditLink } from '../../components/edit-link/edit-link.component';
 import { AbstractInsEditorResizable, InsEditorResizable } from '../../components/editor-resizable';
 import { InsEditableImage } from '../../common/image';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
+import { INS_EDITOR_RESIZE_EVENT } from '../../common/default-events';
 
 interface ServerSideGlobal extends Global {
     document: Document | undefined;
@@ -206,7 +207,7 @@ export class InsImageEditor
 
     private notifyUpdate(): void {
         this.el.nativeElement.dispatchEvent(
-            // new CustomEvent(INS_EDITOR_RESIZE_EVENT, {bubbles: true}),
+            new CustomEvent(INS_EDITOR_RESIZE_EVENT, {bubbles: true}),
         );
     }
 }

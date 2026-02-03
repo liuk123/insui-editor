@@ -1,101 +1,98 @@
 <ins-editor-resizable
-    #resizable
-    [autoHeight]="true"
-    [isEditable]="editor().isEditable"
-    [width]="width"
-    (sizeChange)="updateSize($event)"
+  #resizable
+  [autoHeight]="true"
+  [isEditable]="editor().isEditable"
+  [width]="width"
+  (sizeChange)="updateSize($event)"
 >
-    <img
-        #img
-        contenteditable="false"
-        decoding="async"
-        loading="lazy"
-        [alt]="alt"
-        [attr.width]="width"
-        [src]="getBypassedSrc(attrs.src)"
-        [style.max-width.px]="maxWidth"
-        [style.min-width.px]="minWidth"
-        [title]="title"
-        [insDropdown]="linkEditingDropdown"
-        [insDropdownOpen]="isLinkDropdownOpened"
-        (load)="onImageLoad()"
+  <img
+    #img
+    contenteditable="false"
+    decoding="async"
+    loading="lazy"
+    [alt]="alt"
+    [attr.width]="width"
+    [src]="getBypassedSrc(attrs.src)"
+    [style.max-width.px]="maxWidth"
+    [style.min-width.px]="minWidth"
+    [title]="title"
+    [insDropdown]="linkEditingDropdown"
+    [insDropdownOpen]="isLinkDropdownOpened"
+    (load)="onImageLoad()"
+  />
+
+  <ng-template #linkEditingDropdown>
+    <ins-edit-link
+      [explicitOnlyLinkEdit]="true"
+      [link]="attrs['data-href'] ?? undefined"
+      (addLink)="addLink($event)"
+      (removeLink)="removeLink()"
+      (insActiveZoneChange)="onEditLinkActiveZoneChange($event)"
     />
-
-    <ng-template #linkEditingDropdown>
-        <ins-edit-link
-            [explicitOnlyLinkEdit]="true"
-            [link]="attrs['data-href'] ?? undefined"
-            (addLink)="addLink($event)"
-            (removeLink)="removeLink()"
-            (insActiveZoneChange)="onEditLinkActiveZoneChange($event)"
-        />
-    </ng-template>
-
+  </ng-template>
+  @if (editor().isEditable && containerWidth >= 68) {
     <div
-        *ngIf="editor.isEditable && containerWidth >= 68"
-        insDropdownAlign="right"
-        insDropdownAppearance="editor-image-options"
-        class="t-image-buttons"
-        [class._open]="isAlignDropdownOpened"
-        [insDropdown]="list"
-        [insDropdownEnabled]="editor.isEditable"
-        [(insDropdownOpen)]="isAlignDropdownOpened"
+      insDropdownAlign="right"
+      insDropdownAppearance="editor-image-options"
+      class="t-image-buttons"
+      [class._open]="isAlignDropdownOpened"
+      [insDropdown]="list"
+      [insDropdownEnabled]="editor.isEditable"
+      [(insDropdownOpen)]="isAlignDropdownOpened"
     >
-        <button
-            #insDropdownHost
-            appearance="flat"
-            size="xs"
-            insIconButton
-            type="button"
-            [iconStart]="options.icons.imageExtension.settings"
-            (click)="toggleAlignDropdown($event)"
-        >
-            Image align
-        </button>
-
-        <button
-            *ngIf="supportLinkExtension"
-            appearance="flat"
-            size="xs"
-            insIconButton
-            type="button"
-            [disabled]="isLinkDropdownOpened"
-            [iconStart]="options.icons.imageExtension.link"
-            (click)="editLink($event)"
-        >
-            Image link
-        </button>
-
-        <ng-template #list>
-            <ins-image-align-list
-                [style]="style"
-                (updateAlignStyles)="align($event); isAlignDropdownOpened = false"
-            />
-        </ng-template>
-    </div>
-
-    <button
-        *ngIf="attrs['data-href'] as href"
-        appearance="reference"
-        size="s"
-        insButton
+      <button
+        #insDropdownHost
+        appearance="flat"
+        size="xs"
+        insIconButton
         type="button"
-        [disabled]="isLinkDropdownOpened"
-        [iconStart]="options.icons.imageExtension.previewLink"
-        (click)="openLink(href)"
-    >
-        <div
-            *ngIf="containerWidth >= 170"
-            class="t-link-href"
+        [iconStart]="options.icons.imageExtension.settings"
+        (click)="toggleAlignDropdown($event)"
+      >
+        Image align
+      </button>
+      @if (supportLinkExtension) {
+        <button
+          appearance="flat"
+          size="xs"
+          insIconButton
+          type="button"
+          [disabled]="isLinkDropdownOpened"
+          [iconStart]="options.icons.imageExtension.link"
+          (click)="editLink($event)"
         >
-            {{ href }}
-        </div>
+          Image link
+        </button>
+      }
 
-        <ins-icon
-            *ngIf="containerWidth >= 170"
-            class="t-link-preview-edit"
-            [icon]="options.icons.imageExtension.previewEditLink"
-            (click.self)="editLink($event)"
+      <ng-template #list>
+        <ins-image-align-list
+          [style]="style"
+          (updateAlignStyles)="align($event); isAlignDropdownOpened = false"
         />
+      </ng-template>
+    </div>
+  }
+  @if (attrs['data-href']) {
+    <button
+      appearance="reference"
+      size="s"
+      insButton
+      type="button"
+      [disabled]="isLinkDropdownOpened"
+      [iconStart]="options.icons.imageExtension.previewLink"
+      (click)="openLink(attrs['data-href'])"
+    >
+      @if (containerWidth >= 170) {
+        <div class="t-link-href">
+          {{ attrs['data-href'] }}
+        </div>
+        <ins-icon
+          class="t-link-preview-edit"
+          [icon]="options.icons.imageExtension.previewEditLink"
+          (click.self)="editLink($event)"
+        />
+      }
     </button>
+  }
 </ins-editor-resizable>

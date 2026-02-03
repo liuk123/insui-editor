@@ -411,8 +411,8 @@ const EXTENSIONS = [
         key: 'image',
         default: true,
         async loader(options: Partial<InsImageExtensionOptions>, injector: Injector) {
-            const { insCreateImageEditorExtension } = await import('../extensions/image-editor/index');
-            return insCreateImageEditorExtension({injector, ...options});
+          const { insCreateImageEditorExtension } = await import('../extensions/image-editor/index');
+          return insCreateImageEditorExtension({injector, ...options});
         },
     },
     // {
