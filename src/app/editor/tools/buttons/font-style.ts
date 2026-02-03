@@ -51,7 +51,7 @@ type Tools = Set<InsEditorToolType> | readonly InsEditorToolType[];
                 </button>
                 }
                 @if(isEnabled(editorTool.Strikethrough)){
-                <button 
+                <button
                     insStrikeTool
                     [editor]="editor"
                 >
@@ -70,7 +70,7 @@ type Tools = Set<InsEditorToolType> | readonly InsEditorToolType[];
 export class InsFontStyleButtonTool extends InsToolbarTool {
   private toolsSet = new Set(this.options.tools);
   private readonly dropdown = inject(InsDropdownDirective)
-  protected readonly open = inject(InsDropdownOpen);
+  // protected readonly open = inject(InsDropdownOpen);
   protected readonly editorTool = InsEditorTool;
 
   @Input()
@@ -125,6 +125,7 @@ export class InsFontStyleButtonTool extends InsToolbarTool {
   }
 
   protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-    return this.open.insDropdownOpen() ? '' : (texts?.fontStyle ?? '');
+    // return this.open.insDropdownOpen() ? '' : (texts?.fontStyle ?? '');
+    return texts?.fontStyle ?? ''
   }
 }

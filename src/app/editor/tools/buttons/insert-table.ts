@@ -75,7 +75,7 @@ const MIN_DISTANCE_PX = 70;
 export class InsInsertTableButtonTool extends InsToolbarTool {
     private readonly win = inject(WINDOW);
   private readonly dropdown = inject(InsDropdownDirective)
-  protected readonly open = inject(InsDropdownOpen);
+  // protected readonly open = inject(InsDropdownOpen);
 
     protected tableSize = {
         rows: 1,
@@ -106,7 +106,8 @@ export class InsInsertTableButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open.insDropdownOpen() ? '' : (texts?.insertTable ?? '');
+        // return this.open.insDropdownOpen() ? '' : (texts?.insertTable ?? '');
+        return texts?.insertTable ?? ''
     }
 
     protected addTable({rows, cols}: {cols: number; rows: number}): void {

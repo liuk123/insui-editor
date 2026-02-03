@@ -5,7 +5,7 @@ import { InsButton, insButtonOptionsProvider } from '@liuk123/insui';
     standalone: true,
     providers: [
         insButtonOptionsProvider({
-            size: 'm',
+            size: 's',
             appearance: 'icon',
         }),
     ],
@@ -18,7 +18,7 @@ import { InsButton, insButtonOptionsProvider } from '@liuk123/insui';
     host: {
         insItem: '',
         insToolbarTool: '',
-        insIconButton: '',
+        insButton: '',
         type: 'button',
         '[attr.disabled]': 'disabled() ? "disabled" : null',
     },

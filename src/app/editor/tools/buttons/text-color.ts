@@ -8,7 +8,7 @@ import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
 @Component({
     standalone: true,
     selector: 'button[insTextColorTool]',
-    imports: [InsTextfield], //InsPaletteModule, 
+    imports: [InsTextfield], //InsPaletteModule,
     template: `
         {{ insHint() }}
 
@@ -29,7 +29,7 @@ import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
 })
 export class InsTextColorButtonTool extends InsToolbarTool {
     private readonly dropdown = inject(InsDropdownDirective)
-    protected readonly open = inject(InsDropdownOpen);
+    // protected readonly open = inject(InsDropdownOpen);
 
     @Input()
     public colors: ReadonlyMap<string, string> =
@@ -55,6 +55,7 @@ export class InsTextColorButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open.insDropdownOpen() ? '' : (texts?.foreColor ?? '');
+        // return this.open.insDropdownOpen() ? '' : (texts?.foreColor ?? '');
+        return texts?.foreColor ?? ''
     }
 }

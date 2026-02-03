@@ -37,7 +37,7 @@ import { AsyncPipe } from '@angular/common';
 })
 export class InsPaintButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective)
-  protected readonly open = inject(InsDropdownOpen);
+  // protected readonly open = inject(InsDropdownOpen);
 
     @Input()
     public colors: ReadonlyMap<string, string> =
@@ -65,11 +65,14 @@ export class InsPaintButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open.insDropdownOpen()
-            ? ''
-            : (this.editor?.isActive('group') && (texts?.hiliteGroup ?? '')) ||
+        // return this.open.insDropdownOpen()
+        //     ? ''
+        //     : (this.editor?.isActive('group') && (texts?.hiliteGroup ?? '')) ||
+        //           (this.editor?.isActive('table') && (texts?.cellColor ?? '')) ||
+        //           '';
+        return (this.editor?.isActive('group') && (texts?.hiliteGroup ?? '')) ||
                   (this.editor?.isActive('table') && (texts?.cellColor ?? '')) ||
-                  '';
+                  ''
     }
 
     protected setCellColor(color: string): void {

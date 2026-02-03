@@ -56,7 +56,7 @@ import { InsUnorderedListButtonTool } from './unordered-list';
 })
 export class InsListButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective)
-  protected readonly open = inject(InsDropdownOpen);
+  // protected readonly open = inject(InsDropdownOpen);
 
     private _currentTemplate: PolymorpheusContent | null = null;
 
@@ -83,6 +83,7 @@ export class InsListButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open.insDropdownOpen() ? '' : (texts?.list ?? '');
+        // return this.open.insDropdownOpen() ? '' : (texts?.list ?? '');
+        return texts?.list ?? ''
     }
 }

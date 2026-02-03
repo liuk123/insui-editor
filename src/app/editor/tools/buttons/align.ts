@@ -51,7 +51,7 @@ import {InsAlignRightButtonTool} from './align-right';
 })
 export class InsAlignButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective)
-  protected readonly open = inject(InsDropdownOpen);
+  // protected readonly open = inject(InsDropdownOpen);
 
     @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
     protected set template(template: PolymorpheusContent) {
@@ -73,6 +73,7 @@ export class InsAlignButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open.insDropdownOpen() ? '' : (texts?.justify ?? '');
+        // return this.open.insDropdownOpen() ? '' : (texts?.justify ?? '');
+        return texts?.justify ?? ''
     }
 }

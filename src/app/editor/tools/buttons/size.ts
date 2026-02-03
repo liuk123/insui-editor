@@ -54,7 +54,7 @@ import { INS_EDITOR_FONT_OPTIONS } from '../../common/i18n';
 })
 export class InsFontSizeButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective)
-  protected readonly open = inject(InsDropdownOpen);
+  // protected readonly open = inject(InsDropdownOpen);
 
     protected readonly fontsOptions$ = inject(INS_EDITOR_FONT_OPTIONS).pipe(
         map((texts) => this.options.fontOptions(texts)),
@@ -70,7 +70,8 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return this.open.insDropdownOpen() ? '' : (texts?.font ?? '');
+        // return this.open.insDropdownOpen() ? '' : (texts?.font ?? '');
+        return texts?.font ?? ''
     }
 
     protected setFontOption({headingLevel, px}: Partial<InsEditorFontOption>): void {

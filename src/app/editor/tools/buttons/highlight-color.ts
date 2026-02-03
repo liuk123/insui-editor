@@ -27,7 +27,7 @@ import { AsyncPipe } from '@angular/common';
           @if(editor?.valueChange$ | async){}
         </div>
         }
-       
+
     `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
@@ -38,7 +38,7 @@ import { AsyncPipe } from '@angular/common';
 })
 export class InsHighlightColorButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective)
-  protected readonly open = inject(InsDropdownOpen);
+  // protected readonly open = inject(InsDropdownOpen);
 
   @Input()
   public colors: ReadonlyMap<string, string> =
@@ -65,7 +65,8 @@ export class InsHighlightColorButtonTool extends InsToolbarTool {
   }
 
   protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-    return this.open.insDropdownOpen() ? '' : (texts?.backColor ?? '');
+    // return this.open.insDropdownOpen() ? '' : (texts?.backColor ?? '');
+    return texts?.backColor ?? ''
   }
 
   protected getBackgroundColor(): string {
