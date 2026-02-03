@@ -17,8 +17,6 @@
   [insToolbarDropdown]="dropdownSelectionHandler"
   [insToolbarDropdownPosition]="floatingToolbar ? 'selection' : 'tag'"
   (valueChange)="onModelChange($event)"
-  (keydown.arrowUp)="$event.stopPropagation()"
-  (keydown.arrowDown)="$event.stopPropagation()"
 ></div>
 
 <ins-editor-socket />

@@ -174,20 +174,20 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   public get nativeFocusableElement(): HTMLDivElement | null {
     return this.editorEl?.nativeElement.querySelector('[contenteditable].ProseMirror') || null;
   }
-  protected focus(event: KeyboardEvent | MouseEvent): void {
-    const isSafeArea =
-      this.nativeFocusableElement?.contains(event.target as Node | null) ||
-      Array.from(this.rootEl.querySelectorAll('ins-toolbar-host')).some((toolbar) =>
-        toolbar.contains(event.target as Node | null),
-      );
+  // protected focus(event: KeyboardEvent | MouseEvent): void {
+  //   const isSafeArea =
+  //     this.nativeFocusableElement?.contains(event.target as Node | null) ||
+  //     Array.from(this.rootEl.querySelectorAll('ins-toolbar-host')).some((toolbar) =>
+  //       toolbar.contains(event.target as Node | null),
+  //     );
 
-    if (isSafeArea) {
-      return;
-    }
+  //   if (isSafeArea) {
+  //     return;
+  //   }
 
-    event.preventDefault();
-    this.nativeFocusableElement?.focus();
-  }
+  //   event.preventDefault();
+  //   this.nativeFocusableElement?.focus();
+  // }
 
   protected get dropdownSelectionHandler(): InsBooleanHandler<Range> {
     if (!this.focused() || this.readOnly()) {
