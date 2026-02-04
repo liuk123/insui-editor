@@ -1,0 +1,96 @@
+import {type Attributes, mergeAttributes, Node} from '@tiptap/core';
+import {type DOMOutputSpec, type Node as ProseMirrorNode} from '@tiptap/pm/model';
+
+export interface InsMentionOptions {
+    HTMLAttributes: Record<string, any>;
+    renderHTML(props: {options: InsMentionOptions; node: ProseMirrorNode}): DOMOutputSpec;
+}
+
+export const InsMention = Node.create<InsMentionOptions>({
+    name: 'mention',
+    group: 'inline',
+    inline: true,
+    selectable: true,
+    atom: true,
+
+    addOptions(): InsMentionOptions {
+        return {
+            HTMLAttributes: {},
+            renderHTML({node}) {
+                return [
+                    'span',
+                    this.HTMLAttributes,
+                    `@${node.attrs['label'] ?? node.attrs['id']}`.replaceAll(/@+/g, '@'),
+                ];
+            },
+        };
+    },
+
+    addAttributes(): Attributes {
+        return {
+            id: {
+                default: null,
+                keepOnSplit: true,
+                parseHTML: (element) => element.innerText,
+                renderHTML: () => ({'data-type': this.name}),
+            },
+            class: {
+                default: null,
+                keepOnSplit: true,
+            },
+            dataAttributes: {
+                default: {},
+                keepOnSplit: true,
+                parseHTML: (element) =>
+                    element
+                        .getAttributeNames()
+                        .filter(
+                            (attribute) =>
+                                attribute.startsWith('data-') &&
+                                attribute !== 'data-type',
+                        )
+                        .reduce<Record<string, string | null>>(
+                            (attributes, attribute) => ({
+                                ...attributes,
+                                [attribute]: element.getAttribute(attribute),
+                            }),
+                            {},
+                        ),
+                renderHTML: ({dataAttributes}) => dataAttributes,
+            },
+        };
+    },
+
+    parseHTML(): [{tag: string}] {
+        return [{tag: `span[data-type="${this.name}"]`}];
+    },
+
+    renderHTML({node, HTMLAttributes}): DOMOutputSpec {
+        const html = this.options.renderHTML({
+            options: this.options,
+            node,
+        });
+
+        if (typeof html === 'string') {
+            return [
+                'span',
+                mergeAttributes(
+                    {'data-type': this.name},
+                    this.options.HTMLAttributes,
+                    HTMLAttributes,
+                ),
+                html,
+            ];
+        }
+
+        return [
+            'span',
+            mergeAttributes(
+                {'data-type': this.name},
+                this.options.HTMLAttributes,
+                HTMLAttributes,
+            ),
+            (html as any)?.[2],
+        ];
+    },
+});
