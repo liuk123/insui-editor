@@ -1,8 +1,16 @@
 <div class="t-edit-link">
   <label class="t-label">
-    <div class="t-label-properties">URL</div>
+    <div class="t-label-properties">
+      @if (anchorMode) {
+        Anchor
+      } @else {
+        URL
+      }
+    </div>
     <div class="t-url">
-      <div class="t-prefix">{{ prefix }}</div>
+      @if (anchorMode) {
+        <div class="t-prefix">#</div>
+      } @else {}
       <input
         #inputRef
         class="t-input"
@@ -44,7 +52,7 @@
 @if (showAnchors) {
   <hr class="t-hr" />
   <div class="t-anchor-list">
-    @for (id of anchorIds | insFilterAnchors: prefix ?? '' : url; track id) {
+    @for (id of anchorIds | insFilterAnchors: (anchorMode ? '#' : '') : url; track id) {
       <button type="button" class="t-anchor" (mousedown)="setAnchor(id)">#{{ id }}</button>
     }
   </div>

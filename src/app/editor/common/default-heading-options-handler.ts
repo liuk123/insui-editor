@@ -1,4 +1,4 @@
-import { InsEditorFontOption } from "./editor-font-option";
+import { InsEditorHeadingOption } from "./editor-font-option";
 
 export function insDefaultHeadingOptionsHandler(
     texts: {
@@ -10,7 +10,7 @@ export function insDefaultHeadingOptionsHandler(
         heading5: string;
         heading6: string;
     }
-): ReadonlyArray<Partial<InsEditorFontOption>> {
+): ReadonlyArray<Partial<InsEditorHeadingOption>> {
     return [
         {
             name: texts.paragraph,

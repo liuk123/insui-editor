@@ -1,4 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { InsButton, InsTextfield, isElement, WINDOW } from '@liuk123/insui';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
@@ -18,12 +28,13 @@ interface ServerSideGlobal extends Global {
   imports: [InsButton, InsTextfield, FormsModule, InsFilterAnchorsPipe],
   host: {
     '(document:selectionchange)': 'onSelectionChange()',
-     '(mousedown.capture)': 'onMouseDown($event)',
+    '(mousedown.capture)': 'onMouseDown($event)',
   },
 })
 export class InsEditLink implements AfterViewInit {
   private readonly injectionEditor = inject(InsTiptapEditorService, { optional: true });
-  private readonly doc: Document | null = inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
+  private readonly doc: Document | null =
+    inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
 
   protected readonly options = inject(INS_EDITOR_OPTIONS);
   protected url = this.getHrefOrAnchorId();
@@ -55,7 +66,7 @@ export class InsEditLink implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    requestAnimationFrame(()=>this.inputRef?.nativeElement.focus())
+    requestAnimationFrame(() => this.inputRef?.nativeElement.focus());
   }
 
   protected onClear(): void {
@@ -69,8 +80,8 @@ export class InsEditLink implements AfterViewInit {
     }
   }
   protected onRemove(): void {
-        this.removeLink.emit();
-    }
+    this.removeLink.emit();
+  }
   protected onBlur(url: string): void {
     const range = this.editor?.getSelectionSnapshot();
     if (range && !url && !this.url) {
@@ -84,7 +95,7 @@ export class InsEditLink implements AfterViewInit {
     }
   }
   protected onSelectionChange() {
-    if(!this.edit){
+    if (!this.edit) {
       this.url = this.getHrefOrAnchorId();
       this.anchorMode = this.detectAnchorMode();
     }
@@ -106,7 +117,6 @@ export class InsEditLink implements AfterViewInit {
 
   private detectAnchorMode(): boolean {
     const a = this.getAnchorElement();
-
     return !a?.href && (!!a?.getAttribute('id') || a?.getAttribute('data-type') === 'jump-anchor');
   }
   protected onMouseDown(event: MouseEvent): void {
@@ -115,14 +125,14 @@ export class InsEditLink implements AfterViewInit {
     }
   }
   private getAllAnchorsIds(): string[] {
-        const nodes: Element[] = Array.from(
-            this.editor
-                ?.getOriginTiptapEditor()
-                ?.view.dom.querySelectorAll('[data-type="jump-anchor"]') ?? [],
-        );
+    const nodes: Element[] = Array.from(
+      this.editor
+        ?.getOriginTiptapEditor()
+        ?.view.dom.querySelectorAll('[data-type="jump-anchor"]') ?? [],
+    );
 
-        return Array.from(nodes)
-            .map((node) => node.getAttribute('id') ?? '')
-            .filter(Boolean);
-    }
+    return Array.from(nodes)
+      .map((node) => node.getAttribute('id') ?? '')
+      .filter(Boolean);
+  }
 }

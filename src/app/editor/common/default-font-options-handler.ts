@@ -27,14 +27,12 @@ export function insDefaultFontOptionsHandler(
         //     px: 24,
         //     family: 'var(--ins-font-heading)',
         //     name: texts.subtitle,
-        //     headingLevel: 2,
         //     weight: 'bold',
         // },
         // {
         //     px: 30,
         //     family: 'var(--ins-font-heading)',
         //     name: texts.title,
-        //     headingLevel: 1,
         //     weight: 'bold',
         // },
     ];

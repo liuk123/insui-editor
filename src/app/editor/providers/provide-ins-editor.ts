@@ -47,6 +47,8 @@ import {type HistoryOptions } from '@tiptap/extension-history';
 import {type TypographyOptions} from '@tiptap/extension-typography'
 import { InsImageExtensionOptions } from '../extensions/image-editor/image-editor.extension';
 import { InsTableHandlesOptions } from '../extensions/table-handles/table-handles.extension';
+import { InsFontSizeOptions } from '../extensions/font-size';
+import { InsFontColorOptions } from '../extensions/font-color';
 
 interface Options {
     starterKit: Partial<StarterKitOptions> | boolean;
@@ -71,19 +73,20 @@ interface Options {
     strike: Partial<StrikeOptions> | boolean;
     text: Partial<Record<string, unknown>> | boolean;
     placeholder: Partial<PlaceholderOptions> | boolean;
-    // enter: Partial<Record<string, unknown>> | boolean;
     textStyle: Partial<TextStyleOptions> | boolean;
-    // fontSize: Partial<InsFontSizeOptions> | boolean;
+    fontColor: Partial<InsFontColorOptions> | boolean;
+    fontSize: Partial<InsFontSizeOptions> | boolean;
     textAlign: Partial<TextAlignOptions> | boolean;
     underline: Partial<UnderlineOptions> | boolean;
     subscript: Partial<SubscriptExtensionOptions> | boolean;
     superscript: Partial<SuperscriptExtensionOptions> | boolean;
-    // fontColor: Partial<InsFontColorOptions> | boolean;
+    jumpAnchor: Partial<Record<string, unknown>> | boolean;
     link: Partial<LinkOptions> | boolean;
     image: Partial<InsImageExtensionOptions> | boolean;
-    // jumpAnchor: Partial<Record<string, unknown>> | boolean;
-    // fileLink: Partial<Record<string, unknown>> | boolean;
-    // backgroundCoInslor: HandlesPartial<InsBackgroundColorOptions> | boolean;
+    fileLink: Partial<Record<string, unknown>> | boolean;
+
+    // enter: Partial<Record<string, unknown>> | boolean;
+    // backgroundColor: HandlesPartial<InsBackgroundColorOptions> | boolean;
     // table: Partial<TableOptions> | boolean;
     table: Partial<InsTableHandlesOptions> | boolean;
     tableCell: Partial<TableCellOptions> | boolean;
@@ -235,10 +238,10 @@ const EXTENSIONS = [
         key: 'horizontalRule',
         default: true,
         async loader(options: Partial<HorizontalRuleOptions>) {
-            const {HorizontalRule} =
-                await import('@tiptap/extension-horizontal-rule');
+            const {InsHorizontalRule} =
+                await import('../extensions/horizontal');
 
-            return HorizontalRule.configure(options);
+            return InsHorizontalRule.configure(options);
         },
     },
     {
@@ -250,15 +253,7 @@ const EXTENSIONS = [
             return Italic.configure(options);
         },
     },
-    {
-        key: 'italic',
-        default: true,
-        async loader(options: Partial<ItalicOptions>) {
-            const {Italic} = await import('@tiptap/extension-italic');
 
-            return Italic.configure(options);
-        },
-    },
     {
         key: 'taskList',
         default: true,
@@ -337,16 +332,24 @@ const EXTENSIONS = [
     //         return InsCustomEnter.configure(options);
     //     },
     // },
-    // {
-    //     key: 'fontSize',
-    //     default: true,
-    //     async loader(options: Partial<InsFontSizeOptions>) {
-    //         const {InsFontSizeExtension} =
-    //             await import('@taiga-ui/editor/extensions/font-size');
+    {
+        key: 'fontColor',
+        default: true,
+        async loader(options: Partial<InsFontColorOptions>) {
+            const {InsFontColor} = await import('../extensions/font-color');
+            return InsFontColor.configure(options);
+        },
+    },
+    {
+        key: 'fontSize',
+        default: true,
+        async loader(options: Partial<InsFontSizeOptions>) {
+            const {InsFontSizeExtension} =
+                await import('../extensions/font-size');
 
-    //         return InsFontSizeExtension.configure(options);
-    //     },
-    // },
+            return InsFontSizeExtension.configure(options);
+        },
+    },
     {
         key: 'textStyle',
         default: true,
@@ -392,15 +395,6 @@ const EXTENSIONS = [
             return Superscript.configure(options);
         },
     },
-    // {
-    //     key: 'fontColor',
-    //     default: true,
-    //     async loader(options: Partial<InsFontColorOptions>) {
-    //         const {InsFontColor} = await import('@taiga-ui/editor/extensions/font-color');
-
-    //         return InsFontColor.configure(options);
-    //     },
-    // },
     {
         key: 'link',
         default: true,
@@ -417,25 +411,24 @@ const EXTENSIONS = [
           return insCreateImageEditorExtension({injector, ...options});
         },
     },
-    // {
-    //     key: 'jumpAnchor',
-    //     default: true,
-    //     async loader(options: Partial<Record<string, unknown>>) {
-    //         const {InsJumpAnchor} =
-    //             await import('@taiga-ui/editor/extensions/jump-anchor');
+    {
+        key: 'jumpAnchor',
+        default: true,
+        async loader(options: Partial<Record<string, unknown>>) {
+            const {InsJumpAnchor} =
+                await import('../extensions/jump-anchor');
 
-    //         return InsJumpAnchor.configure(options);
-    //     },
-    // },
-    // {
-    //     key: 'fileLink',
-    //     default: true,
-    //     async loader(options: Partial<Record<string, unknown>>) {
-    //         const {InsFileLink} = await import('@taiga-ui/editor/extensions/file-link');
-
-    //         return InsFileLink.configure(options);
-    //     },
-    // },
+            return InsJumpAnchor.configure(options);
+        },
+    },
+    {
+        key: 'fileLink',
+        default: true,
+        async loader(options: Partial<Record<string, unknown>>) {
+            const {InsFileLink} = await import('../extensions/file-link');
+            return InsFileLink.configure(options);
+        },
+    },
     // {
     //     key: 'backgroundColor',
     //     default: true,

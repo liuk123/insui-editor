@@ -1,0 +1,74 @@
+
+import {Mark, mergeAttributes} from '@tiptap/core';
+import { insGetCurrentWordBounds } from '../../directives/tiptap-editor/utils/get-current-word-bounds';
+import { insGetSlicedFragment } from '../../directives/tiptap-editor/utils/get-sliced-fragment';
+import { INS_TIPTAP_WHITESPACE_HACK } from '../../common/hack';
+
+declare module '@tiptap/core' {
+    interface Commands<ReturnType> {
+        anchor: {
+            removeAnchor(): ReturnType;
+            setAnchor(id: string): ReturnType;
+        };
+    }
+}
+
+export const InsJumpAnchor = Mark.create({
+    name: 'jumpAnchor',
+    priority: 1000,
+    keepOnSplit: false,
+
+    addAttributes() {
+        return {
+            id: {
+                default: null,
+                parseHTML: (element) => element.getAttribute('id'),
+                renderHTML: (attributes) => {
+                    if (!attributes['id']) {
+                        return {};
+                    }
+
+                    return {id: attributes['id']};
+                },
+            },
+        };
+    },
+
+    parseHTML() {
+        return [{tag: 'a[data-type="jump-anchor"]'}];
+    },
+
+    renderHTML({HTMLAttributes}) {
+        return ['a', mergeAttributes({'data-type': 'jump-anchor'}, HTMLAttributes), 0];
+    },
+
+    addCommands() {
+        return {
+            setAnchor:
+                (id) =>
+                ({chain, state, editor}) => {
+                    const {from, to} = insGetCurrentWordBounds(editor);
+                    const sliced = insGetSlicedFragment(state);
+                    const forwardSymbolIsWhitespace = sliced === ' ';
+                    const jumpAnchorMark = chain()
+                        .setTextSelection({from, to})
+                        .extendMarkRange('jumpAnchor')
+                        .setMark('jumpAnchor', {id});
+
+                    return (
+                        forwardSymbolIsWhitespace
+                            ? jumpAnchorMark.setTextSelection(to - 1)
+                            : jumpAnchorMark
+                                  .setTextSelection(to)
+                                  .insertContent(INS_TIPTAP_WHITESPACE_HACK)
+                                  .setTextSelection(to - 1)
+                    ).run();
+                },
+
+            removeAnchor:
+                () =>
+                ({chain}) =>
+                    chain().unsetMark(this.name, {extendEmptyMarkRange: true}).run(),
+        };
+    },
+});

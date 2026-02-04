@@ -71,16 +71,11 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
         return texts?.font ?? ''
     }
 
-    protected setFontOption({headingLevel, px}: Partial<InsEditorFontOption>): void {
+    protected setFontOption({px}: Partial<InsEditorFontOption>): void {
         const color = this.editor?.getFontColor() ?? EDITOR_BLANK_COLOR;
 
         this.clearPreviousTextStyles();
-
-        if (headingLevel) {
-            this.editor?.setHeading(headingLevel);
-        } else {
-            this.editor?.setParagraph({fontSize: (px ?? 0) + 'px'});
-        }
+        this.editor?.setParagraph({fontSize: (px ?? 0) + 'px'});
 
         if (color !== EDITOR_BLANK_COLOR) {
             this.editor?.setFontColor(color);

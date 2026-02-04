@@ -5,7 +5,7 @@ import { InsEditorOptions } from '../../common/editor-options';
 import { InsDataList, InsDropdownDirective, InsItem, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { InsEditorFontOption } from '../../common/editor-font-option';
+import { InsEditorFontOption, InsEditorHeadingOption } from '../../common/editor-font-option';
 import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
 
 @Component({
@@ -61,7 +61,7 @@ export class InsHeadingButtonTool extends InsToolbarTool {
         return texts?.heading ?? ''
     }
 
-    protected setHeaderOption({headingLevel}: Partial<InsEditorFontOption>): void {
+    protected setHeaderOption({headingLevel}: Partial<InsEditorHeadingOption>): void {
 
         this.clearPreviousTextStyles();
         if (headingLevel) {
