@@ -96,18 +96,6 @@ export class InsToolbar {
         optional: true,
     });
 
-    // /**
-    //  * @deprecated use provideInsEditorOptions({ textColors, backgroundColors })
-    //  */
-    // @Input()
-    // public colors: ReadonlyMap<string, string> = this.options.colors;
-
-    // /**
-    //  * @deprecated
-    //  */
-    // @Input()
-    // public disabled = false;
-
     @Output()
     public readonly linkAdded = new EventEmitter<string>();
 
@@ -122,24 +110,7 @@ export class InsToolbar {
 
     @Input()
     public set tools(value: Set<InsEditorToolType> | readonly InsEditorToolType[]) {
-        const newSet = new Set(value);
-
-        if (this.toolsSet.size === newSet.size) {
-            let equal = true;
-
-            for (const tool of newSet) {
-                if (!this.toolsSet.has(tool)) {
-                    equal = false;
-                    break;
-                }
-            }
-
-            if (equal) {
-                return;
-            }
-        }
-
-        this.toolsSet = newSet;
+        this.toolsSet = new Set(value);
     }
 
     protected get formatEnabled(): boolean {

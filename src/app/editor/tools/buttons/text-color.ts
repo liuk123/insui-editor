@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, Input, TemplateRef, viewChild, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, Input, TemplateRef, viewChild } from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';

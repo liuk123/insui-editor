@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, Input, TemplateRef, viewChild, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, Input, TemplateRef, viewChild } from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDropdown, InsDropdownDirective, InsDropdownOpen, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import { InsDropdownDirective, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen } from '@liuk123/insui';
 import { AsyncPipe } from '@angular/common';
 
 @Component({

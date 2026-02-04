@@ -70,29 +70,11 @@ type Tools = Set<InsEditorToolType> | readonly InsEditorToolType[];
 export class InsFontStyleButtonTool extends InsToolbarTool {
   private toolsSet = new Set(this.options.tools);
   private readonly dropdown = inject(InsDropdownDirective)
-  // protected readonly open = inject(InsDropdownOpen);
   protected readonly editorTool = InsEditorTool;
 
   @Input()
   public set enabledTools(value: Tools) {
-    const newSet = new Set(value);
-
-    if (this.toolsSet.size === newSet.size) {
-      let equal = true;
-
-      for (const tool of newSet) {
-        if (!this.toolsSet.has(tool)) {
-          equal = false;
-          break;
-        }
-      }
-
-      if (equal) {
-        return;
-      }
-    }
-
-    this.toolsSet = newSet;
+    this.toolsSet = new Set(value);;
   }
 
   public isEnabled(tool: InsEditorToolType): boolean {
