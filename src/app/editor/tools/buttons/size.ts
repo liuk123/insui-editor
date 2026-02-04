@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
@@ -51,30 +51,23 @@ import { INS_EDITOR_FONT_OPTIONS } from '../../common/i18n';
     },
 })
 export class InsFontSizeButtonTool extends InsToolbarTool {
-  private _currentTemplate: PolymorpheusContent | null = null;
 
   private readonly dropdown = inject(InsDropdownDirective)
-  // protected readonly open = inject(InsDropdownOpen);
 
     protected readonly fontsOptions$ = inject(INS_EDITOR_FONT_OPTIONS).pipe(
         map((texts) => this.options.fontOptions(texts)),
     );
 
-    @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
-    protected set template(template: PolymorpheusContent) {
-         if (template === this._currentTemplate) {
-            return;
-        }
-        this._currentTemplate = template;
-        this.dropdown.insDropdown = template;
-    }
+    protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
+    private e = effect(()=>{
+            this.dropdown.insDropdown = this.tem();
+    })
 
     protected getIcon(icons: InsEditorOptions['icons']): string {
         return icons.fontSize;
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        // return this.open.insDropdownOpen() ? '' : (texts?.font ?? '');
         return texts?.font ?? ''
     }
 

@@ -1,9 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   forwardRef,
   inject,
   TemplateRef,
+  viewChild,
   ViewChild,
 } from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
@@ -45,18 +47,12 @@ import { INS_EDITOR_CODE_OPTIONS } from '../../common/i18n';
 export class InsCodeButtonTool extends InsToolbarTool {
   protected readonly codeOptionsTexts$ = inject(INS_EDITOR_CODE_OPTIONS);
   private readonly dropdown = inject(InsDropdownDirective);
-  // protected readonly open = inject(InsDropdownOpen);
 
-  private _currentTemplate: PolymorpheusContent | null = null;
 
-  @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), { read: TemplateRef })
-  protected set template(template: PolymorpheusContent) {
-    if (template === this._currentTemplate) {
-      return;
-    }
-    this._currentTemplate = template;
-    this.dropdown.insDropdown = template;
-  }
+  protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
+    private e = effect(()=>{
+      this.dropdown.insDropdown = this.tem();
+    })
 
   protected override isActive(): boolean {
     return (this.editor?.isActive('code') || this.editor?.isActive('codeBlock')) ?? false;
@@ -67,7 +63,6 @@ export class InsCodeButtonTool extends InsToolbarTool {
   }
 
   protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-    // return this.open.insDropdownOpen() ? '' : (texts?.code ?? '');
     return texts?.code ?? ''
   }
 

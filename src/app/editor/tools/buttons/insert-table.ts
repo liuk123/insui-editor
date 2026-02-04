@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
@@ -75,23 +75,17 @@ const MIN_DISTANCE_PX = 70;
 export class InsInsertTableButtonTool extends InsToolbarTool {
     private readonly win = inject(WINDOW);
   private readonly dropdown = inject(InsDropdownDirective)
-  // protected readonly open = inject(InsDropdownOpen);
 
     protected tableSize = {
         rows: 1,
         cols: 1,
     };
 
-    private _currentTemplate: PolymorpheusContent | null = null;
 
-    @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
-    protected set template(template: PolymorpheusContent) {
-        if (template === this._currentTemplate) {
-            return;
-        }
-        this._currentTemplate = template;
-        this.dropdown.insDropdown = template;
-    }
+    protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
+    private e = effect(()=>{
+        this.dropdown.insDropdown = this.tem();
+    })
 
     protected get columnsNumber(): number[] {
         return new Array(Math.min(Math.max(3, this.tableSize.cols + 1), MAX_COLS_NUMBER));
@@ -106,7 +100,6 @@ export class InsInsertTableButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        // return this.open.insDropdownOpen() ? '' : (texts?.insertTable ?? '');
         return texts?.insertTable ?? ''
     }
 

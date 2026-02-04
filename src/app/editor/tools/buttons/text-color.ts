@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, inject, Input, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, Input, TemplateRef, viewChild, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
@@ -29,22 +29,15 @@ import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
 })
 export class InsTextColorButtonTool extends InsToolbarTool {
     private readonly dropdown = inject(InsDropdownDirective)
-    // protected readonly open = inject(InsDropdownOpen);
 
     @Input()
     public colors: ReadonlyMap<string, string> =
         this.options.textColors ?? this.options.colors;
 
-    private _currentTemplate: PolymorpheusContent | null = null;
-
-    @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
-    protected set template(template: PolymorpheusContent) {
-        if (template === this._currentTemplate) {
-            return;
-        }
-        this._currentTemplate = template;
-        this.dropdown.insDropdown = template;
-    }
+    protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
+    private e = effect(()=>{
+        this.dropdown.insDropdown = this.tem();
+    })
 
     protected override isActive(): boolean {
         return this.editor?.getFontColor() !== EDITOR_BLANK_COLOR;
@@ -55,7 +48,6 @@ export class InsTextColorButtonTool extends InsToolbarTool {
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        // return this.open.insDropdownOpen() ? '' : (texts?.foreColor ?? '');
         return texts?.foreColor ?? ''
     }
 }

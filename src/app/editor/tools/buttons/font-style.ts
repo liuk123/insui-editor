@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, forwardRef, inject, Input, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, forwardRef, inject, Input, TemplateRef, viewChild, ViewChild } from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
@@ -99,16 +99,10 @@ export class InsFontStyleButtonTool extends InsToolbarTool {
     return this.toolsSet.has(tool);
   }
 
-  private _currentTemplate: PolymorpheusContent | null = null;
-
-  @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), { read: TemplateRef })
-  protected set template(template: PolymorpheusContent) {
-    if (template === this._currentTemplate) {
-      return;
-    }
-    this._currentTemplate = template;
-    this.dropdown.insDropdown = template;
-  }
+  protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
+    private e = effect(()=>{
+        this.dropdown.insDropdown = this.tem();
+    })
 
   protected override isActive(): boolean {
     return (

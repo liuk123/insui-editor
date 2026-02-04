@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
@@ -41,7 +41,6 @@ import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
 })
 export class InsHeadingButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective)
-  private _currentTemplate: PolymorpheusContent | null = null;
 
     protected readonly headingOptions = toSignal(
         inject(INS_EDITOR_HEADING_OPTIONS).pipe(
@@ -49,14 +48,10 @@ export class InsHeadingButtonTool extends InsToolbarTool {
         )
     );
 
-    @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
-    protected set template(template: PolymorpheusContent) {
-        if (template === this._currentTemplate) {
-            return;
-        }
-        this._currentTemplate = template;
-        this.dropdown.insDropdown = template;
-    }
+   protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
+    private e = effect(()=>{
+        this.dropdown.insDropdown = this.tem();
+    })
 
     protected getIcon(icons: InsEditorOptions['icons']): string {
         return icons.paragraph;

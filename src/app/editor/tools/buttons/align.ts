@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild} from '@angular/core';
 import { InsEditorOptions } from '../../common/editor-options';
 import { InsDropdown, InsDropdownDirective, InsDropdownOpen, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
 
@@ -53,10 +53,10 @@ export class InsAlignButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective)
   // protected readonly open = inject(InsDropdownOpen);
 
-    @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), {read: TemplateRef})
-    protected set template(template: PolymorpheusContent) {
-        this.dropdown.insDropdown = template;
-    }
+   protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
+    private e = effect(()=>{
+        this.dropdown.insDropdown = this.tem();
+    })
 
     protected override isActive(): boolean {
         return (

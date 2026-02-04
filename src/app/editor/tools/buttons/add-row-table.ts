@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, forwardRef, inject, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild } from '@angular/core';
 import { InsDataList, InsDropdownDirective, InsLanguageEditor, InsOptGroup, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
@@ -35,7 +35,7 @@ export const InsTableCommands = {
                         {{ item }}
                     </button>
                     }
-                    
+
                 </ins-opt-group>
                 }
             </ins-data-list>
@@ -47,16 +47,11 @@ export const InsTableCommands = {
 export class InsAddRowTableButtonTool extends InsToolbarTool {
     protected readonly tableCommandTexts$ = inject(INS_EDITOR_TABLE_COMMANDS);
     private readonly dropdown = inject(InsDropdownDirective);
-    private _currentTemplate: PolymorpheusContent | null = null;
 
-    @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), { read: TemplateRef })
-    protected set template(template: PolymorpheusContent) {
-        if (template === this._currentTemplate) {
-            return;
-        }
-        this._currentTemplate = template;
-        this.dropdown.insDropdown = template;
-    }
+    protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
+    private e = effect(()=>{
+          this.dropdown.insDropdown = this.tem();
+    })
 
     protected override getDisableState(): boolean {
         return !(this.editor?.isActive('table') ?? false);
