@@ -97,7 +97,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
       this.hoveredRow = rowIndex;
       this.hoveredCol = colIndex;
       this.updateHandlePositions(cell, row);
-      this.cdr.detectChanges();
+      // this.cdr.detectChanges();
     }
   }
 
@@ -106,7 +106,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
     if (this.colDropdownOpen() || this.rowDropdownOpen()) return;
     this.hoveredRow = null;
     this.hoveredCol = null;
-    this.cdr.detectChanges();
+    // this.cdr.detectChanges();
   }
 
   updateHandlePositions(cell: HTMLTableCellElement, row: HTMLTableRowElement) {
@@ -150,7 +150,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
     if (!cell) {
       this.dropIndicator = null;
       this.dropIndex = null;
-      this.cdr.detectChanges();
+      // this.cdr.detectChanges();
       return;
     }
 
@@ -196,7 +196,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
       };
     }
 
-    this.cdr.detectChanges();
+    // this.cdr.detectChanges();
   }
 
   onDrop(event: DragEvent) {
@@ -214,7 +214,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
     this.draggingState = null;
     this.dropIndicator = null;
     this.dropIndex = null;
-    this.cdr.detectChanges();
+    // this.cdr.detectChanges();
   }
 
   private reorderRows(from: number, to: number) {
