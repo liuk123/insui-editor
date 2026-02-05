@@ -7,7 +7,12 @@ import {
   inject,
   OnInit,
   OnDestroy,
+  AfterViewInit,
   signal,
+  effect,
+  untracked,
+  ViewEncapsulation,
+  NgZone,
 } from '@angular/core';
 import { AngularNodeViewComponent } from '../tiptap-node-view';
 import { CommonModule } from '@angular/common';
@@ -46,8 +51,9 @@ interface DropIndicator {
   templateUrl: './table-handles.component.html',
   styleUrls: ['./table-handles.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
 })
-export class InsTableHandles extends AngularNodeViewComponent implements OnInit, OnDestroy {
+export class InsTableHandles extends AngularNodeViewComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('wrapper', { static: true }) wrapper!: ElementRef<HTMLElement>;
   @ViewChild('tableRef', { static: true }) tableRef!: ElementRef<HTMLTableElement>;
 
@@ -67,14 +73,33 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
   dropIndex: number | null = null;
 
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly ngZone = inject(NgZone);
   protected readonly icons = inject<any>(INS_EDITOR_OPTIONS).icons;
+
+  constructor() {
+    super();
+    effect(() => {
+      const node = this.node();
+      untracked(() => {
+        this.updateColumns(node);
+      });
+    });
+  }
 
   ngOnInit() {
     //
   }
 
+  ngAfterViewInit() {
+    this.updateColumns(this.node());
+    
+    this.ngZone.runOutsideAngular(() => {
+      this.tableRef.nativeElement.addEventListener('mousemove', this.onMouseMove.bind(this));
+    });
+  }
+
   ngOnDestroy() {
-    //
+    this.tableRef.nativeElement.removeEventListener('mousemove', this.onMouseMove.bind(this));
   }
 
   onMouseMove(event: MouseEvent) {
@@ -98,20 +123,19 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
 
     const cellPos = view.posAtDOM(cell, 0);
     const map = TableMap.get(tableNode);
-    // Calculate column index relative to the table
-    // The cell position is global, we need relative to table start + 1
-    // cellPos is start of content, cell start is cellPos - 1
-    // table content start is pos + 1
-    // offset = (cellPos - 1) - (pos + 1) = cellPos - pos - 2
+    
     try {
       const cellRect = map.findCell(cellPos - pos - 2);
       const colIndex = cellRect.left;
       const rowIndex = cellRect.top;
 
       if (this.hoveredRow !== rowIndex || this.hoveredCol !== colIndex) {
-        this.hoveredRow = rowIndex;
-        this.hoveredCol = colIndex;
-        this.updateHandlePositions(cell, (cell.parentElement as HTMLTableRowElement));
+        this.ngZone.run(() => {
+            this.hoveredRow = rowIndex;
+            this.hoveredCol = colIndex;
+            this.updateHandlePositions(cell, (cell.parentElement as HTMLTableRowElement));
+            this.cdr.markForCheck();
+        });
       }
     } catch (e) {
       console.warn('Table handle mousemove error:', e);
@@ -123,7 +147,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
     if (this.colDropdownOpen() || this.rowDropdownOpen()) return;
     this.hoveredRow = null;
     this.hoveredCol = null;
-    // this.cdr.detectChanges();
+    this.cdr.detectChanges();
   }
 
   updateHandlePositions(cell: HTMLTableCellElement, row: HTMLTableRowElement) {
@@ -167,7 +191,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
     if (!cell) {
       this.dropIndicator = null;
       this.dropIndex = null;
-      // this.cdr.detectChanges();
+      this.cdr.detectChanges();
       return;
     }
 
@@ -238,7 +262,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
       };
     }
 
-    // this.cdr.detectChanges();
+    this.cdr.detectChanges();
   }
 
   onDrop(event: DragEvent) {
@@ -256,7 +280,7 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
     this.draggingState = null;
     this.dropIndicator = null;
     this.dropIndex = null;
-    // this.cdr.detectChanges();
+    this.cdr.detectChanges();
   }
 
   private reorderRows(from: number, to: number) {
@@ -444,5 +468,41 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
     this.runCommand(deleteRow);
     this.onMouseLeave();
     this.rowDropdownOpen.set(false);
+  }
+
+  private updateColumns(node: PMNode) {
+    if (!this.tableRef?.nativeElement) return;
+    const table = this.tableRef.nativeElement;
+
+    let colgroup = table.querySelector('colgroup');
+    if (!colgroup) {
+      colgroup = document.createElement('colgroup');
+      table.prepend(colgroup);
+    }
+
+    const firstRow = node.firstChild;
+    if (!firstRow) return;
+
+    let totalWidth = 0;
+    const cols: string[] = [];
+
+    firstRow.content.forEach((cell) => {
+      const { colspan, colwidth } = cell.attrs;
+      for (let i = 0; i < (colspan || 1); i++) {
+        const hasWidth = colwidth && colwidth[i];
+        const cssWidth = hasWidth ? hasWidth + 'px' : '';
+        totalWidth += hasWidth || 0;
+        cols.push(cssWidth);
+      }
+    });
+
+    let output = '';
+    cols.forEach((w) => {
+      output += `<col${w ? ` style="width: ${w}"` : ''} />`;
+    });
+    
+    if (colgroup.innerHTML !== output) {
+       colgroup.innerHTML = output;
+    }
   }
 }
