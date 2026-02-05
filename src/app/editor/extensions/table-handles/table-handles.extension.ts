@@ -14,7 +14,9 @@ export function insCreateTableHandlesExtension({
     injector,
     resizable,
 }: InsTableHandlesOptions): Node {
-    return Table.extend({
+    return Table.configure({
+        resizable: resizable ?? true,
+    }).extend({
         addNodeView(): NodeViewRenderer {
             return AngularNodeViewRenderer(InsTableHandles, {
                 injector,

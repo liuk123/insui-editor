@@ -28,7 +28,8 @@
             appearance='icon'
             draggable="true"
             [insDropdown]="colHandleTemplate"
-            [(insDropdownOpen)]="colDropdownOpen"
+            [insDropdownOpen]="colDropdownOpen()"
+            (insDropdownOpenChange)="colDropdownOpen.set($event)"
             (dragstart)="onDragStart($event, 'col', hoveredCol!)"
             (click)="selectCol(hoveredCol!)"
             [iconStart]="icons.dragHorizontalHandle"
@@ -49,7 +50,8 @@
             insIconButton
             appearance='icon'
             [insDropdown]="rowHandleTemplate"
-            [(insDropdownOpen)]="rowDropdownOpen"
+            [insDropdownOpen]="rowDropdownOpen()"
+            (insDropdownOpenChange)="rowDropdownOpen.set($event)"
             (dragstart)="onDragStart($event, 'row', hoveredRow!)"
             (click)="selectRow(hoveredRow!)"
             [iconStart]="icons.dragVerticalHandle"

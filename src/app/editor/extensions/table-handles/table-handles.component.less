@@ -15,6 +15,7 @@
       table {
         border-collapse: collapse;
         width: 100%;
+        table-layout: fixed;
       }
 
       .table-handle {
@@ -45,4 +46,18 @@
         color: #888;
         font-weight: bold;
         cursor: grab;
+      }
+
+      :host ::ng-deep .column-resize-handle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: -2px;
+        width: 4px;
+        background-color: #3b82f6;
+        pointer-events: none;
+      }
+
+      :host ::ng-deep .resize-cursor {
+        cursor: col-resize !important;
       }
