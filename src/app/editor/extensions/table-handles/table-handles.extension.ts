@@ -8,14 +8,20 @@ import { InsTableHandles } from './table-handles.component';
 export interface InsTableHandlesOptions {
     injector: Injector;
     resizable?: boolean;
+    lastColumnResizable?:boolean
+    allowTableNodeSelection?:boolean
 }
 
 export function insCreateTableHandlesExtension({
     injector,
     resizable,
+    lastColumnResizable,
+    allowTableNodeSelection
 }: InsTableHandlesOptions): Node {
     return Table.configure({
         resizable: resizable ?? true,
+        lastColumnResizable: lastColumnResizable ?? true,
+        allowTableNodeSelection: allowTableNodeSelection ?? true,
     }).extend({
         addNodeView(): NodeViewRenderer {
             return AngularNodeViewRenderer(InsTableHandles, {

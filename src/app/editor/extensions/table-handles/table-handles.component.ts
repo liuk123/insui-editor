@@ -18,6 +18,7 @@ import {
   addRowBefore,
   deleteColumn,
   deleteRow,
+  TableMap,
 } from 'prosemirror-tables';
 import { TextSelection } from '@tiptap/pm/state';
 import { Fragment, Node as PMNode } from '@tiptap/pm/model';
@@ -86,18 +87,34 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
       return;
     }
 
-    const row = cell.parentElement as HTMLTableRowElement;
-    const tbody = row.parentElement as HTMLTableSectionElement;
+    // Ensure the cell belongs to this table
+    if (cell.closest('table') !== this.tableRef.nativeElement) return;
 
-    // Note: This is DOM index. For complex tables with colspan/rowspan, this might be inaccurate.
-    const rowIndex = Array.from(tbody.children).indexOf(row);
-    const colIndex = Array.from(row.children).indexOf(cell);
+    const { state, view } = this.editor();
+    const pos = this.getPos()?.();
+    if (typeof pos !== 'number') return;
+    const tableNode = state.doc.nodeAt(pos);
+    if (!tableNode) return;
 
-    if (this.hoveredRow !== rowIndex || this.hoveredCol !== colIndex) {
-      this.hoveredRow = rowIndex;
-      this.hoveredCol = colIndex;
-      this.updateHandlePositions(cell, row);
-      // this.cdr.detectChanges();
+    const cellPos = view.posAtDOM(cell, 0);
+    const map = TableMap.get(tableNode);
+    // Calculate column index relative to the table
+    // The cell position is global, we need relative to table start + 1
+    // cellPos is start of content, cell start is cellPos - 1
+    // table content start is pos + 1
+    // offset = (cellPos - 1) - (pos + 1) = cellPos - pos - 2
+    try {
+      const cellRect = map.findCell(cellPos - pos - 2);
+      const colIndex = cellRect.left;
+      const rowIndex = cellRect.top;
+
+      if (this.hoveredRow !== rowIndex || this.hoveredCol !== colIndex) {
+        this.hoveredRow = rowIndex;
+        this.hoveredCol = colIndex;
+        this.updateHandlePositions(cell, (cell.parentElement as HTMLTableRowElement));
+      }
+    } catch (e) {
+      console.warn('Table handle mousemove error:', e);
     }
   }
 
@@ -154,12 +171,38 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
       return;
     }
 
+    // Ensure the cell belongs to this table
+    if (cell.closest('table') !== this.tableRef.nativeElement) {
+      this.dropIndicator = null;
+      this.dropIndex = null;
+      return;
+    }
+
+    const { state, view } = this.editor();
+    const pos = this.getPos()?.();
+    if (typeof pos !== 'number') return;
+    const tableNode = state.doc.nodeAt(pos);
+    if (!tableNode) return;
+
+    const cellPos = view.posAtDOM(cell, 0);
+    const map = TableMap.get(tableNode);
+    let cellRect;
+    try {
+      cellRect = map.findCell(cellPos - pos - 2);
+    } catch (e) {
+      console.warn('Table handle dragover error:', e);
+      this.dropIndicator = null;
+      this.dropIndex = null;
+      return;
+    }
+
+    const rowIndex = cellRect.top;
+    const colIndex = cellRect.left;
+
     const row = cell.parentElement as HTMLTableRowElement;
-    const tbody = row.parentElement as HTMLTableSectionElement;
     const wrapperRect = this.wrapper.nativeElement.getBoundingClientRect();
 
     if (this.draggingState.type === 'row') {
-      const rowIndex = Array.from(tbody.children).indexOf(row);
       const rowRect = row.getBoundingClientRect();
 
       this.dropIndex = rowIndex;
@@ -176,15 +219,14 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
         height: 4,
       };
     } else {
-      const colIndex = Array.from(row.children).indexOf(cell);
-      const cellRect = cell.getBoundingClientRect();
+      const cellRectDOM = cell.getBoundingClientRect();
 
-      this.dropIndex = colIndex;
+      const isAfter = colIndex > this.draggingState.index;
+      this.dropIndex = colIndex + (isAfter ? 1 : 0);
 
-      const isAfter = this.dropIndex > this.draggingState.index;
       const left = isAfter
-        ? cellRect.right - wrapperRect.left - 2
-        : cellRect.left - wrapperRect.left - 2;
+        ? cellRectDOM.right - wrapperRect.left - 2
+        : cellRectDOM.left - wrapperRect.left - 2;
 
       const tableHeight = this.tableRef.nativeElement.getBoundingClientRect().height;
 
@@ -245,22 +287,82 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
     const tableNode = state.doc.nodeAt(pos);
     if (!tableNode) return;
 
+    const map = TableMap.get(tableNode);
     const rows: PMNode[] = [];
 
-    // Iterate over each row and move the cell
-    tableNode.content.forEach((row) => {
-      const cells: PMNode[] = [];
-      row.content.forEach((cell) => {
-        cells.push(cell);
-      });
+    // Check if we can move this column
+    // For simplicity, we only allow moving columns if:
+    // 1. The 'from' column doesn't contain any merged cells that start before the column or span across it in a complex way.
+    // Basically, all cells in 'from' column must have colspan=1.
+    for (let r = 0; r < tableNode.childCount; r++) {
+      const index = map.map[r * map.width + from];
+      // If this cell starts before 'from' column, we can't move 'from' column independently.
+      const cellRect = map.findCell(index);
+      if (cellRect.left < from) {
+        console.warn('Cannot move column due to merged cells');
+        return;
+      }
+      // If this cell spans more than 1 column, we can't move just this column.
+      if (cellRect.right > from + 1) {
+           console.warn('Cannot move column with colspan > 1');
+           return;
+      }
+    }
 
-      if (from < cells.length && to <= cells.length) {
-        const [cell] = cells.splice(from, 1);
-        cells.splice(to, 0, cell);
+    // Iterate over each row and reconstruct it
+    for (let r = 0; r < tableNode.childCount; r++) {
+      const row = tableNode.child(r);
+
+      // We need to iterate the ORIGINAL cells and decide where they go.
+      // Since we verified that 'from' column consists of single-column cells,
+      // we can safely extract them.
+
+      const originalCells: PMNode[] = [];
+      row.content.forEach(c => originalCells.push(c));
+
+      // We need to map visual index 'from' to child index in this row.
+      // Since all previous cells might have colspan, we sum them up.
+      let domIndexFrom = -1;
+      let currentCol = 0;
+      for (let i = 0; i < originalCells.length; i++) {
+        if (currentCol === from) {
+            domIndexFrom = i;
+            break;
+        }
+        currentCol += (originalCells[i].attrs['colspan'] || 1);
       }
 
-      rows.push(row.type.create(row.attrs, Fragment.from(cells)));
-    });
+      // Calculate insertion point for 'to'
+      // This is tricky because 'to' is a visual index.
+      let domIndexTo = 0;
+      currentCol = 0;
+      for (let i = 0; i < originalCells.length; i++) {
+         if (currentCol >= to) {
+             break;
+         }
+         domIndexTo = i + 1; // Default to after
+         currentCol += (originalCells[i].attrs['colspan'] || 1);
+      }
+
+      if (domIndexFrom !== -1) {
+          const [cell] = originalCells.splice(domIndexFrom, 1);
+
+          // Re-scan to find 'to' position after removal
+          let currentC = 0;
+          let insertIndex = 0;
+          for (let i = 0; i < originalCells.length; i++) {
+             if (currentC >= (to > from ? to - 1 : to)) {
+                 break;
+             }
+             insertIndex++;
+             currentC += (originalCells[i].attrs['colspan'] || 1);
+          }
+
+          originalCells.splice(insertIndex, 0, cell);
+      }
+
+      rows.push(row.type.create(row.attrs, Fragment.from(originalCells)));
+    }
 
     const newTable = tableNode.type.create(tableNode.attrs, Fragment.from(rows));
     const tr = state.tr.replaceWith(pos, pos + tableNode.nodeSize, newTable);
@@ -301,32 +403,46 @@ export class InsTableHandles extends AngularNodeViewComponent implements OnInit,
   addColBefore(colIndex: number) {
     this.setSelection(this.hoveredRow || 0, colIndex);
     this.runCommand(addColumnBefore);
+    this.colDropdownOpen.set(false);
+    this.hoveredRow = null;
+    this.hoveredCol = null;
   }
 
   addColAfter(colIndex: number) {
     this.setSelection(this.hoveredRow || 0, colIndex);
     this.runCommand(addColumnAfter);
+    this.colDropdownOpen.set(false);
+    this.hoveredRow = null;
+    this.hoveredCol = null;
   }
 
   deleteCol(colIndex: number) {
     this.setSelection(this.hoveredRow || 0, colIndex);
     this.runCommand(deleteColumn);
     this.onMouseLeave();
+    this.colDropdownOpen.set(false);
   }
 
   addRowBefore(rowIndex: number) {
     this.setSelection(rowIndex, this.hoveredCol || 0);
     this.runCommand(addRowBefore);
+    this.rowDropdownOpen.set(false);
+    this.hoveredRow = null;
+    this.hoveredCol = null;
   }
 
   addRowAfter(rowIndex: number) {
     this.setSelection(rowIndex, this.hoveredCol || 0);
     this.runCommand(addRowAfter);
+    this.rowDropdownOpen.set(false);
+    this.hoveredRow = null;
+    this.hoveredCol = null;
   }
 
   deleteRow(rowIndex: number) {
     this.setSelection(rowIndex, this.hoveredCol || 0);
     this.runCommand(deleteRow);
     this.onMouseLeave();
+    this.rowDropdownOpen.set(false);
   }
 }
