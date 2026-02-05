@@ -1,63 +1,65 @@
 .table-wrapper {
-        position: relative;
-        display: inline-block;
-        margin-top: 20px;
-        margin-left: 20px;
-      }
+  position: relative;
+  display: inline-block;
+  margin-top: 20px;
+  margin-left: 20px;
+}
 
-      .drop-indicator {
-        position: absolute;
-        background-color: #3b82f6;
-        pointer-events: none;
-        z-index: 20;
-      }
+.drop-indicator {
+  position: absolute;
+  background-color: #3b82f6;
+  pointer-events: none;
+  z-index: 20;
+}
 
-      table {
-        border-collapse: collapse;
-        width: 100%;
-        table-layout: fixed;
-      }
+table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
 
-      .table-handle {
-        position: absolute;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: transparent;
-        z-index: 10;
-        pointer-events: auto;
-      }
+.table-handle {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  z-index: 10;
+  pointer-events: auto;
+}
 
-      .col-handle {
-        top: -1.5rem;
-        width: 2rem;
-        height: 1.5rem;
-        flex-direction: row;
-      }
+.col-handle {
+  top: -1.5rem;
+  width: 2rem;
+  height: 1.5rem;
+  flex-direction: row;
+}
 
-      .row-handle {
-        left: -1.5rem;
-        width: 1.5rem;
-        height: 2rem;
-        flex-direction: column;
-      }
+.row-handle {
+  left: -1.5rem;
+  width: 1.5rem;
+  height: 2rem;
+  flex-direction: column;
+}
 
-      .drag-handle {
-        color: #888;
-        font-weight: bold;
-        cursor: grab;
-      }
+.drag-handle {
+  color: #888;
+  font-weight: bold;
+  cursor: grab;
+}
 
-      :host ::ng-deep .column-resize-handle {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: -2px;
-        width: 4px;
-        background-color: #3b82f6;
-        pointer-events: none;
-      }
+:host ::ng-deep .column-resize-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -3px;
+  width: 6px;
+  background-color: #3b82f6;
+  pointer-events: auto;
+  z-index: 100;
+  cursor: col-resize;
+}
 
-      :host ::ng-deep .resize-cursor {
-        cursor: col-resize !important;
-      }
+:host ::ng-deep .resize-cursor {
+  cursor: col-resize !important;
+}
