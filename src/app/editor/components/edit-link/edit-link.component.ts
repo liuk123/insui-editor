@@ -38,7 +38,6 @@ export class InsEditLink implements AfterViewInit {
 
   protected readonly options = inject(INS_EDITOR_OPTIONS);
   protected url = this.getHrefOrAnchorId();
-  protected prefix = 'http://';
   protected anchorIds = this.getAllAnchorsIds();
 
   protected edit = true;
@@ -135,4 +134,10 @@ export class InsEditLink implements AfterViewInit {
       .map((node) => node.getAttribute('id') ?? '')
       .filter(Boolean);
   }
+
+  protected setAnchor(anchor: string): void {
+        this.url = anchor;
+        this.anchorMode = true;
+        this.addLink.emit(this.href);
+    }
 }
