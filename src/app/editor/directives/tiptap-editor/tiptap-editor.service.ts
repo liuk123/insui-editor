@@ -31,12 +31,16 @@ export class InsTiptapEditorService extends AbstractInsEditor {
         return
       }
       this.editor = editor
-      editor.on('transaction', () => {
+      editor.on('update', () => {
         const json = editor.getJSON().content
         const value: string = insIsEmptyParagraph(json) ? '' : editor.getHTML()
         this.valueChange$.next(value)
       })
-      editor.on('blur', () => this.triggerTransaction())
+
+      editor.on('selectionUpdate', () => {
+        this.selectionChange$.next(null)
+      })
+      // editor.on('blur', () => this.triggerTransaction())
     })
   }
 
@@ -215,7 +219,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     attributes?: Record<string, unknown>,
   ): Observable<boolean>;
   public isActive$(name: Attrs | string, attributes?: Attrs): Observable<boolean> {
-    return this.valueChange$.pipe(
+    return this.selectionChange$.pipe(
       startWith(null),
       map(() =>
         typeof name === 'string'

@@ -26,12 +26,9 @@ export abstract class AbstractInsEditor {
     public abstract readonly html: string;
     public abstract editable: boolean;
 
-    // /**
-    //  * @deprecated use valueChange$ instead
-    //  */
-    // public readonly stateChange$ = new Subject<void>();
 
     public readonly valueChange$ = new BehaviorSubject<string>('');
+    public readonly selectionChange$ = new Subject();
 
     public abstract get state(): EditorState | null;
 

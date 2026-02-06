@@ -25,7 +25,7 @@ import { AsyncPipe } from '@angular/common';
             insPlate
             [style.background]="editor?.getCellColor() ?? editor?.getGroupColor()"
         >
-            @if(editor?.valueChange$ | async){}
+            @if(editor?.selectionChange$ | async){}
         </div>
         }
     `,
