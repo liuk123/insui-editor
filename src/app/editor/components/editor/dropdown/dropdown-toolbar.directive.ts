@@ -56,7 +56,9 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
         range.commonAncestorContainer.parentElement?.closest('ins-dropdown');
       this.range =
         (contained && isTextNode(range.commonAncestorContainer)) ||
-        range.commonAncestorContainer.nodeName === 'P'
+        ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(
+          range.commonAncestorContainer.nodeName,
+        )
           ? range
           : this.range;
       return contained && handler(this.range);

@@ -25,9 +25,10 @@
 <ng-template #dropdownTemp>
   @if(floatingToolbar){
     <ins-toolbar-host [disabled]="!interactive()">
-      <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
+      <!-- <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
         <ng-content select="tools" />
-      </ins-toolbar>
+      </ins-toolbar> -->
+      <ins-bubble-menu></ins-bubble-menu>
     </ins-toolbar-host>
   }
   @if(isLinkSelected){

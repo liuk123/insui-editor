@@ -27,8 +27,7 @@ export abstract class AbstractInsEditor {
     public abstract editable: boolean;
 
 
-    public readonly valueChange$ = new BehaviorSubject<string | null>('');
-    public readonly selectionChange$ = new Subject<InsSelectionSnapshot | null>();
+    public readonly valueChange$ = new BehaviorSubject<string>('');
 
     public abstract get state(): EditorState | null;
 

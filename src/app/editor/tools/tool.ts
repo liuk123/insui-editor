@@ -85,7 +85,7 @@ export abstract class InsToolbarTool implements OnInit {
           this.updateSignals();
 
           return editor
-            ? editor.selectionChange$.pipe(
+            ? editor.valueChange$.pipe(
                 startWith(null),
                 shareReplay({ bufferSize: 1, refCount: true }),
                 takeUntilDestroyed(this.destroy$),

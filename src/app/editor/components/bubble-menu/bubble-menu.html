@@ -1,0 +1,24 @@
+<section insToolbarBlock>
+    <button insHeadingTool></button>
+    <button insFontSizeTool></button>
+</section>
+<section insToolbarBlock>
+    <button insBoldTool [editor]="editor"></button>
+    <button insItalicTool [editor]="editor"></button>
+    <button insUnderlineTool [editor]="editor"></button>
+    <button insStrikeTool [editor]="editor"></button>
+</section>
+<section insToolbarBlock>
+    <button insAlignTool [editor]="editor"></button>
+    <button insListTool [editor]="editor"></button>
+    <button insBlockquoteTool [editor]="editor"></button>
+    <button insLinkTool [editor]="editor"></button>
+    <button insCodeTool [editor]="editor"></button>
+</section>
+<section insToolbarBlock>
+    <button insTextColorTool [colors]="options.textColors ?? options.colors" [editor]="editor"></button>
+    <button insHighlightColorTool [colors]="options.backgroundColors ?? options.colors" [editor]="editor"></button>
+</section>
+<section insToolbarBlock>
+    <button insClearTool [editor]="editor"></button>
+</section>
