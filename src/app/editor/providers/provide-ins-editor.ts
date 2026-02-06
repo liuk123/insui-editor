@@ -1,19 +1,15 @@
 import { inject, INJECTOR, type Injector, type Provider } from '@angular/core';
 
-// import {type InsBackgroundColorOptions} from '../extensions/background-color';
-// import {type InsDetailsExtensionOptions} from '../extensions/details';
 import { type Extension, type KeyboardShortcutCommand, type Mark, type Node } from '@tiptap/core';
 import { type BlockquoteOptions } from '@tiptap/extension-blockquote';
 import { type BoldOptions } from '@tiptap/extension-bold';
 import { type BulletListOptions } from '@tiptap/extension-bullet-list';
 import { type CodeOptions } from '@tiptap/extension-code';
 import { type CodeBlockOptions } from '@tiptap/extension-code-block';
-// import {type DetailsContentOptions} from '@tiptap/extension-details-content/src/details-content';
-// import {type DetailsSummaryOptions} from '@tiptap/extension-details-summary';
 import { type DropcursorOptions } from '@tiptap/extension-dropcursor';
 import { type HardBreakOptions } from '@tiptap/extension-hard-break';
 import { type HeadingOptions } from '@tiptap/extension-heading';
-// import {type HistoryOptions} from '@tiptap/extension-history';
+import {type HistoryOptions} from '@tiptap/extension-history';
 import { type HorizontalRuleOptions } from '@tiptap/extension-horizontal-rule';
 import { type ItalicOptions } from '@tiptap/extension-italic';
 import { type LinkOptions } from '@tiptap/extension-link';
@@ -35,7 +31,6 @@ import { type TextStyleOptions } from '@tiptap/extension-text-style';
 import { type UnderlineOptions } from '@tiptap/extension-underline';
 import { type StarterKitOptions } from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
-import { type HistoryOptions } from '@tiptap/extension-history';
 import { type TypographyOptions } from '@tiptap/extension-typography';
 import { InsImageExtensionOptions } from '../extensions/image-editor/image-editor.extension';
 import { InsFontSizeOptions } from '../extensions/font-size';
@@ -310,7 +305,7 @@ const EXTENSIONS = [
   },
   {
     key: 'placeholder',
-    default: false,
+    default: true,
     async loader(options: Partial<PlaceholderOptions>) {
       const { Placeholder } = await import('@tiptap/extension-placeholder');
 
@@ -493,7 +488,7 @@ const EXTENSIONS = [
   },
   {
       key: 'details',
-      default: false,
+      default: true,
       async loader(options: Partial<InsDetailsExtensionOptions>) {
           const {InsDetailsExtension} =
               await import('../extensions/details');
@@ -503,7 +498,7 @@ const EXTENSIONS = [
   },
   {
       key: 'detailsSummary',
-      default: false,
+      default: true,
       async loader(options: Partial<DetailsSummaryOptions>) {
           const {InsDetailsSummary} =
               await import('../extensions/details');
@@ -513,7 +508,7 @@ const EXTENSIONS = [
   },
   {
       key: 'detailsContent',
-      default: false,
+      default: true,
       async loader(options: Partial<DetailsContentOptions>) {
           const {InsDetailsContent} =
               await import('../extensions/details');
@@ -523,7 +518,7 @@ const EXTENSIONS = [
   },
   {
       key: 'video',
-      default: false,
+      default: true,
       async loader(options: Partial<Record<string, unknown>>) {
           const {InsVideo} = await import('../extensions/media');
 
@@ -532,7 +527,7 @@ const EXTENSIONS = [
   },
   {
       key: 'audio',
-      default: false,
+      default: true,
       async loader(options: Partial<Record<string, unknown>>) {
           const {InsAudio} = await import('../extensions/media');
 
@@ -541,7 +536,7 @@ const EXTENSIONS = [
   },
   {
       key: 'source',
-      default: false,
+      default: true,
       async loader(options: Partial<Record<string, unknown>>) {
           const {InsSource} = await import('../extensions/media');
 
@@ -550,7 +545,7 @@ const EXTENSIONS = [
   },
   {
       key: 'iframe',
-      default: false,
+      default: true,
       async loader(_: Partial<Record<string, unknown>>, injector: Injector) {
           const {insCreateIframeEditorExtension} =
               await import('../extensions/iframe-editor');

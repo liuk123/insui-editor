@@ -5,7 +5,7 @@
 //     type InsEditorAttachedFile,
 // } from '@taiga-ui/editor/common';
 import type BulletList from '@tiptap/extension-bullet-list';
-import type Highlight from '@tiptap/extension-highlight';
+// import type Highlight from '@tiptap/extension-highlight';
 import {type Image} from '@tiptap/extension-image';
 import type Link from '@tiptap/extension-link';
 import type ListItem from '@tiptap/extension-list-item';
@@ -24,10 +24,11 @@ import type Underline from '@tiptap/extension-underline';
 import type StarterKit from '@tiptap/starter-kit';
 import { InsEditableImage } from '../image';
 import { InsEditorAttachedFile } from '../attached';
+import { InsEditableIframe } from '../iframe';
 
 export type {
     BulletList,
-    Highlight,
+    // Highlight,
     Image,
     Link,
     ListItem,
@@ -48,9 +49,7 @@ export type {
 
 declare module '@tiptap/core' {
     interface Commands<ReturnType> {
-        // iframe: {
-        //     setIframe(options: InsEditableIframe): ReturnType;
-        // };
+        iframe: { setIframe(options: InsEditableIframe): ReturnType; }
     }
 
     interface Commands<ReturnType> {
