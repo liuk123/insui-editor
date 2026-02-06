@@ -12,6 +12,7 @@ import { InsEditableImage } from "../../common/image";
 import { INS_EDITOR_OPTIONS } from "../../common/editor-options";
 import { insGetMarkRange } from "./utils/get-mark-range";
 import { InsEditorAttachedFile } from "../../common/attached";
+import { InsEditableIframe } from "../../common/iframe";
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
 type Attrs = Record<string, unknown>;
@@ -32,9 +33,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       }
       this.editor = editor
       editor.on('update', () => {
-        const json = editor.getJSON().content
-        const value: string = insIsEmptyParagraph(json) ? '' : editor.getHTML()
-        this.valueChange$.next(value)
+        this.valueChange$.next(null)
       })
 
       editor.on('selectionUpdate', () => {
@@ -50,6 +49,9 @@ export class InsTiptapEditorService extends AbstractInsEditor {
 
   public get html(): string {
     return this.editor?.getHTML() ?? '';
+  }
+  public get json(): any {
+    return this.editor?.getJSON() ?? '';
   }
 
   public get editable(): boolean {
@@ -398,12 +400,6 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.commands.unsetDetails();
   }
 
-  // /**
-  //  * @deprecated use {@link unsetDetails}
-  //  */
-  // public removeDetails(): void {
-  //   this.editor?.commands.unsetDetails();
-  // }
 
   public setGroup(): void {
     this.editor?.commands.setGroup();
@@ -433,9 +429,9 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   //   this.editor?.commands.setYoutubeVideo(options as any);
   // }
 
-  // public setIframe(options: TuiEditableIframe): void {
-  //   this.editor?.commands.setIframe(options);
-  // }
+  public setIframe(options: InsEditableIframe): void {
+    this.editor?.commands.setIframe(options);
+  }
 
   public removeEmptyTextStyle(): void {
     this.editor?.commands.removeEmptyTextStyle();
@@ -448,13 +444,6 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   ): void {
     this.editor?.commands.toggleMark(typeOrName, attributes, options);
   }
-
-  // /**
-  //  * @deprecated use {@link html}
-  //  */
-  // public getHTML(): string {
-  //   return this.getOriginTiptapEditor()?.getHTML() ?? '';
-  // }
 
   public takeSelectionSnapshot(): void {
     this.selectionSnapshot = this.editor?.state.selection.toJSON() ?? null;

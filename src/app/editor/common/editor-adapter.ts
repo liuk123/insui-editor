@@ -6,7 +6,7 @@ import {BehaviorSubject, type Observable, Subject} from 'rxjs';
 import { InsEditorAttachedFile } from './attached';
 
 // import {type InsEditorAttachedFile} from './attached';
-// import {type InsEditableIframe} from './iframe';
+import {type InsEditableIframe} from './iframe';
 // import {type InsYoutubeOptions} from './youtube';
 
 export interface InsSelectionSnapshot {
@@ -27,8 +27,8 @@ export abstract class AbstractInsEditor {
     public abstract editable: boolean;
 
 
-    public readonly valueChange$ = new BehaviorSubject<string>('');
-    public readonly selectionChange$ = new Subject();
+    public readonly valueChange$ = new BehaviorSubject<string | null>('');
+    public readonly selectionChange$ = new Subject<InsSelectionSnapshot | null>();
 
     public abstract get state(): EditorState | null;
 
@@ -169,11 +169,6 @@ export abstract class AbstractInsEditor {
 
     public abstract enter(): void;
 
-    // /**
-    //  * @deprecated use {@link unsetDetails}
-    //  */
-    // public abstract removeDetails(): void;
-
     public abstract setDetails(): void;
 
     public abstract unsetDetails(): void;
@@ -192,7 +187,5 @@ export abstract class AbstractInsEditor {
 
     // public abstract setYoutubeVideo(options: InsYoutubeOptions): void;
 
-    // public abstract setIframe(options: InsEditableIframe): void;
-
-    // public abstract getHTML(): string;
+    public abstract setIframe(options: InsEditableIframe): void;
 }
