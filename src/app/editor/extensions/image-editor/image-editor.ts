@@ -168,8 +168,7 @@ export class InsImageEditor extends AbstractInsEditorResizable<InsEditableImage>
     return Boolean(this.editor().commands.toggleLink);
   }
 
-  // @insPure
-  protected getBypassedSrc(src: string): SafeResourceUrl {
+  protected getBypassedSrc = (src: string): SafeResourceUrl =>{
     return this.sanitizer.bypassSecurityTrustResourceUrl(src);
   }
 
