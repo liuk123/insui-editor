@@ -22,7 +22,6 @@ interface ServerSideGlobal extends Global {
 
 declare const globalThis: ServerSideGlobal;
 
-// TODO: rename to InsDetails in v5
 export const InsDetailsExtension = Details.extend<InsDetailsExtensionOptions>({
     addOptions() {
         const parentOptions = this.parent?.() ?? ({} as DetailsOptions);
@@ -42,8 +41,7 @@ export const InsDetailsExtension = Details.extend<InsDetailsExtensionOptions>({
                 parseHTML: (element) =>
                     element.getAttribute('open') === 'open' ||
                     element.getAttribute('open') === 'true' ||
-                    element.hasAttribute('open') ||
-                    element.getAttribute('data-opened'), // legacy
+                    element.hasAttribute('open'),
                 renderHTML: (attributes) => ({
                     open:
                         attributes['open'] && this.options.inheritOpen ? 'open' : undefined,

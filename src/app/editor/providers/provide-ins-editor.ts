@@ -234,9 +234,9 @@ const EXTENSIONS = [
     key: 'horizontalRule',
     default: true,
     async loader(options: Partial<HorizontalRuleOptions>) {
-      const { InsHorizontalRule } = await import('../extensions/horizontal');
+      const { HorizontalRule } = await import('@tiptap/extension-horizontal-rule');
 
-      return InsHorizontalRule.configure(options);
+      return HorizontalRule.configure(options);
     },
   },
   {

@@ -31,25 +31,53 @@
     />
   </ng-template>
   @if (editor().isEditable && containerWidth >= 68) {
-    <div
-      insDropdownAlign="right"
-      insDropdownAppearance="editor-image-options"
-      class="t-image-buttons"
-      [class._open]="isAlignDropdownOpened"
-      [insDropdown]="list"
-      [insDropdownEnabled]="editor.isEditable"
-      [(insDropdownOpen)]="isAlignDropdownOpened"
-    >
+    <div class="t-image-buttons" [class._open]="isAlignDropdownOpened">
       <button
-        #insDropdownHost
-        appearance="flat"
+        aria-label="Justify align"
+        size="xs"
+        title=""
+        insIconButton
+        type="button"
+        [appearance]="style === null || style === undefined || style === '' ? 'outline' : 'flat'"
+        [iconStart]="options.icons.imageExtension.alignJustify"
+        (click.capture)="align(null)"
+      >
+        Justify align
+      </button>
+      <button
+        aria-label="Align left"
         size="xs"
         insIconButton
         type="button"
-        [iconStart]="options.icons.imageExtension.settings"
-        (click)="toggleAlignDropdown($event)"
+        [appearance]="style | insMapper: getAppearance : 'float:left'"
+        [iconStart]="options.icons.imageExtension.alignLeft"
+        (click.capture)="align('float: left')"
       >
-        Image align
+        Left align
+      </button>
+      <button
+        aria-label="Align center"
+        size="xs"
+        insIconButton
+        type="button"
+        [appearance]="style | insMapper: getAppearance : 'justify-content:center'"
+        [iconStart]="options.icons.imageExtension.alignCenter"
+        (click.capture)="
+          align('display: flex; justify-content: center; margin-left: auto; margin-right: auto;')
+        "
+      >
+        Center align
+      </button>
+      <button
+        aria-label="Align right"
+        size="xs"
+        insIconButton
+        type="button"
+        [appearance]="style | insMapper: getAppearance : 'float:right'"
+        [iconStart]="options.icons.imageExtension.alignRight"
+        (click.capture)="align('float: right')"
+      >
+        Right align
       </button>
       @if (supportLinkExtension) {
         <button
@@ -64,13 +92,6 @@
           Image link
         </button>
       }
-
-      <ng-template #list>
-        <ins-image-align-list
-          [style]="style"
-          (updateAlignStyles)="align($event); isAlignDropdownOpened = false"
-        />
-      </ng-template>
     </div>
   }
   @if (attrs['data-href']) {
