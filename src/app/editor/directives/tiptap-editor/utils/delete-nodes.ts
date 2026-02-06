@@ -1,0 +1,28 @@
+import {type CommandProps} from '@tiptap/core';
+import {type EditorState} from '@tiptap/pm/state';
+
+export function insDeleteNode(
+    state: EditorState,
+    dispatch: CommandProps['dispatch'],
+    nodeName: string,
+): boolean {
+    const position = state.selection.$anchor;
+
+    for (let depth = position.depth; depth > 0; depth--) {
+        const node = position.node(depth);
+
+        if (node.type.name === nodeName) {
+            if (dispatch) {
+                dispatch(
+                    state.tr
+                        .delete(position.before(depth), position.after(depth))
+                        .scrollIntoView(),
+                );
+            }
+
+            return true;
+        }
+    }
+
+    return false;
+}

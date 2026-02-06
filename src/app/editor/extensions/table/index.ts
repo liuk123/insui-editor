@@ -10,7 +10,7 @@ export const InsTable = Table.extend({
 
         return [
             'div',
-            {class: 'tui-table-wrapper'},
+            {class: 'ins-table-wrapper'},
             [
                 'table',
                 mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
