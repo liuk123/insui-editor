@@ -23,7 +23,6 @@
 
   <ng-template #linkEditingDropdown>
     <ins-edit-link
-      [explicitOnlyLinkEdit]="true"
       [link]="attrs['data-href'] ?? undefined"
       (addLink)="addLink($event)"
       (removeLink)="removeLink()"
