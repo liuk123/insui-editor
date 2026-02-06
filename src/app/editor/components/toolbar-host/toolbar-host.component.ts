@@ -19,7 +19,7 @@ import { AbstractInsEditor } from '../../common/editor-adapter';
 @Component({
     standalone: true,
     selector: 'ins-toolbar-host',
-    imports: [AsyncPipe, InsToolbarNavigationManager],
+    imports: [InsToolbarNavigationManager],
     templateUrl: './toolbar-host.component.html',
     styleUrls: ['./toolbar-host.style.less'],
     encapsulation: ViewEncapsulation.None,
