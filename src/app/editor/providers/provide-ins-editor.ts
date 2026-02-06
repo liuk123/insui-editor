@@ -46,7 +46,6 @@ import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import {type HistoryOptions } from '@tiptap/extension-history';
 import {type TypographyOptions} from '@tiptap/extension-typography'
 import { InsImageExtensionOptions } from '../extensions/image-editor/image-editor.extension';
-import { InsTableHandlesOptions } from '../extensions/table-handles/table-handles.extension';
 import { InsFontSizeOptions } from '../extensions/font-size';
 import { InsFontColorOptions } from '../extensions/font-color';
 
@@ -88,12 +87,12 @@ interface Options {
     // enter: Partial<Record<string, unknown>> | boolean;
     // backgroundColor: HandlesPartial<InsBackgroundColorOptions> | boolean;
     // table: Partial<TableOptions> | boolean;
-    table: Partial<InsTableHandlesOptions> | boolean;
+    table: Partial<TableOptions> | boolean;
     tableCell: Partial<TableCellOptions> | boolean;
     tableRow: Partial<TableRowOptions> | boolean;
     tableHeader: Partial<TableHeaderOptions> | boolean;
-    // tableCellBackground: Partial<Record<string, unknown>> | boolean;
-    // tab: Partial<Record<string, unknown>> | boolean;
+    tableCellBackground: Partial<Record<string, unknown>> | boolean;
+    tab: Partial<Record<string, unknown>> | boolean;
     // details: Partial<InsDetailsExtensionOptions> | boolean;
     // detailsSummary: Partial<DetailsSummaryOptions> | boolean;
     // detailsContent: Partial<DetailsContentOptions> | boolean;
@@ -451,19 +450,19 @@ const EXTENSIONS = [
     {
         key: 'table',
         default: true,
-        async loader(options: Partial<InsTableHandlesOptions>, injector: Injector) {
-            const {insCreateTableHandlesExtension} = await import('../extensions/table-handles/table-handles.extension');
+        async loader(options: Partial<TableOptions>) {
+            const {InsTable} = await import('../extensions/table');
 
-            return insCreateTableHandlesExtension({injector, ...options});
+            return InsTable.configure(options);
         },
     },
     {
         key: 'tableCell',
         default: true,
         async loader(options: Partial<TableCellOptions>) {
-            const {TableCell} = await import('@tiptap/extension-table-cell');
+            const {InsTableCell} = await import('../extensions/table-cell');
 
-            return TableCell.configure(options);
+            return InsTableCell.configure(options);
         },
     },
     {
@@ -484,28 +483,26 @@ const EXTENSIONS = [
             return TableHeader.configure(options);
         },
     },
+    {
+        key: 'tableCellBackground',
+        default: true,
+        async loader(options: Partial<Record<string, unknown>>) {
+            const {TableCellBackground} =
+                await import('../extensions/table-cell-background');
 
+            return TableCellBackground.configure(options);
+        },
+    },
+    {
+        key: 'tab',
+        default: true,
+        async loader(options: Partial<Record<string, unknown>>) {
+            const {InsTabExtension} =
+                await import('../extensions/indent-outdent');
 
-    // {
-    //     key: 'tableCellBackground',
-    //     default: true,
-    //     async loader(options: Partial<Record<string, unknown>>) {
-    //         const {TableCellBackground} =
-    //             await import('@taiga-ui/editor/extensions/table-cell-background');
-
-    //         return TableCellBackground.configure(options);
-    //     },
-    // },
-    // {
-    //     key: 'tab',
-    //     default: true,
-    //     async loader(options: Partial<Record<string, unknown>>) {
-    //         const {InsTabExtension} =
-    //             await import('@taiga-ui/editor/extensions/indent-outdent');
-
-    //         return InsTabExtension.configure(options);
-    //     },
-    // },
+            return InsTabExtension.configure(options);
+        },
+    },
     // {
     //     key: 'details',
     //     default: false,
