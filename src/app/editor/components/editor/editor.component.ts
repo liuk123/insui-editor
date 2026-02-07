@@ -87,7 +87,9 @@ interface ServerSideGlobal extends Global {
   ],
   host: {
     ngSkipHydration: 'true',
+    class: 't-wrapper',
     '(insActiveZoneChange)': 'onActiveZone($event)',
+    // '(click)': 'focus($event)',
   },
 })
 export class InsEditor extends InsControl<string> implements OnDestroy {
@@ -196,8 +198,8 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     }
     return this.floatingToolbar
       ? (range) =>
-          (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
-          this.openDropdownWhen(range)
+        (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
+        this.openDropdownWhen(range)
       : this.openDropdownWhen;
   }
   private readonly openDropdownWhen = (range: Range): boolean =>
