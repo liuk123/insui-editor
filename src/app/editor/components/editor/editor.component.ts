@@ -45,9 +45,9 @@ import {
   InsSelectionState,
 } from '../../directives/tiptap-editor/utils/get-selection-state';
 import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-link-range';
-import { TiptapBubbleMenuDirective } from 'ngx-tiptap';
 import {type Editor } from '@tiptap/core';
 import { InsBubbleMenu } from '../bubble-menu/bubble-menu';
+import { TiptapBubbleMenuDirective } from '../../directives/bubble-menu/bubble-menu.directive';
 
 
 interface ServerSideGlobal extends Global {
