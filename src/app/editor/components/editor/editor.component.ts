@@ -30,7 +30,7 @@ import {
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorAttachedFile } from '../../common/attached';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
-import { delay, fromEvent, map, merge } from 'rxjs';
+import { delay, fromEvent, map, merge, single } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_VALUE_TRANSFORMER } from '../../common/editor-value-transformer';
@@ -40,14 +40,15 @@ import { InsTiptapEditor } from '../../directives/tiptap-editor/tiptap-editor.di
 import { AbstractInsEditor } from '../../common/editor-adapter';
 import { INS_EDITOR_PROVIDERS } from './editor.providers';
 import { InsEditorSocket } from '../editor-socket';
-import { InsEditorDropdownToolbar } from './dropdown/dropdown-toolbar.directive';
 import {
   insGetSelectionState,
   InsSelectionState,
 } from '../../directives/tiptap-editor/utils/get-selection-state';
 import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-link-range';
-import { InsEditLink } from '../edit-link/edit-link.component';
+import { TiptapBubbleMenuDirective } from 'ngx-tiptap';
+import {type Editor } from '@tiptap/core';
 import { InsBubbleMenu } from '../bubble-menu/bubble-menu';
+
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -58,14 +59,11 @@ interface ServerSideGlobal extends Global {
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.less'],
   imports: [
-    InsToolbarHost,
-    InsToolbar,
     InsTiptapEditor,
     InsDropdown,
     InsEditorSocket,
-    InsEditorDropdownToolbar,
-    InsEditLink,
-    InsBubbleMenu,
+    TiptapBubbleMenuDirective,
+    InsBubbleMenu
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -88,8 +86,7 @@ interface ServerSideGlobal extends Global {
   host: {
     ngSkipHydration: 'true',
     class: 't-wrapper',
-    '(insActiveZoneChange)': 'onActiveZone($event)',
-    // '(click)': 'focus($event)',
+    '(insActiveZoneChange)': 'onActiveZone($event)'
   },
 })
 export class InsEditor extends InsControl<string> implements OnDestroy {
@@ -97,6 +94,8 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   protected readonly editorLoaded = signal(false);
   protected readonly editorLoaded$ = inject(TIPTAP_EDITOR);
   public readonly editorService = inject(InsTiptapEditorService);
+  public readonly editor = signal<Editor | null>(null);
+
   private readonly contentProcessor = inject<InsValueTransformer<string | null, string | null>>(
     INS_EDITOR_VALUE_TRANSFORMER,
     { optional: true },
@@ -128,15 +127,12 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   @Output()
   public readonly focusOut = new EventEmitter<void>();
 
-  private hasMentionPlugin = false;
-  protected readonly $ = this.editorLoaded$.pipe(delay(0), takeUntilDestroyed()).subscribe(() => {
-    this.hasMentionPlugin = !!this.editorService
-      .getOriginTiptapEditor()
-      ?.extensionManager.extensions.find((extension) => extension.name === 'mention');
+  protected readonly $ = this.editorLoaded$.pipe(delay(0), takeUntilDestroyed()).subscribe((editor) => {
 
     const processed =
       this.contentProcessor?.fromControlValue(this.control.value) ?? this.control.value ?? '';
     this.editorService.setValue(processed, { clearsHistory: true });
+    this.editor.set(editor);
     this.editorLoaded.set(true);
 
     this.patchContentEditableElement();
@@ -162,7 +158,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     });
   }
   ngOnDestroy(): void {
-    this.editor?.destroy();
+    this.editorService?.destroy();
   }
 
   private readonly state = computed(() => {
@@ -171,9 +167,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     }
     return this.hovered() ? 'hover' : null;
   });
-  public get editor(): AbstractInsEditor | null {
-    return this.editorService.getOriginTiptapEditor() ? this.editorService : null;
-  }
+  // public get editor(): AbstractInsEditor | null {
+  //   return this.editorService.getOriginTiptapEditor() ? this.editorService : null;
+  // }
   public get nativeFocusableElement(): HTMLDivElement | null {
     return this.editorEl?.nativeElement.querySelector('[contenteditable].ProseMirror') || null;
   }
@@ -192,45 +188,45 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     this.nativeFocusableElement?.focus();
   }
 
-  protected get dropdownSelectionHandler(): InsBooleanHandler<Range> {
-    if (!this.focused() || this.readOnly()) {
-      return () => false;
-    }
-    return this.floatingToolbar
-      ? (range) =>
-        (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
-        this.openDropdownWhen(range)
-      : this.openDropdownWhen;
-  }
-  private readonly openDropdownWhen = (range: Range): boolean =>
-    this.currentFocusedNodeIsTextAnchor(range) ||
-    this.isMentionMode ||
-    Boolean(this.insDropdownOpen?.insDropdownOpen());
+  // protected get dropdownSelectionHandler(): InsBooleanHandler<Range> {
+  //   if (!this.focused() || this.readOnly()) {
+  //     return () => false;
+  //   }
+  //   return this.floatingToolbar
+  //     ? (range) =>
+  //       (this.value().trim() !== '' && !this.editorService?.state?.selection.empty) ||
+  //       this.openDropdownWhen(range)
+  //     : this.openDropdownWhen;
+  // }
+  // private readonly openDropdownWhen = (range: Range): boolean =>
+  //   this.currentFocusedNodeIsTextAnchor(range) ||
+  //   this.isMentionMode ||
+  //   Boolean(this.insDropdownOpen?.insDropdownOpen());
 
-  private get focusNode(): Node | null {
-    return this.doc?.getSelection()?.focusNode ?? null;
-  }
+  // private get focusNode(): Node | null {
+  //   return this.doc?.getSelection()?.focusNode ?? null;
+  // }
   /**
    * @description:
    * The commonAncestorContainer not always relevant node element in Range,
    * so the focusNode is used for the correct behaviour from the selection,
    * which is the actual element at the moment
    */
-  private currentFocusedNodeIsTextAnchor(range: Range): boolean {
-    return (
-      this.focusNode?.nodeName === 'A' ||
-      !!this.focusNode?.parentElement?.closest('a') ||
-      !!this.focusNode?.parentElement?.closest('[insEditorRootEditLink]') ||
-      (!!range.startContainer.parentElement?.closest('a') && insIsSafeLinkRange(range))
-    );
-  }
+  // private currentFocusedNodeIsTextAnchor(range: Range): boolean {
+  //   return (
+  //     this.focusNode?.nodeName === 'A' ||
+  //     !!this.focusNode?.parentElement?.closest('a') ||
+  //     !!this.focusNode?.parentElement?.closest('[insEditorRootEditLink]') ||
+  //     (!!range.startContainer.parentElement?.closest('a') && insIsSafeLinkRange(range))
+  //   );
+  // }
 
-  public get isMentionMode(): boolean {
-    return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
-  }
+  // public get isMentionMode(): boolean {
+  //   return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
+  // }
 
   public get selectionState(): InsSelectionState {
-    return insGetSelectionState(this.editor);
+    return insGetSelectionState(this.editorService);
   }
   onModelChange(value: string | null): void {
     if (value === '' && !this.editorLoaded()) {
@@ -283,18 +279,18 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     this.ownDropdown?.toggle(false);
   }
   protected addLink(link: string): void {
-    this.editor?.selectClosest();
-    this.editor?.setLink(link);
+    this.editorService?.selectClosest();
+    this.editorService?.setLink(link);
   }
 
   protected removeLink(): void {
-    this.editor?.unsetLink();
+    this.editorService?.unsetLink();
   }
   protected addAnchor(anchor: string): void {
-    this.editor?.setAnchor(anchor);
+    this.editorService?.setAnchor(anchor);
   }
 
   protected removeAnchor(): void {
-    this.editor?.removeAnchor();
+    this.editorService?.removeAnchor();
   }
 }

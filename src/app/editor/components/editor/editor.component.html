@@ -1,36 +1,20 @@
-@if(!floatingToolbar && editorLoaded()){
-  <ins-toolbar-host [disabled]="!interactive()">
-    <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
-      <ng-content select="tools" />
-    </ins-toolbar>
-  </ins-toolbar-host>
-}
-
 <div
-  insDropdownDirection="bottom"
-  insDropdownLimitWidth="auto"
   insTiptapEditor
   class="ins-editor-socket"
   [attr.data-contenteditable]="interactive()"
   [editable]="interactive()"
-  [insDropdown]="dropdownTemp"
-  [insToolbarDropdown]="dropdownSelectionHandler"
-  [insToolbarDropdownPosition]="floatingToolbar ? 'selection' : 'tag'"
   (valueChange)="onModelChange($event)"
   (click)="focus($event)"
 ></div>
-
+ 
 <ins-editor-socket />
 
-<ng-template #dropdownTemp>
-  @if(floatingToolbar){
-    <ins-toolbar-host [disabled]="!interactive()">
-      <!-- <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
-        <ng-content select="tools" />
-      </ins-toolbar> -->
-      <ins-bubble-menu></ins-bubble-menu>
-    </ins-toolbar-host>
-  }
+@if(editor()) {
+<tiptap-bubble-menu [editor]="editor()">
+  <ins-bubble-menu></ins-bubble-menu>
+</tiptap-bubble-menu>
+}
+<!-- <ng-template #dropdownTemp>
   @if(isLinkSelected){
     <ins-edit-link
       #link
@@ -39,7 +23,4 @@
       (removeLink)="link.anchorMode ? removeAnchor() : removeLink(); closeDropdown()"
     ></ins-edit-link>
   }
-</ng-template>
-<!-- <ng-template [insPopup]="true">
-33333333333333333333333
 </ng-template> -->
