@@ -21,7 +21,7 @@ import {
   isTextNode,
   WINDOW,
 } from '@liuk123/insui';
-import { BehaviorSubject, combineLatest, map } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, map, throttleTime } from 'rxjs';
 import { INS_EDITOR_PM_SELECTED_NODE } from '../../../common/pm-css-classes';
 
 interface ServerSideGlobal extends Global {
@@ -35,6 +35,7 @@ interface ServerSideGlobal extends Global {
 })
 export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccessor, OnDestroy {
   private previousTagPosition: DOMRect | null = null;
+  private previousRect: DOMRect | null = null;
   protected range = isPlatformBrowser(inject(PLATFORM_ID)) ? new Range() : ({} as unknown as Range);
 
   private readonly doc: Document | null =
@@ -50,6 +51,8 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
     this.handler$,
     this.selection$.pipe(map(() => this.getRange())),
   ]).pipe(
+    
+    debounceTime(30),
     map(([handler, range]) => {
       const contained =
         this.el.nativeElement.contains(range.commonAncestorContainer) ||
@@ -61,6 +64,7 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
         )
           ? range
           : this.range;
+      console.log(range.endContainer.nodeName)
       return contained && handler(this.range);
     }),
   );
@@ -109,12 +113,24 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
         const rect = this.range.getBoundingClientRect();
 
         if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
-          console.log('rect', rect);
+          if (this.previousRect) {
+            return this.previousRect;
+          }
+
+          // const element = isElement(this.range.commonAncestorContainer)
+          //   ? this.range.commonAncestorContainer
+          //   : this.range.commonAncestorContainer.parentElement;
+
+          // if (element) {
+          //   return element.getBoundingClientRect();
+          // }
+
           return (
             this.el.nativeElement.querySelector('p') ?? this.el.nativeElement
           ).getBoundingClientRect();
         }
 
+        this.previousRect = rect;
         return rect;
       }
     }
