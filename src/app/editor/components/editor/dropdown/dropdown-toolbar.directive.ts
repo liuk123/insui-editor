@@ -54,7 +54,7 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
       const contained =
         this.el.nativeElement.contains(range.commonAncestorContainer) ||
         range.commonAncestorContainer.parentElement?.closest('ins-dropdown');
-      this.range =
+      this.range = 
         (contained && isTextNode(range.commonAncestorContainer)) ||
         ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(
           range.commonAncestorContainer.nodeName,
@@ -109,6 +109,7 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
         const rect = this.range.getBoundingClientRect();
 
         if (rect.x === 0 && rect.y === 0 && rect.width === 0 && rect.height === 0) {
+          console.log('rect', rect);
           return (
             this.el.nativeElement.querySelector('p') ?? this.el.nativeElement
           ).getBoundingClientRect();
