@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, TemplateRef, viewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDataList, InsDropdownDirective, InsItem, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import { InsDataList, InsDropdownDirective, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen } from '@liuk123/insui';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { InsEditorFontOption, InsEditorHeadingOption } from '../../common/editor-font-option';
+import { InsEditorHeadingOption } from '../../common/editor-font-option';
 import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
 
 @Component({

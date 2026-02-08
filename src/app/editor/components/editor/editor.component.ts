@@ -22,7 +22,7 @@ import {
   InsValueTransformer,
   InsBooleanHandler,
   InsDropdown,
-  InsDropdownOpen,
+  // InsDropdownOpen,
   InsDropdownDirective,
   InsPopup,
   WINDOW,
@@ -76,12 +76,7 @@ interface ServerSideGlobal extends Global {
     INS_EDITOR_PROVIDERS,
   ],
   hostDirectives: [
-    InsAppearance,
-    {
-      directive: InsDropdownOpen,
-      inputs: ['insDropdownOpen'],
-      outputs: ['insDropdownOpenChange'],
-    },
+    InsAppearance
   ],
   host: {
     ngSkipHydration: 'true',
@@ -101,7 +96,6 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     { optional: true },
   );
 
-  protected readonly insDropdownOpen = inject(InsDropdownOpen, { optional: true });
   private readonly doc: Document | null =
     inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
   private el = injectElement();
