@@ -18,10 +18,9 @@ import {
   insGetWordRange,
   InsRectAccessor,
   isElement,
-  isTextNode,
   WINDOW,
 } from '@liuk123/insui';
-import { BehaviorSubject, combineLatest, debounceTime, fromEvent, map, merge, throttleTime } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, map } from 'rxjs';
 import { INS_EDITOR_PM_SELECTED_NODE } from '../../../common/pm-css-classes';
 
 interface ServerSideGlobal extends Global {
@@ -51,6 +50,7 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
     this.handler$,
     this.selection$.pipe(map(() => this.getRange())),
   ]).pipe(
+    debounceTime(100),
     map(([handler, range]) => {
       const contained =
         this.el.nativeElement.contains(range.commonAncestorContainer) ||
