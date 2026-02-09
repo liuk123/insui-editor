@@ -41,10 +41,6 @@ import { AbstractInsEditor } from '../../common/editor-adapter';
 import { INS_EDITOR_PROVIDERS } from './editor.providers';
 import { InsEditorSocket } from '../editor-socket';
 import { InsEditorDropdownToolbar } from './dropdown/dropdown-toolbar.directive';
-import {
-  insGetSelectionState,
-  InsSelectionState,
-} from '../../directives/tiptap-editor/utils/get-selection-state';
 import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-link-range';
 import { InsEditLink } from '../edit-link/edit-link.component';
 import { InsBubbleMenu } from '../bubble-menu/bubble-menu';
@@ -128,12 +124,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   @Output()
   public readonly focusOut = new EventEmitter<void>();
 
-  private hasMentionPlugin = false;
   protected readonly $ = this.editorLoaded$.pipe(delay(0), takeUntilDestroyed()).subscribe(() => {
-    this.hasMentionPlugin = !!this.editorService
-      .getOriginTiptapEditor()
-      ?.extensionManager.extensions.find((extension) => extension.name === 'mention');
-
     const processed =
       this.contentProcessor?.fromControlValue(this.control.value) ?? this.control.value ?? '';
     this.editorService.setValue(processed, { clearsHistory: true });
@@ -178,16 +169,15 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     return this.editorEl?.nativeElement.querySelector('[contenteditable].ProseMirror') || null;
   }
   protected focus(event: KeyboardEvent | MouseEvent): void {
-    const isSafeArea =
-      this.nativeFocusableElement?.contains(event.target as Node | null) ||
-      Array.from(this.rootEl.querySelectorAll('ins-toolbar-host')).some((toolbar) =>
-        toolbar.contains(event.target as Node | null),
-      );
+    // const isSafeArea =
+    //   this.nativeFocusableElement?.contains(event.target as Node | null) ||
+    //   Array.from(this.rootEl.querySelectorAll('ins-toolbar-host')).some((toolbar) =>
+    //     toolbar.contains(event.target as Node | null),
+    //   );
 
-    if (isSafeArea) {
-      return;
-    }
-
+    // if (isSafeArea) {
+    //   return;
+    // }
     event.preventDefault();
     this.nativeFocusableElement?.focus();
   }
@@ -204,7 +194,6 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   }
   private readonly openDropdownWhen = (range: Range): boolean =>
     this.currentFocusedNodeIsTextAnchor(range) ||
-    this.isMentionMode ||
     Boolean(this.insDropdownOpen?.insDropdownOpen());
 
   private get focusNode(): Node | null {
@@ -225,13 +214,13 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     );
   }
 
-  public get isMentionMode(): boolean {
-    return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
-  }
+  // public get isMentionMode(): boolean {
+  //   return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
+  // }
 
-  public get selectionState(): InsSelectionState {
-    return insGetSelectionState(this.editor);
-  }
+  // public get selectionState(): InsSelectionState {
+  //   return insGetSelectionState(this.editor);
+  // }
   onModelChange(value: string | null): void {
     if (value === '' && !this.editorLoaded()) {
       return;
