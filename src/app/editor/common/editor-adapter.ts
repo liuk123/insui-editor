@@ -26,6 +26,9 @@ export abstract class AbstractInsEditor {
     public abstract readonly html: string;
     public abstract editable: boolean;
 
+    // 事务状态
+    public transactionStable = false
+
 
     public readonly valueChange$ = new BehaviorSubject<string>('');
 

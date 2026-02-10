@@ -20,8 +20,9 @@ import {
   isElement,
   WINDOW,
 } from '@liuk123/insui';
-import { BehaviorSubject, combineLatest, debounceTime, map } from 'rxjs';
+import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import { INS_EDITOR_PM_SELECTED_NODE } from '../../../common/pm-css-classes';
+import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -37,6 +38,8 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
   private previousRect: DOMRect | null = null;
   protected range = isPlatformBrowser(inject(PLATFORM_ID)) ? new Range() : ({} as unknown as Range);
 
+  private readonly editorService = inject(InsTiptapEditorService);
+
   private readonly doc: Document | null =
     inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
 
@@ -50,20 +53,12 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
     this.handler$,
     this.selection$.pipe(map(() => this.getRange())),
   ]).pipe(
-    debounceTime(100),
     map(([handler, range]) => {
       const contained =
         this.el.nativeElement.contains(range.commonAncestorContainer) ||
         range.commonAncestorContainer.parentElement?.closest('ins-dropdown');
 
         this.range = contained?range:this.range;
-      // this.range =
-        // (contained && isTextNode(range.commonAncestorContainer)) ||
-          // ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(
-          //   range.commonAncestorContainer.nodeName,
-          // )
-          // ? range
-          // : this.range;
       return contained && handler(this.range);
     }),
   );
@@ -110,23 +105,18 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
         return insGetWordRange(this.range).getBoundingClientRect();
       default: {
         const rect = this.range.getBoundingClientRect();
-
-        if (this.range.collapsed) {
-          if (this.previousRect) {
-            return this.previousRect
-          }
-
-          const element = isElement(this.range.commonAncestorContainer)
-            ? this.range.commonAncestorContainer
-            : this.range.commonAncestorContainer.parentElement;
-
-          if (element) {
-            return element.getBoundingClientRect();
-          }
-
-          return (
-            this.el.nativeElement.querySelector('p') ?? this.el.nativeElement
-          ).getBoundingClientRect();
+        if (
+            rect.x === 0 &&
+            rect.y === 0 &&
+            rect.width === 0 &&
+            rect.height === 0
+        ) {
+            return this.previousRect ?? (
+                this.el.nativeElement.querySelector('p') ?? this.el.nativeElement
+            ).getBoundingClientRect();
+        }
+        if(this.editorService.transactionStable){
+          return this.previousRect ?? EMPTY_CLIENT_RECT;
         }
         this.previousRect = rect;
         return rect;

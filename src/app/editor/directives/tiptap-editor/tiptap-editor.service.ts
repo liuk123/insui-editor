@@ -25,6 +25,8 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   protected editor?: Editor;
   private readonly options = inject(INS_EDITOR_OPTIONS);
 
+
+
   constructor() {
     super()
     this.editorRef.subscribe(editor => {
@@ -35,6 +37,10 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       editor.on('transaction', () => {
         const json = editor.getJSON().content
         const value: string = insIsEmptyParagraph(json) ? '' : editor.getHTML()
+        requestAnimationFrame(() => {
+          this.transactionStable = false
+        })
+        this.transactionStable = true
         this.valueChange$.next(value)
       })
       // editor.on('blur', () => this.triggerTransaction())
