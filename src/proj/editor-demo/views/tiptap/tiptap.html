@@ -1,6 +1,19 @@
 <ins-editor
-  [(ngModel)]="value"
+  [formControl]="control"
   class="editor"
   [floatingToolbar]="true"
+  [(insDropdownOpen)]="open"
   >
+
+  <ins-data-list *insDropdown>
+    123123123
+      <!-- <button
+          *ngFor="let item of filter(suggestion)"
+          tuiOption
+          type="button"
+          (click)="command(item)"
+      >
+          {{ item.name }}
+      </button> -->
+  </ins-data-list>
 </ins-editor>

@@ -44,6 +44,7 @@ import { InsEditorDropdownToolbar } from './dropdown/dropdown-toolbar.directive'
 import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-link-range';
 import { InsEditLink } from '../edit-link/edit-link.component';
 import { InsBubbleMenu } from '../bubble-menu/bubble-menu';
+import { insGetSelectionState, InsSelectionState } from '../../directives/tiptap-editor/utils/get-selection-state';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -218,9 +219,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   //   return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
   // }
 
-  // public get selectionState(): InsSelectionState {
-  //   return insGetSelectionState(this.editor);
-  // }
+  public get selectionState(): InsSelectionState {
+    return insGetSelectionState(this.editor);
+  }
   onModelChange(value: string | null): void {
     if (value === '' && !this.editorLoaded()) {
       return;

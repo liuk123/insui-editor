@@ -1,13 +1,16 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { InsEditor } from '../../../../app/editor/components/editor/editor.component';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { provideInsEditor } from '../../../../app/editor/providers';
+import { InsTextfield } from '@liuk123/insui';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-tiptap',
   imports: [
     InsEditor,
-    FormsModule,
+    ReactiveFormsModule,
+    InsTextfield
 ],
   templateUrl: './tiptap.html',
   styleUrl: './tiptap.less',
@@ -19,6 +22,23 @@ import { provideInsEditor } from '../../../../app/editor/providers';
     }),
   ]
 })
-export class Tiptap {
-  value = '123';
+export class Tiptap implements OnInit {
+  private readonly destroy$ = inject(DestroyRef);
+  open = signal(false)
+
+  @ViewChild(InsEditor, {static: true})
+  protected readonly wysiwyg?: InsEditor;
+
+  protected control = new FormControl('');
+
+  ngOnInit(): void {
+    this.control.valueChanges
+      .pipe(takeUntilDestroyed(this.destroy$))
+      .subscribe(() => {
+        const hasSlash = !!this.wysiwyg?.selectionState.before.startsWith('/')
+        console.log('hasSlash',hasSlash)
+        this.open.set(!!this.wysiwyg?.isLinkSelected?false: hasSlash)
+    })
+  }
+
 }
