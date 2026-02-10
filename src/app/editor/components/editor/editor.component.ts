@@ -85,7 +85,7 @@ interface ServerSideGlobal extends Global {
     ngSkipHydration: 'true',
     class: 't-wrapper',
     '(insActiveZoneChange)': 'onActiveZone($event)',
-    // '(click)': 'focus($event)',
+    '(click)': 'focus($event)',
   },
 })
 export class InsEditor extends InsControl<string> implements OnDestroy {
@@ -169,15 +169,15 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     return this.editorEl?.nativeElement.querySelector('[contenteditable].ProseMirror') || null;
   }
   protected focus(event: KeyboardEvent | MouseEvent): void {
-    // const isSafeArea =
-    //   this.nativeFocusableElement?.contains(event.target as Node | null) ||
-    //   Array.from(this.rootEl.querySelectorAll('ins-toolbar-host')).some((toolbar) =>
-    //     toolbar.contains(event.target as Node | null),
-    //   );
+    const isSafeArea =
+      this.nativeFocusableElement?.contains(event.target as Node | null) ||
+      Array.from(this.rootEl.querySelectorAll('ins-toolbar-host')).some((toolbar) =>
+        toolbar.contains(event.target as Node | null),
+      );
 
-    // if (isSafeArea) {
-    //   return;
-    // }
+    if (isSafeArea) {
+      return;
+    }
     event.preventDefault();
     this.nativeFocusableElement?.focus();
   }
@@ -263,9 +263,8 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
       parentFocusElement?.parentNode?.nodeName.toLowerCase() === 'a' ||
       focusElement?.nodeName.toLowerCase() === 'a' ||
       !!focusElement?.parentElement?.closest('a') ||
-      !!focusElement?.parentElement?.closest('[insEditorRootEditLink]')
-      // ||
-      // !!focusElement?.parentElement?.closest('ins-dropdown')
+      !!focusElement?.parentElement?.closest('[insEditorRootEditLink]')||
+      !!focusElement?.parentElement?.closest('ins-dropdown')
     );
   }
   protected closeDropdown(): void {
