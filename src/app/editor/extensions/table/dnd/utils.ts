@@ -38,7 +38,7 @@ export function getHoveringCell(
 
 function domCellAround(target: HTMLElement | null): HTMLElement | null {
   while (target && target.nodeName != 'TD' && target.nodeName != 'TH') {
-    target = target.classList?.contains('ProseMirror')
+    target = target.classList?.contains('ProseMirror-table-cell')
       ? null
       : (target.parentNode as HTMLElement | null)
   }

@@ -8,7 +8,7 @@ export class PreviewController {
     constructor() {
         this._preview = document.createElement('div');
         this._preview.classList.add('table-dnd-preview');
-        this._preview.classList.add('ProseMirror');
+        this._preview.classList.add('ProseMirror-table-cell');
         Object.assign(this._preview.style, {
             position: 'absolute',
             pointerEvents: 'none',

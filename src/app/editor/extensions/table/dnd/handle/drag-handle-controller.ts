@@ -61,6 +61,11 @@ export class DragHandleController {
         const referenceCell = editor.view.nodeDOM(hoveringCell.colFirstCellPos);
         if (!referenceCell) return;
 
+        Object.assign(this._colDragHandle.style, {
+            display: 'block',
+            visibility: 'hidden',
+        });
+
         const yOffset = -1 * parseInt(getComputedStyle(this._colDragHandle).height) / 2;
 
         computePosition(
@@ -73,7 +78,7 @@ export class DragHandleController {
         )
             .then(({ x, y }) => {
                 Object.assign(this._colDragHandle.style, {
-                    display: 'block',
+                    visibility: 'visible',
                     top: `${y}px`,
                     left: `${x}px`,
                 });
@@ -83,6 +88,11 @@ export class DragHandleController {
     private _showRowDragHandle(editor: Editor, hoveringCell: HoveringCellInfo) {
         const referenceCell = editor.view.nodeDOM(hoveringCell.rowFirstCellPos);
         if (!referenceCell) return;
+
+        Object.assign(this._rowDragHandle.style, {
+            display: 'block',
+            visibility: 'hidden',
+        });
 
         const xOffset = -1 * parseInt(getComputedStyle(this._rowDragHandle).width) / 2;
 
@@ -96,7 +106,7 @@ export class DragHandleController {
         )
             .then(({ x, y}) => {
                 Object.assign(this._rowDragHandle.style, {
-                    display: 'block',
+                    visibility: 'visible',
                     top: `${y}px`,
                     left: `${x}px`,
                 });
