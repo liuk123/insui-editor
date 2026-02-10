@@ -93,6 +93,7 @@ interface Options {
 
   typography: Partial<TypographyOptions> | boolean;
   trailingNode: Partial<TrailingNodeOptions> | boolean;
+  tableDnd: Partial<Record<string, unknown>> | boolean;
 }
 
 const EXTENSIONS = [
@@ -433,10 +434,19 @@ const EXTENSIONS = [
       },
   },
   {
+    key: 'tableDnd',
+    default: true,
+    async loader(options: Partial<TableOptions>) {
+      const { TableDndExtension } = await import('../extensions/table/dnd/dnd-extension');
+
+      return TableDndExtension.configure(options);
+    },
+  },
+  {
     key: 'table',
     default: true,
     async loader(options: Partial<TableOptions>) {
-      const { InsTable } = await import('../extensions/table');
+      const { InsTable } = await import('../extensions/table/table');
 
       return InsTable.configure(options);
     },
@@ -445,7 +455,7 @@ const EXTENSIONS = [
     key: 'tableCell',
     default: true,
     async loader(options: Partial<TableCellOptions>) {
-      const { InsTableCell } = await import('../extensions/table-cell');
+      const { InsTableCell } = await import('../extensions/table/table-cell');
 
       return InsTableCell.configure(options);
     },
@@ -472,7 +482,7 @@ const EXTENSIONS = [
     key: 'tableCellBackground',
     default: true,
     async loader(options: Partial<Record<string, unknown>>) {
-      const { TableCellBackground } = await import('../extensions/table-cell-background');
+      const { TableCellBackground } = await import('../extensions/table/table-cell-background');
 
       return TableCellBackground.configure(options);
     },
