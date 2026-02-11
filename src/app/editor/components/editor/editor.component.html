@@ -1,6 +1,6 @@
-@if(!floatingToolbar && editorLoaded()){
+@if (!floatingToolbar && editorLoaded()) {
   <ins-toolbar-host [disabled]="!interactive()">
-    <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
+    <ins-toolbar [tools]="tools" (fileAttached)="fileAttached.emit($event)">
       <ng-content select="tools" />
     </ins-toolbar>
   </ins-toolbar-host>
@@ -22,7 +22,7 @@
 <ins-editor-socket />
 
 <ng-template #dropdownTemp>
-  @if(floatingToolbar){
+  @if (floatingToolbar) {
     <ins-toolbar-host [disabled]="!interactive()">
       <!-- <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
         <ng-content select="tools" />
@@ -30,7 +30,7 @@
       <ins-bubble-menu></ins-bubble-menu>
     </ins-toolbar-host>
   }
-  @if(isLinkSelected){
+  @if (isLinkSelected) {
     <ins-edit-link
       #link
       insEditorRootEditLink
@@ -38,6 +38,11 @@
       (removeLink)="link.anchorMode ? removeAnchor() : removeLink(); closeDropdown()"
     ></ins-edit-link>
   }
+  <!-- <ng-container
+    *polymorpheusOutlet="insDropdownOpen?.insDropdownOpen() ? dropdownContent : null as text"
+  >
+    {{ text }}
+  </ng-container> -->
 </ng-template>
 <!-- <ng-template [insPopup]="true">
 33333333333333333333333

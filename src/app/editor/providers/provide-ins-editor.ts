@@ -433,15 +433,15 @@ const EXTENSIONS = [
           return InsBackgroundColor.configure(options);
       },
   },
-  {
-    key: 'tableDnd',
-    default: true,
-    async loader(options: Partial<TableOptions>) {
-      const { TableDndExtension } = await import('../extensions/table/dnd/dnd-extension');
+  // {
+  //   key: 'tableDnd',
+  //   default: false,
+  //   async loader(options: Partial<TableOptions>) {
+  //     const { TableDndExtension } = await import('../extensions/table/dnd/dnd-extension');
 
-      return TableDndExtension.configure(options);
-    },
-  },
+  //     return TableDndExtension.configure(options);
+  //   },
+  // },
   {
     key: 'table',
     default: true,

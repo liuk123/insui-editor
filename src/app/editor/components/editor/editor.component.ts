@@ -13,6 +13,8 @@ import {
   effect,
   computed,
   forwardRef,
+  ContentChild,
+  TemplateRef,
 } from '@angular/core';
 import {
   injectElement,
@@ -24,8 +26,9 @@ import {
   InsDropdown,
   InsDropdownOpen,
   InsDropdownDirective,
-  InsPopup,
   WINDOW,
+  PolymorpheusOutlet,
+  InsTextfieldDropdownDirective,
 } from '@liuk123/insui';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorAttachedFile } from '../../common/attached';
@@ -44,7 +47,10 @@ import { InsEditorDropdownToolbar } from './dropdown/dropdown-toolbar.directive'
 import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-link-range';
 import { InsEditLink } from '../edit-link/edit-link.component';
 import { InsBubbleMenu } from '../bubble-menu/bubble-menu';
-import { insGetSelectionState, InsSelectionState } from '../../directives/tiptap-editor/utils/get-selection-state';
+import {
+  insGetSelectionState,
+  InsSelectionState,
+} from '../../directives/tiptap-editor/utils/get-selection-state';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -63,6 +69,7 @@ interface ServerSideGlobal extends Global {
     InsEditorDropdownToolbar,
     InsEditLink,
     InsBubbleMenu,
+    PolymorpheusOutlet,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -107,6 +114,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   @ViewChild(InsTiptapEditor, { read: ElementRef })
   private readonly editorEl?: ElementRef<HTMLElement>;
   public readonly rootEl = injectElement();
+
+  // @ContentChild(InsTextfieldDropdownDirective, { read: TemplateRef })
+  // protected dropdownContent?: TemplateRef<unknown>;
 
   @ViewChild(forwardRef(() => InsDropdownDirective))
   private readonly ownDropdown?: InsDropdownDirective;
@@ -189,13 +199,12 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
     }
     return this.floatingToolbar
       ? (range) =>
-        (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
-        this.openDropdownWhen(range)
+          (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
+          this.openDropdownWhen(range)
       : this.openDropdownWhen;
   }
   private readonly openDropdownWhen = (range: Range): boolean =>
-    this.currentFocusedNodeIsTextAnchor(range) ||
-    Boolean(this.insDropdownOpen?.insDropdownOpen());
+    this.currentFocusedNodeIsTextAnchor(range) || Boolean(this.insDropdownOpen?.insDropdownOpen());
 
   private get focusNode(): Node | null {
     return this.doc?.getSelection()?.focusNode ?? null;
@@ -264,7 +273,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
       parentFocusElement?.parentNode?.nodeName.toLowerCase() === 'a' ||
       focusElement?.nodeName.toLowerCase() === 'a' ||
       !!focusElement?.parentElement?.closest('a') ||
-      !!focusElement?.parentElement?.closest('[insEditorRootEditLink]')||
+      !!focusElement?.parentElement?.closest('[insEditorRootEditLink]') ||
       !!focusElement?.parentElement?.closest('ins-dropdown')
     );
   }

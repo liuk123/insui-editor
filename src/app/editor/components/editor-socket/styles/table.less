@@ -1,140 +1,90 @@
-.tableWrapper {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+@import '@liuk123/insui/styles/ins-ui-global.less';
+
+table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  inline-size: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* stylelint-disable-next-line */
+table .tableWrapper {
   overflow-x: auto;
-  & table {
-    overflow-x: hidden;
-    min-width: 700px !important;
+}
+
+/* stylelint-disable-next-line */
+.tableWrapper,
+.tui-table-wrapper {
+  overflow-x: auto;
+}
+
+table td {
+  position: relative;
+  min-inline-size: 1em;
+  block-size: 2rem;
+  padding: 0.1875rem 0.3125rem;
+  vertical-align: top;
+  box-sizing: border-box;
+  word-break: break-word;
+}
+
+table th {
+  position: relative;
+  min-inline-size: 1em;
+  block-size: 2rem;
+  padding: 0.1875rem 0.3125rem;
+  vertical-align: top;
+  box-sizing: border-box;
+  word-break: break-word;
+  font-weight: bold;
+  text-align: start;
+  background-color: var(--tui-background-base-alt);
+  min-block-size: 2rem;
+}
+
+table td,
+table th {
+  border: 0.125rem solid rgb(233, 233, 231);
+
+  [tuiTheme='dark'] & {
+    border: 0.125rem solid rgb(47, 47, 47);
   }
 }
 
-.table-dnd-preview {
-  padding: 0;
-  background-color: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(2px);
-}
-
-.table-dnd-drop-indicator {
+/* stylelint-disable-next-line */
+table .column-resize-handle {
+  position: absolute;
+  right: -0.125rem;
+  top: 0;
+  bottom: -0.125rem;
+  inline-size: 0.25rem;
   background-color: #adf;
+  pointer-events: none;
 }
 
-.ProseMirror {
-  table {
-    border-collapse: collapse;
-    margin: 0;
-    table-layout: fixed;
-    width: 100%;
-
-    td,
-    th {
-      border: 1px solid #ced4da;
-      box-sizing: border-box;
-      min-width: 1em;
-      padding: 3px 5px;
-      position: relative;
-      vertical-align: top;
-
-      &:first-of-type:not(a) {
-        margin-top: 0;
-      }
-
-      p {
-        margin: 0;
-
-        & + p {
-          margin-top: 0.75rem;
-        }
-      }
-    }
-
-    th {
-      background-color: light-dark(
-        var(--mantine-color-gray-1),
-        var(--mantine-color-dark-5)
-      );
-      font-weight: bold;
-      text-align: left;
-    }
-
-    .column-resize-handle {
-      background-color: #adf;
-      bottom: -1px;
-      position: absolute;
-      right: -2px;
-      pointer-events: none;
-      top: 0;
-      width: 4px;
-    }
-
-    .selectedCell:after {
-      background: rgba(200, 200, 255, 0.4);
-      content: "";
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      pointer-events: none;
-      position: absolute;
-      z-index: 2;
-    }
-  }
+table td > * {
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
-/* Table cell background colors with dark mode support */
-.ProseMirror {
-  table {
-    // @mixin dark {
-    //   /* Blue */
-    //   td[data-background-color="#b4d5ff"],
-    //   th[data-background-color="#b4d5ff"] {
-    //     background-color: #1a3a5c !important;
-    //   }
-
-    //   /* Green */
-    //   td[data-background-color="#acf5d2"],
-    //   th[data-background-color="#acf5d2"] {
-    //     background-color: #1a4d3a !important;
-    //   }
-
-    //   /* Yellow */
-    //   td[data-background-color="#fef1b4"],
-    //   th[data-background-color="#fef1b4"] {
-    //     background-color: #7c5014 !important;
-    //   }
-
-    //   /* Red */
-    //   td[data-background-color="#ffbead"],
-    //   th[data-background-color="#ffbead"] {
-    //     background-color: #5c2a23 !important;
-    //   }
-
-    //   /* Pink */
-    //   td[data-background-color="#ffc7fe"],
-    //   th[data-background-color="#ffc7fe"] {
-    //     background-color: #4d2a4d !important;
-    //   }
-
-    //   /* Gray */
-    //   td[data-background-color="#eaecef"],
-    //   th[data-background-color="#eaecef"] {
-    //     background-color: #2a2e33 !important;
-    //   }
-
-    //   /* Purple */
-    //   td[data-background-color="#c1b7f2"],
-    //   th[data-background-color="#c1b7f2"] {
-    //     background-color: #3a2f5c !important;
-    //   }
-    // }
-  }
+table th > * {
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
-.editor-container:has(.table-dnd-drop-indicator[data-dragging="true"]) {
-  .prosemirror-dropcursor-block {
-    display: none;
-  }
+/* stylelint-disable-next-line */
+.selectedCell {
+  outline: 0.0625rem solid rgb(131, 180, 215);
 
-  .prosemirror-dropcursor-inline {
-    display: none;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--tui-service-selected-text);
+    pointer-events: none;
   }
 }
