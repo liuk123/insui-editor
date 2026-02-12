@@ -1,0 +1,18 @@
+ins-float-menu {
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overflow: auto;
+    flex-wrap: wrap;
+    align-content: center;
+    box-sizing: border-box;
+
+    &::-webkit-scrollbar,
+    &::-webkit-scrollbar-thumb {
+        display: none;
+    }
+    [insToolbarBlock]{
+      flex-direction: column;
+    }
+}

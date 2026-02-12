@@ -2,11 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   effect,
-  forwardRef,
   inject,
   TemplateRef,
   viewChild,
-  ViewChild,
 } from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
@@ -14,12 +12,12 @@ import { InsEditorOptions } from '../../common/editor-options';
 import {
   InsDataList,
   InsDropdownDirective,
+  InsDropdownPositionSided,
   InsLanguageEditor,
   InsOption,
   InsTextfield,
   InsTextfieldDropdownDirective,
   InsWithDropdownOpen,
-  PolymorpheusContent,
 } from '@liuk123/insui';
 import { AsyncPipe } from '@angular/common';
 import { INS_EDITOR_CODE_OPTIONS } from '../../common/i18n';
@@ -42,12 +40,14 @@ import { INS_EDITOR_CODE_OPTIONS } from '../../common/i18n';
     </ng-container>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
+  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen, {
+    directive: InsDropdownPositionSided,
+    inputs: ['insDropdownSided']
+  }],
 })
 export class InsCodeButtonTool extends InsToolbarTool {
   protected readonly codeOptionsTexts$ = inject(INS_EDITOR_CODE_OPTIONS);
   private readonly dropdown = inject(InsDropdownDirective);
-
 
   protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
     private e = effect(()=>{

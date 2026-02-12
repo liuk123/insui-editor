@@ -7,6 +7,8 @@ import { getClosestFocusable, insClamp, isNativeFocusedIn, isNativeMouseFocusabl
     host: {
         '(keydown.arrowRight.prevent)': 'onHorizontalNavigation(false)',
         '(keydown.arrowLeft.prevent)': 'onHorizontalNavigation(true)',
+        '(keydown.arrowUp.prevent)': 'onHorizontalNavigation(true)',
+        '(keydown.arrowDown.prevent)': 'onHorizontalNavigation(false)',
     },
 })
 export class InsToolbarNavigationManager {

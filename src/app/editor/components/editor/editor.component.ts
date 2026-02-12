@@ -15,6 +15,7 @@ import {
   forwardRef,
   ContentChild,
   TemplateRef,
+  OnInit,
 } from '@angular/core';
 import {
   injectElement,
@@ -51,6 +52,7 @@ import {
   insGetSelectionState,
   InsSelectionState,
 } from '../../directives/tiptap-editor/utils/get-selection-state';
+import { InsFloatMenu } from '../float-menu/float-menu';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -69,6 +71,7 @@ interface ServerSideGlobal extends Global {
     InsEditorDropdownToolbar,
     InsEditLink,
     InsBubbleMenu,
+    InsFloatMenu,
     PolymorpheusOutlet,
   ],
   encapsulation: ViewEncapsulation.None,
@@ -96,7 +99,7 @@ interface ServerSideGlobal extends Global {
     '(click)': 'focus($event)',
   },
 })
-export class InsEditor extends InsControl<string> implements OnDestroy {
+export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   protected readonly options = inject(INS_EDITOR_OPTIONS);
   protected readonly editorLoaded = signal(false);
   protected readonly editorLoaded$ = inject(TIPTAP_EDITOR);
@@ -115,8 +118,8 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   private readonly editorEl?: ElementRef<HTMLElement>;
   public readonly rootEl = injectElement();
 
-  // @ContentChild(InsTextfieldDropdownDirective, { read: TemplateRef })
-  // protected dropdownContent?: TemplateRef<unknown>;
+  @ContentChild(InsTextfieldDropdownDirective, { read: TemplateRef })
+  protected dropdownContent?: TemplateRef<unknown>;
 
   @ViewChild(forwardRef(() => InsDropdownDirective))
   private readonly ownDropdown?: InsDropdownDirective;
@@ -150,18 +153,14 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
       fromEvent(this.el, 'mouseleave').pipe(map(() => false)),
     ),
   );
+  private readonly a1 = effect(() => this.appearance.insAppearanceState.set(this.state()));
+  private readonly a2 = effect(() => this.appearance.insAppearanceMode.set(this.mode()));
+  private readonly a3 = effect(() => this.appearance.insAppearanceFocus.set(this.focused()));
 
-  constructor() {
-    super();
-    effect(() => {
-      this.appearance.insAppearanceState.set(this.state());
-    });
-    effect(() => {
-      this.appearance.insAppearanceMode.set(this.mode());
-    });
-    effect(() => {
-      this.appearance.insAppearanceFocus.set(this.focused());
-    });
+  ngOnInit(): void {
+    if (this.insDropdownOpen) {
+      this.insDropdownOpen.isClickToggle = false;
+    }
   }
   ngOnDestroy(): void {
     this.editor?.destroy();
@@ -204,7 +203,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
       : this.openDropdownWhen;
   }
   private readonly openDropdownWhen = (range: Range): boolean =>
-    this.currentFocusedNodeIsTextAnchor(range) || Boolean(this.insDropdownOpen?.insDropdownOpen());
+    this.currentFocusedNodeIsTextAnchor(range) || 
+    this.isFloatMenu||
+    Boolean(this.insDropdownOpen?.insDropdownOpen());
 
   private get focusNode(): Node | null {
     return this.doc?.getSelection()?.focusNode ?? null;
@@ -227,6 +228,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy {
   // public get isMentionMode(): boolean {
   //   return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
   // }
+  public get isFloatMenu(): boolean {
+    return this.selectionState.before.startsWith('/')
+  }
 
   public get selectionState(): InsSelectionState {
     return insGetSelectionState(this.editor);

@@ -1,95 +1,103 @@
 [insToolbar] {
-    display: flex;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    overflow: auto;
-    flex-wrap: wrap;
-    align-content: center;
-    box-sizing: border-box;
+  display: flex;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overflow: auto;
+  flex-wrap: wrap;
+  align-content: center;
+  box-sizing: border-box;
 
-    &::-webkit-scrollbar,
-    &::-webkit-scrollbar-thumb {
-        display: none;
-    }
+  &::-webkit-scrollbar,
+  &::-webkit-scrollbar-thumb {
+    display: none;
+  }
 }
 
 [insToolbar]._disabled {
-    pointer-events: none;
-    opacity: var(--ins-disabled-opacity);
+  pointer-events: none;
+  opacity: var(--ins-disabled-opacity);
 }
 
 [insToolbar]:has([insToolbarBlock]:not(:empty)) {
-    border: none;
-    padding: 0.25rem 0.75rem;
-    outline: 0.0625rem solid var(--ins-border-normal);
+  border: none;
+  padding: 0.25rem 0.75rem;
+  outline: 0.0625rem solid var(--ins-border-normal);
 }
 
 [insToolbarBlock] {
-    display: flex;
-    padding: 0.25rem 0;
+  display: flex;
+  padding: 0.25rem 0;
 }
 
 [insToolbarBlock]:empty {
-    display: none;
+  display: none;
 }
 
 [insToolbarBlock]:not(:last-child)::after {
-    content: '';
-    display: block;
-    margin: 0 0.25rem;
-    inline-size: 0.0625rem;
-    background: var(--ins-background-neutral-1-pressed);
+  content: '';
+  display: block;
+  margin: 0 0.25rem;
+  inline-size: 0.0625rem;
+  background: var(--ins-background-neutral-1-pressed);
 }
 
 [insToolbarTool] {
-    position: relative;
-    transition: background var(--ins-duration) ease-in-out;
-    margin: 0 0.125rem;
-    overflow: visible;
+  position: relative;
+  transition: background var(--ins-duration) ease-in-out;
+  margin: 0 0.125rem;
+  overflow: visible;
 }
 
 [insToolbarTool]:hover {
-    background: var(--ins-background-neutral-1-hover);
+  background: var(--ins-background-neutral-1-hover);
 }
 
 [insToolbar] [insItem] {
-    position: relative;
-    align-self: center;
+  position: relative;
+  align-self: center;
+}
+[iconButton] [insToolbarTool]{
+  gap: 0;
+  inline-size: var(--t-size);
+  font-size: 0 !important;
+  padding: 0;
+  [insIcons]:before,
+  [insIcons]:after {
+    font-size: 1.5rem;
+  }
 }
 
 [insToolbar] input[type='file'] {
-    pointer-events: none;
-    inline-size: 0;
-    block-size: 0;
-    font-size: 0;
-    opacity: 0;
+  pointer-events: none;
+  inline-size: 0;
+  block-size: 0;
+  font-size: 0;
+  opacity: 0;
 }
 
 [insToolbar] input[type='file']::-webkit-file-upload-button {
-    display: none;
+  display: none;
 }
 
 [insPlateHost] {
-    position: relative;
+  position: relative;
 }
 
 [insPlate] {
-    position: absolute;
-    top: 1.9rem;
-    left: 50%;
-    block-size: 0.25rem;
-    pointer-events: none;
-    transform: translateX(-50%);
-    inline-size: 1.25rem;
+  position: absolute;
+  top: 1.9rem;
+  left: 50%;
+  block-size: 0.25rem;
+  pointer-events: none;
+  transform: translateX(-50%);
+  inline-size: 1.25rem;
 }
 
 [insToolbarDropdownContent] {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
 
 [insPalette] {
-    box-sizing: border-box;
-    max-inline-size: 22.6rem;
+  box-sizing: border-box;
+  max-inline-size: 22.6rem;
 }
-
-

@@ -7,7 +7,24 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 
-import { InsAlignButtonTool, InsBlockquoteButtonTool, InsClearButtonTool, InsCodeButtonTool, InsFontSizeButtonTool, InsHeadingButtonTool, InsHighlightColorButtonTool, InsLinkButtonTool, InsListButtonTool, InsRedoButtonTool, InsTextColorButtonTool, InsUndoButtonTool, InsBoldButtonTool, InsItalicButtonTool, InsUnderlineButtonTool, InsStrikeButtonTool } from '../../tools';
+import {
+  InsAlignButtonTool,
+  InsBlockquoteButtonTool,
+  InsClearButtonTool,
+  InsCodeButtonTool,
+  InsFontSizeButtonTool,
+  InsHeadingButtonTool,
+  InsHighlightColorButtonTool,
+  InsLinkButtonTool,
+  InsListButtonTool,
+  InsRedoButtonTool,
+  InsTextColorButtonTool,
+  InsUndoButtonTool,
+  InsBoldButtonTool,
+  InsItalicButtonTool,
+  InsUnderlineButtonTool,
+  InsStrikeButtonTool,
+} from '../../tools';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorToolType } from '../../common/editor-tool';
 import { INS_EDITOR_DEFAULT_TOOLS } from '../../common/default-editor-tools';
@@ -32,12 +49,15 @@ import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-ed
     InsBoldButtonTool,
     InsItalicButtonTool,
     InsUnderlineButtonTool,
-    InsStrikeButtonTool
+    InsStrikeButtonTool,
   ],
   templateUrl: './bubble-menu.html',
-  styleUrl: './bubble-menu.less',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    insToolbar: '',
+    iconButton: ''
+  },
 })
 export class InsBubbleMenu {
   protected readonly options = inject(INS_EDITOR_OPTIONS);
@@ -49,5 +69,4 @@ export class InsBubbleMenu {
   public editor: AbstractInsEditor | null = inject(InsTiptapEditorService, {
     optional: true,
   });
-
 }

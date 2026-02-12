@@ -23,26 +23,33 @@
 
 <ng-template #dropdownTemp>
   @if (floatingToolbar) {
-    <ins-toolbar-host [disabled]="!interactive()">
-      <!-- <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
-        <ng-content select="tools" />
-      </ins-toolbar> -->
-      <ins-bubble-menu></ins-bubble-menu>
-    </ins-toolbar-host>
+    @if (isFloatMenu) {
+      <ins-toolbar-host [disabled]="!interactive()">
+        <ins-float-menu></ins-float-menu>
+      </ins-toolbar-host>
+    }@else {
+      <ins-toolbar-host [disabled]="!interactive()">
+        <!-- <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
+          <ng-content select="tools" />
+        </ins-toolbar> -->
+        <ins-bubble-menu></ins-bubble-menu>
+      </ins-toolbar-host>
+      @if (isLinkSelected) {
+        <ins-edit-link
+          #link
+          insEditorRootEditLink
+          (addLink)="link.anchorMode ? addAnchor($event) : addLink($event); closeDropdown()"
+          (removeLink)="link.anchorMode ? removeAnchor() : removeLink(); closeDropdown()"
+        ></ins-edit-link>
+      }
+    }
   }
-  @if (isLinkSelected) {
-    <ins-edit-link
-      #link
-      insEditorRootEditLink
-      (addLink)="link.anchorMode ? addAnchor($event) : addLink($event); closeDropdown()"
-      (removeLink)="link.anchorMode ? removeAnchor() : removeLink(); closeDropdown()"
-    ></ins-edit-link>
-  }
-  <!-- <ng-container
+
+  <ng-container
     *polymorpheusOutlet="insDropdownOpen?.insDropdownOpen() ? dropdownContent : null as text"
   >
     {{ text }}
-  </ng-container> -->
+  </ng-container>
 </ng-template>
 <!-- <ng-template [insPopup]="true">
 33333333333333333333333
