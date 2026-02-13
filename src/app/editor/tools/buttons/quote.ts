@@ -1,17 +1,11 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
-  ElementRef,
-  inject,
 } from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { injectElement, InsLanguageEditor } from '@liuk123/insui';
-import { fromEvent} from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { InsLanguageEditor } from '@liuk123/insui';
 
 @Component({
   standalone: true,
@@ -21,16 +15,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   hostDirectives: [InsToolbarButtonTool],
   host: {
     '[attr.automation-id]': '"toolbar__quote-button"',
+    '(click)': 'toggleBlockquote()',
   },
 })
-export class InsBlockquoteButtonTool extends InsToolbarTool implements AfterViewInit {
-  public readonly el = injectElement();
-  private readonly destroyRef = inject(DestroyRef);
-  ngAfterViewInit(): void {
-    fromEvent(this.el, 'click')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.toggleBlockquote());
-  }
+export class InsBlockquoteButtonTool extends InsToolbarTool {
 
   protected override isActive(): boolean {
     return this.editor?.isActive('blockquote') ?? false;

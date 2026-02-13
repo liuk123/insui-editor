@@ -84,7 +84,6 @@ import { InsEditorAttachedFile } from '../../common/attached';
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
         insToolbar: '',
-        iconButton:'',
     },
 })
 export class InsToolbar {

@@ -55,8 +55,6 @@ import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-ed
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    insToolbar: '',
-    iconButton: ''
   },
 })
 export class InsBubbleMenu {

@@ -1,7 +1,12 @@
 
-<section insToolbarBlock>
-    <button insListTool [editor]="editor"  (click)="slashDeleteRange()" ></button>
-    <button insBlockquoteTool [editor]="editor" (click)="slashDeleteRange()"></button>
-    <button insLinkTool [editor]="editor" (click)="slashDeleteRange()"></button>
-    <button insCodeTool [editor]="editor" [insDropdownSided]="true"></button>
-</section>
+<ins-data-list>
+  @for (item of filter(suggestion); track item.key) {
+  <button
+    insOption
+    type="button"
+    (click)="command(item)"
+  >
+    {{ item.name }}
+  </button>
+  }
+</ins-data-list>

@@ -18,7 +18,7 @@ import { InsButton, insButtonOptionsProvider } from '@liuk123/insui';
     host: {
         insItem: '',
         insToolbarTool: '',
-        insButton: '',
+        insIconButton: '',
         type: 'button',
         '[attr.disabled]': 'disabled() ? "disabled" : null',
     },

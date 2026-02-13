@@ -10,12 +10,12 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, distinctUntilChanged, of, shareReplay, startWith, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, fromEvent, map, of, shareReplay, startWith, Subject, switchMap, take, tap } from 'rxjs';
 import { AbstractInsEditor } from '../common/editor-adapter';
 import { InsTiptapEditorService } from '../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../common/editor-options';
 import { INS_EDITOR_TOOLBAR_TEXTS } from '../common/i18n';
-import { InsAppearance, InsIcons, InsLanguageEditor } from '@liuk123/insui';
+import { injectElement, InsAppearance, InsIcons, InsLanguageEditor } from '@liuk123/insui';
 import { InsToolbarButtonTool } from './tool-button';
 
 @Directive()
@@ -24,6 +24,7 @@ export abstract class InsToolbarTool implements OnInit {
     optional: true,
   });
 
+  public readonly el = injectElement();
   private readonly editor$ = new BehaviorSubject(this.editorInstance);
 
   protected readonly cd = inject(ChangeDetectorRef);
@@ -43,14 +44,8 @@ export abstract class InsToolbarTool implements OnInit {
     if (this.iconDir) {
       this.iconDir.iconStart = this.getIcon(this.options.icons);
     }
-    effect(() => {
-      this.appearance.insAppearanceState.set(this.active());
-    });
-    effect(() => {
-      if (this.insToolbarButtonTool) {
-        this.insToolbarButtonTool.disabled.set(this.readOnly());
-      }
-    });
+    effect(() => this.appearance.insAppearanceState.set(this.active()));
+    effect(() => this.insToolbarButtonTool?.disabled.set(this.readOnly()));
   }
 
   protected readonly insHint = computed(() => this.getHint(this.texts()));

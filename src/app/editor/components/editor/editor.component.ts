@@ -17,20 +17,7 @@ import {
   TemplateRef,
   OnInit,
 } from '@angular/core';
-import {
-  injectElement,
-  INS_APPEARANCE_OPTIONS,
-  InsAppearance,
-  InsControl,
-  InsValueTransformer,
-  InsBooleanHandler,
-  InsDropdown,
-  InsDropdownOpen,
-  InsDropdownDirective,
-  WINDOW,
-  PolymorpheusOutlet,
-  InsTextfieldDropdownDirective,
-} from '@liuk123/insui';
+import { injectElement, INS_APPEARANCE_OPTIONS, InsAppearance, InsControl, InsValueTransformer, InsBooleanHandler, InsDropdown, InsDropdownOpen, InsDropdownDirective, WINDOW, PolymorpheusOutlet, InsTextfieldDropdownDirective, InsPopup, InsButton } from '@liuk123/insui';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorAttachedFile } from '../../common/attached';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
@@ -73,7 +60,9 @@ interface ServerSideGlobal extends Global {
     InsBubbleMenu,
     InsFloatMenu,
     PolymorpheusOutlet,
-  ],
+    InsPopup,
+    InsButton
+],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
@@ -203,7 +192,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
       : this.openDropdownWhen;
   }
   private readonly openDropdownWhen = (range: Range): boolean =>
-    this.currentFocusedNodeIsTextAnchor(range) || 
+    this.currentFocusedNodeIsTextAnchor(range) ||
     this.isFloatMenu||
     Boolean(this.insDropdownOpen?.insDropdownOpen());
 
