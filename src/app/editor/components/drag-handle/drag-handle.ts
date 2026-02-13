@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal, NgZone, computed } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal, NgZone, computed, input, TemplateRef } from '@angular/core';
 import { InsButton, InsDataList, InsDropdown, InsOption } from '@liuk123/insui';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { Plugin, PluginKey, NodeSelection } from '@tiptap/pm/state';
@@ -7,7 +7,7 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
 
 @Component({
   selector: 'ins-drag-handle',
-  imports: [InsButton, InsDropdown, InsDataList, InsOption],
+  imports: [InsButton, InsDropdown],
   templateUrl: './drag-handle.html',
   styleUrl: './drag-handle.less',
   host: {
@@ -35,23 +35,24 @@ export class InsDragHandle implements OnInit, OnDestroy {
     return this.editorService.getOriginTiptapEditor();
   }
 
+  public readonly dropdownContent = input<TemplateRef<any> | null>(null);
   // Menu Items Logic
-  public readonly menuItems = computed(() => {
-    const node = this.activeNode();
-    const items = [
-      { label: '删除', action: 'delete' },
-      { label: '复制', action: 'duplicate' },
-    ];
+  // public readonly menuItems = computed(() => {
+  //   const node = this.activeNode();
+  //   const items = [
+  //     { label: '删除', action: 'delete' },
+  //     { label: '复制', action: 'duplicate' },
+  //   ];
 
-    if (node?.type.name === 'heading') {
-      items.push({ label: '转为段落', action: 'turn-to-paragraph' });
-    } else if (node?.type.name === 'paragraph') {
-      items.push({ label: '转为标题 1', action: 'turn-to-h1' });
-      items.push({ label: '转为标题 2', action: 'turn-to-h2' });
-    }
+  //   if (node?.type.name === 'heading') {
+  //     items.push({ label: '转为段落', action: 'turn-to-paragraph' });
+  //   } else if (node?.type.name === 'paragraph') {
+  //     items.push({ label: '转为标题 1', action: 'turn-to-h1' });
+  //     items.push({ label: '转为标题 2', action: 'turn-to-h2' });
+  //   }
 
-    return items;
-  });
+  //   return items;
+  // });
 
   ngOnInit(): void {
     this.registerPlugin();
@@ -59,15 +60,14 @@ export class InsDragHandle implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.editor && !this.editor.isDestroyed) {
-      this.editorService.getOriginTiptapEditor()?.unregisterPlugin(this.pluginKey);
+      this.editor?.unregisterPlugin(this.pluginKey);
     }
   }
 
   private registerPlugin() {
-    const editor = this.editorService.getOriginTiptapEditor();
-    if (!editor) return;
+    if (!this.editor) return;
 
-    editor.registerPlugin(
+    this.editor.registerPlugin(
       new Plugin({
         key: this.pluginKey,
         view: (view) => {
@@ -181,37 +181,37 @@ export class InsDragHandle implements OnInit, OnDestroy {
     (view as any).dragging = { slice, move: true };
   }
 
-  public onMenuAction(action: string) {
-    if (this.currentPos === null || !this.currentNode) return;
-    const editor = this.editorService.getOriginTiptapEditor();
-    if (!editor) return;
+  // public onMenuAction(action: string) {
+  //   if (this.currentPos === null || !this.currentNode) return;
+  //   const editor = this.editorService.getOriginTiptapEditor();
+  //   if (!editor) return;
 
-    // Select the target node first
-    editor.commands.setNodeSelection(this.currentPos);
+  //   // Select the target node first
+  //   editor.commands.setNodeSelection(this.currentPos);
 
-    switch (action) {
-      case 'delete':
-        editor.chain().deleteSelection().run();
-        break;
-      case 'duplicate':
-        // Logic to duplicate the node
-        const selection = NodeSelection.create(editor.state.doc, this.currentPos);
-        const slice = selection.content();
-        editor
-          .chain()
-          .insertContentAt(this.currentPos + selection.node.nodeSize, slice.content)
-          .run();
-        break;
-      case 'turn-to-paragraph':
-        editor.chain().setParagraph().run();
-        break;
-      case 'turn-to-h1':
-        editor.chain().toggleHeading({ level: 1 }).run();
-        break;
-      case 'turn-to-h2':
-        editor.chain().toggleHeading({ level: 2 }).run();
-        break;
-    }
-    this.visible.set(false);
-  }
+  //   switch (action) {
+  //     case 'delete':
+  //       editor.chain().deleteSelection().run();
+  //       break;
+  //     case 'duplicate':
+  //       // Logic to duplicate the node
+  //       const selection = NodeSelection.create(editor.state.doc, this.currentPos);
+  //       const slice = selection.content();
+  //       editor
+  //         .chain()
+  //         .insertContentAt(this.currentPos + selection.node.nodeSize, slice.content)
+  //         .run();
+  //       break;
+  //     case 'turn-to-paragraph':
+  //       editor.chain().setParagraph().run();
+  //       break;
+  //     case 'turn-to-h1':
+  //       editor.chain().toggleHeading({ level: 1 }).run();
+  //       break;
+  //     case 'turn-to-h2':
+  //       editor.chain().toggleHeading({ level: 2 }).run();
+  //       break;
+  //   }
+  //   this.visible.set(false);
+  // }
 }

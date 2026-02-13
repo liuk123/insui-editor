@@ -53,5 +53,16 @@
 </ng-template>
 
 @if (editorLoaded()) {
-  <ins-drag-handle></ins-drag-handle>
+  <ins-drag-handle [dropdownContent]="dragHandle"></ins-drag-handle>
 }
+
+
+<ng-template #dragHandle>123
+  <ins-data-list>
+    <!-- @for (item of menuItems(); track item.label) {
+      <button insOption (click)="onMenuAction(item.action)">
+        {{ item.label }}
+      </button>
+    } -->
+  </ins-data-list>
+</ng-template>
