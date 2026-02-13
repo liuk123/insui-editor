@@ -40,6 +40,7 @@ import {
   InsSelectionState,
 } from '../../directives/tiptap-editor/utils/get-selection-state';
 import { InsFloatMenu } from '../float-menu/float-menu';
+import { InsDragHandle } from '../drag-handle/drag-handle';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -61,7 +62,8 @@ interface ServerSideGlobal extends Global {
     InsFloatMenu,
     PolymorpheusOutlet,
     InsPopup,
-    InsButton
+    InsButton,
+    InsDragHandle
 ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -185,6 +187,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     if (!this.focused() || this.readOnly()) {
       return () => false;
     }
+
     return this.floatingToolbar
       ? (range) =>
           (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
@@ -214,6 +217,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     );
   }
 
+  
   // public get isMentionMode(): boolean {
   //   return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
   // }
@@ -224,6 +228,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   public get selectionState(): InsSelectionState {
     return insGetSelectionState(this.editor);
   }
+
   onModelChange(value: string | null): void {
     if (value === '' && !this.editorLoaded()) {
       return;

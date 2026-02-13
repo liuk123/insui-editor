@@ -51,6 +51,7 @@
     {{ text }}
   </ng-container>
 </ng-template>
-<ng-template [insPopup]="true">
-  <button insIconButton iconStart="plus"></button>
-</ng-template>
+
+@if (editorLoaded()) {
+  <ins-drag-handle></ins-drag-handle>
+}

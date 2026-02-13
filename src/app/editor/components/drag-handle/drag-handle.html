@@ -1,0 +1,20 @@
+<button
+  insIconButton
+  iconStart="drag_handle"
+  size="s"
+  class="drag-handle-button"
+  [insDropdown]="dropdown"
+  insDropdownDirection="bottom"
+  insDropdownLimitWidth="auto"
+  [insDropdownOpen]="false"
+></button>
+
+<ng-template #dropdown>
+  <ins-data-list>
+    @for (item of menuItems(); track item.label) {
+      <button insOption (click)="onMenuAction(item.action)">
+        {{ item.label }}
+      </button>
+    }
+  </ins-data-list>
+</ng-template>
