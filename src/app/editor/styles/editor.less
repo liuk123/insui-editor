@@ -6,12 +6,12 @@ ins-editor {
     max-block-size: inherit;
     min-block-size: 10rem;
     box-sizing: border-box;
-    overflow: auto;
 
     display: flex;
     flex-direction: column;
     .ins-editor-socket{
       flex-grow: 1;
+      overflow: auto;
     }
 }
 ins-editor[data-state='disabled']{

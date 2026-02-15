@@ -1,5 +1,5 @@
-import { Component, inject, OnDestroy, OnInit, signal, NgZone, computed, input, TemplateRef } from '@angular/core';
-import { InsButton, InsDataList, InsDropdown, InsOption } from '@liuk123/insui';
+import { Component, inject, OnDestroy, OnInit, signal, NgZone, input, TemplateRef } from '@angular/core';
+import { InsButton, InsDropdown } from '@liuk123/insui';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { Plugin, PluginKey, NodeSelection } from '@tiptap/pm/state';
 import { EditorView } from '@tiptap/pm/view';
