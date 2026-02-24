@@ -1,18 +1,23 @@
-import { inject, Injectable } from "@angular/core";
-import { AbstractInsEditor, InsSelectionSnapshot, InsSetValueOption } from "../../common/editor-adapter";
+import { inject, Injectable } from '@angular/core';
+import {
+  AbstractInsEditor,
+  InsSelectionSnapshot,
+  InsSetValueOption,
+} from '../../common/editor-adapter';
 import { type Editor, type Range } from '@tiptap/core';
 import { type MarkType } from '@tiptap/pm/model';
-import { distinctUntilChanged, map, Observable, startWith } from "rxjs";
-import { TIPTAP_EDITOR } from "../../common/tiptap-editor";
-import { insIsEmptyParagraph } from "./utils/is-empty-paragraph";
-import { EditorState } from "@tiptap/pm/state";
-import { insParseStyle } from "./utils/parse-style";
-import { EDITOR_BLANK_COLOR } from "../../common/default-editor-colors";
-import { InsEditableImage } from "../../common/image";
-import { INS_EDITOR_OPTIONS } from "../../common/editor-options";
-import { insGetMarkRange } from "./utils/get-mark-range";
-import { InsEditorAttachedFile } from "../../common/attached";
-import { InsEditableIframe } from "../../common/iframe";
+import { distinctUntilChanged, map, Observable, startWith } from 'rxjs';
+import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
+import { insIsEmptyParagraph } from './utils/is-empty-paragraph';
+import { EditorState } from '@tiptap/pm/state';
+import { insParseStyle } from './utils/parse-style';
+import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
+import { InsEditableImage } from '../../common/image';
+import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
+import { insGetMarkRange } from './utils/get-mark-range';
+import { InsEditorAttachedFile } from '../../common/attached';
+import { InsEditableIframe } from '../../common/iframe';
+import { EditorView } from '@tiptap/pm/view';
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
 type Attrs = Record<string, unknown>;
@@ -25,26 +30,31 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   protected editor?: Editor;
   private readonly options = inject(INS_EDITOR_OPTIONS);
 
-
-
   constructor() {
-    super()
-    this.editorRef.subscribe(editor => {
+    super();
+    this.editorRef.subscribe((editor) => {
       if (!editor) {
-        return
+        return;
       }
-      this.editor = editor
+      this.editor = editor;
       editor.on('transaction', () => {
-        const json = editor.getJSON().content
-        const value: string = insIsEmptyParagraph(json) ? '' : editor.getHTML()
+        // const json = editor.getJSON().content;
+        // const value: string = insIsEmptyParagraph(json) ? '' : editor.getHTML();
+        // console.log('transaction')
+        this.valueChange$.next('');
+      });
+      editor.on('selectionUpdate', () => {
+        console.log('selectionUpdate');
+      });
+      editor.on('update', () => {
+        console.log('update');
         requestAnimationFrame(() => {
-          this.transactionStable = false
-        })
-        this.transactionStable = true
-        this.valueChange$.next(value)
-      })
+          this.transactionStable = false;
+        });
+        this.transactionStable = true;
+      });
       // editor.on('blur', () => this.triggerTransaction())
-    })
+    });
   }
 
   public get isFocused(): boolean {
@@ -68,6 +78,9 @@ export class InsTiptapEditorService extends AbstractInsEditor {
 
   public get state(): EditorState | null {
     return this.editor?.state ?? null;
+  }
+  public get view(): EditorView | null {
+    return this.editor?.view ?? null;
   }
 
   public getOriginTiptapEditor(): Editor | null {
@@ -129,8 +142,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       ?.chain()
       .focus()
       .command(({ commands, state }) => {
-        const setImage = ((commands as any).setEditableImage ??
-          commands.setImage) as
+        const setImage = ((commands as any).setEditableImage ?? commands.setImage) as
           | ((config: InsEditableImage) => boolean)
           | undefined;
 
@@ -220,18 +232,11 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   }
 
   public isActive$(attributes: Attrs): Observable<boolean>;
-  public isActive$(
-    name: string,
-    attributes?: Record<string, unknown>,
-  ): Observable<boolean>;
+  public isActive$(name: string, attributes?: Record<string, unknown>): Observable<boolean>;
   public isActive$(name: Attrs | string, attributes?: Attrs): Observable<boolean> {
     return this.valueChange$.pipe(
       startWith(null),
-      map(() =>
-        typeof name === 'string'
-          ? this.isActive(name, attributes)
-          : this.isActive(name),
-      ),
+      map(() => (typeof name === 'string' ? this.isActive(name, attributes) : this.isActive(name))),
       distinctUntilChanged(),
     );
   }
@@ -404,7 +409,6 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.commands.unsetDetails();
   }
 
-
   public setGroup(): void {
     this.editor?.commands.setGroup();
   }
@@ -459,5 +463,4 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   private triggerTransaction(): void {
     this.editor?.view.dispatch(this.editor.state.tr);
   }
-
 }

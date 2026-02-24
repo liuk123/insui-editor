@@ -7,6 +7,7 @@ import { InsEditorAttachedFile } from './attached';
 
 // import {type InsEditorAttachedFile} from './attached';
 import {type InsEditableIframe} from './iframe';
+import { EditorView } from '@tiptap/pm/view';
 // import {type InsYoutubeOptions} from './youtube';
 
 export interface InsSelectionSnapshot {
@@ -33,6 +34,7 @@ export abstract class AbstractInsEditor {
     public readonly valueChange$ = new BehaviorSubject<string>('');
 
     public abstract get state(): EditorState | null;
+    public abstract get view(): EditorView | null;
 
     public abstract isActive$(attributes: Attrs): Observable<boolean>;
     public abstract isActive$(name: string, attributes?: Attrs): Observable<boolean>;

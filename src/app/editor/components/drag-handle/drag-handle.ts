@@ -85,12 +85,12 @@ export class InsDragHandle implements OnInit, OnDestroy {
         },
         props: {
           handleDOMEvents: {
-            drop: (view) => {
-              requestAnimationFrame(() => {
-                this.updatePositionForSelection(view);
-              });
-              return false;
-            },
+            // drop: (view: any) => {
+              // requestAnimationFrame(() => {
+              //   // this.updatePositionForSelection(view);
+              // });
+            //   return false;
+            // },
             // Keep mouse interaction logic if needed for hover effects in future
             // For now, we rely on view updates for positioning based on selection
           },
@@ -120,17 +120,6 @@ export class InsDragHandle implements OnInit, OnDestroy {
         node = parent;
         nodePos = $pos.before(d);
         break;
-      }
-    }
-
-    if (!node) {
-      for (let d = $pos.depth; d > 0; d--) {
-        const parent = $pos.node(d);
-        if (parent.isBlock) {
-          node = parent;
-          nodePos = $pos.before(d);
-          break;
-        }
       }
     }
 
@@ -168,7 +157,7 @@ export class InsDragHandle implements OnInit, OnDestroy {
   public onDragStart(event: DragEvent) {
     if (this.currentPos === null || !this.currentNode) return;
 
-    const view = this.editorService.getOriginTiptapEditor()?.view;
+    const view = this.editorService?.view;
     if (!view) return;
 
     const selection = NodeSelection.create(view.state.doc, this.currentPos);

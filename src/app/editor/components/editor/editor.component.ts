@@ -17,7 +17,22 @@ import {
   TemplateRef,
   OnInit,
 } from '@angular/core';
-import { injectElement, INS_APPEARANCE_OPTIONS, InsAppearance, InsControl, InsValueTransformer, InsBooleanHandler, InsDropdown, InsDropdownOpen, InsDropdownDirective, WINDOW, PolymorpheusOutlet, InsTextfieldDropdownDirective, InsPopup, InsButton } from '@liuk123/insui';
+import {
+  injectElement,
+  INS_APPEARANCE_OPTIONS,
+  InsAppearance,
+  InsControl,
+  InsValueTransformer,
+  InsBooleanHandler,
+  InsDropdown,
+  InsDropdownOpen,
+  InsDropdownDirective,
+  WINDOW,
+  PolymorpheusOutlet,
+  InsTextfieldDropdownDirective,
+  InsPopup,
+  InsButton,
+} from '@liuk123/insui';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorAttachedFile } from '../../common/attached';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
@@ -61,10 +76,8 @@ interface ServerSideGlobal extends Global {
     InsBubbleMenu,
     InsFloatMenu,
     PolymorpheusOutlet,
-    InsPopup,
-    InsButton,
-    InsDragHandle
-],
+    InsDragHandle,
+  ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
@@ -188,15 +201,22 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
       return () => false;
     }
 
+    // console.log('view dragging', this.editor?.view?.dragging, this.editor?.state?.selection.empty)
     return this.floatingToolbar
-      ? (range) =>
-          (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
-          this.openDropdownWhen(range)
+      ? (range) => {
+          if ((this.editor?.view as any)?.dragging !== null) {
+            return false;
+          }
+          return (
+            (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
+            this.openDropdownWhen(range)
+          );
+        }
       : this.openDropdownWhen;
   }
   private readonly openDropdownWhen = (range: Range): boolean =>
     this.currentFocusedNodeIsTextAnchor(range) ||
-    this.isFloatMenu||
+    this.isFloatMenu ||
     Boolean(this.insDropdownOpen?.insDropdownOpen());
 
   private get focusNode(): Node | null {
@@ -217,12 +237,11 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     );
   }
 
-  
   // public get isMentionMode(): boolean {
   //   return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
   // }
   public get isFloatMenu(): boolean {
-    return this.selectionState.before.startsWith('/')
+    return this.selectionState.before.startsWith('/');
   }
 
   public get selectionState(): InsSelectionState {
