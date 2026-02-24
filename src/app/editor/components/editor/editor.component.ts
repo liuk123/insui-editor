@@ -56,6 +56,7 @@ import {
 } from '../../directives/tiptap-editor/utils/get-selection-state';
 import { InsFloatMenu } from '../float-menu/float-menu';
 import { InsDragHandle } from '../drag-handle/drag-handle';
+import { DragHandleMenu } from '../drag-handle-menu/drag-handle-menu';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -77,6 +78,7 @@ interface ServerSideGlobal extends Global {
     InsFloatMenu,
     PolymorpheusOutlet,
     InsDragHandle,
+    DragHandleMenu
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -187,7 +189,8 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
       this.nativeFocusableElement?.contains(event.target as Node | null) ||
       Array.from(this.rootEl.querySelectorAll('ins-toolbar-host')).some((toolbar) =>
         toolbar.contains(event.target as Node | null),
-      );
+      ) ||
+      (event.target as HTMLElement)?.nodeName === 'BUTTON'
 
     if (isSafeArea) {
       return;
@@ -201,7 +204,6 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
       return () => false;
     }
 
-    // console.log('view dragging', this.editor?.view?.dragging, this.editor?.state?.selection.empty)
     return this.floatingToolbar
       ? (range) => {
           if ((this.editor?.view as any)?.dragging !== null) {

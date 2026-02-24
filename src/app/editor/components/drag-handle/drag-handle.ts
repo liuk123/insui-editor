@@ -1,4 +1,13 @@
-import { Component, inject, OnDestroy, OnInit, signal, NgZone, input, TemplateRef } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnDestroy,
+  OnInit,
+  signal,
+  NgZone,
+  input,
+  TemplateRef,
+} from '@angular/core';
 import { InsButton, InsDropdown } from '@liuk123/insui';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { Plugin, PluginKey, NodeSelection } from '@tiptap/pm/state';
@@ -30,9 +39,26 @@ export class InsDragHandle implements OnInit, OnDestroy {
   private currentPos: number | null = null;
   private currentNode: ProseMirrorNode | null = null;
   private pluginKey = new PluginKey('ins-drag-handle');
+  private isDraggingFromHandle = false;
+  protected open=signal(false)
 
   get editor() {
     return this.editorService.getOriginTiptapEditor();
+  }
+  nodeFilter = (nodeName: string) => {
+    // 自定义可拖拽节点类型
+    const allowedNodes = [
+      'paragraph',
+      'heading',
+      'blockquote',
+      'codeBlock',
+      'bulletList',
+      'orderedList',
+      'taskList',
+      'image',
+      'table',
+    ];
+    return allowedNodes.includes(nodeName);
   }
 
   public readonly dropdownContent = input<TemplateRef<any> | null>(null);
@@ -78,19 +104,37 @@ export class InsDragHandle implements OnInit, OnDestroy {
                 !view.state.doc.eq(prevState.doc) ||
                 !view.state.selection.eq(prevState.selection)
               ) {
-                this.updatePositionForSelection(view);
+                this.updatePositionForSelection(view, this.nodeFilter);
               }
             },
           };
         },
         props: {
           handleDOMEvents: {
-            // drop: (view: any) => {
-              // requestAnimationFrame(() => {
-              //   // this.updatePositionForSelection(view);
-              // });
-            //   return false;
-            // },
+            drop: (view: EditorView, event: DragEvent) => {
+              if (!this.isDraggingFromHandle) {
+                return false;
+              }
+
+              setTimeout(() => {
+                const editor = this.editorService.getOriginTiptapEditor();
+                if (!editor) return;
+
+                const { selection } = editor.state;
+                if (!(selection instanceof NodeSelection)) {
+                  this.isDraggingFromHandle = false;
+                  return;
+                }
+
+                const pos =
+                  selection.from + (selection.node.isTextblock ? 1 : 0);
+
+                this.editorService.setTextSelection(pos);
+                this.isDraggingFromHandle = false;
+              });
+
+              return false;
+            },
             // Keep mouse interaction logic if needed for hover effects in future
             // For now, we rely on view updates for positioning based on selection
           },
@@ -99,7 +143,7 @@ export class InsDragHandle implements OnInit, OnDestroy {
     );
   }
 
-  private updatePositionForSelection(view: EditorView) {
+  private updatePositionForSelection(view: EditorView, nodeFilter: (nodeName: string) => boolean) {
     if (!view.editable) return;
 
     const selection = view.state.selection;
@@ -111,12 +155,13 @@ export class InsDragHandle implements OnInit, OnDestroy {
 
     for (let d = $pos.depth; d > 0; d--) {
       const parent = $pos.node(d);
-      if (d === 1 && parent.isBlock) {
+      const nodeName = parent.type.name;
+      if (d === 1 && parent.isBlock && nodeFilter(nodeName)) {
         node = parent;
         nodePos = $pos.before(d);
         break;
       }
-      if (parent.type.name === 'listItem' || parent.type.name === 'taskItem') {
+      if (nodeName === 'listItem' || nodeName === 'taskItem') {
         node = parent;
         nodePos = $pos.before(d);
         break;
@@ -157,6 +202,8 @@ export class InsDragHandle implements OnInit, OnDestroy {
   public onDragStart(event: DragEvent) {
     if (this.currentPos === null || !this.currentNode) return;
 
+    this.isDraggingFromHandle = true;
+
     const view = this.editorService?.view;
     if (!view) return;
 
@@ -168,6 +215,7 @@ export class InsDragHandle implements OnInit, OnDestroy {
 
     // Set dragging flag on view
     (view as any).dragging = { slice, move: true };
+
   }
 
   // public onMenuAction(action: string) {

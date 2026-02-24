@@ -1,0 +1,13 @@
+
+
+<ins-data-list>
+  @for (item of items; track item.key) {
+  <button
+    insOption
+    type="button"
+    (click)="command(item)"
+  >
+    {{ item.name }}
+  </button>
+  }
+</ins-data-list>

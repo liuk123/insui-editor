@@ -57,12 +57,6 @@
 }
 
 
-<ng-template #dragHandle>123
-  <ins-data-list>
-    <!-- @for (item of menuItems(); track item.label) {
-      <button insOption (click)="onMenuAction(item.action)">
-        {{ item.label }}
-      </button>
-    } -->
-  </ins-data-list>
+<ng-template #dragHandle>
+  <ins-drag-handle-menu></ins-drag-handle-menu>
 </ng-template>
