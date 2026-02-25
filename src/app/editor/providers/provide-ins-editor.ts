@@ -93,7 +93,6 @@ interface Options {
 
   typography: Partial<TypographyOptions> | boolean;
   trailingNode: Partial<TrailingNodeOptions> | boolean;
-  tableDnd: Partial<Record<string, unknown>> | boolean;
 }
 
 const EXTENSIONS = [
