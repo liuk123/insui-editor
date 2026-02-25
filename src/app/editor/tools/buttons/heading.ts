@@ -1,11 +1,11 @@
-import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, TemplateRef, viewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDataList, InsDropdownDirective, InsItem, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import { InsChevron, InsDataList, InsDropdownDirective, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen } from '@liuk123/insui';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { InsEditorFontOption, InsEditorHeadingOption } from '../../common/editor-font-option';
+import { InsEditorHeadingOption } from '../../common/editor-font-option';
 import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
 
 @Component({
@@ -15,10 +15,10 @@ import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
         InsDataList,
         InsOption,
         InsTextfield,
+        InsChevron
     ],
     template: `
         {{ insHint() }}
-
         <ng-container *insTextfieldDropdown>
             <ins-data-list>
               @for(item of headingOptions(); track item.name){
@@ -34,7 +34,7 @@ import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
         </ng-container>
     `,
     changeDetection: ChangeDetectionStrategy.OnPush,
-    hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
+    hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen, InsChevron],
     host: {
         '[attr.automation-id]': '"toolbar__heading-button"',
     },
@@ -54,6 +54,25 @@ export class InsHeadingButtonTool extends InsToolbarTool {
     })
 
     protected getIcon(icons: InsEditorOptions['icons']): string {
+        if (this.editor?.isActive('heading', { level: 1 })) {
+            return icons.heading1;
+        }
+        if (this.editor?.isActive('heading', { level: 2 })) {
+            return icons.heading2;
+        }
+        if (this.editor?.isActive('heading', { level: 3 })) {
+            return icons.heading3;
+        }
+        if (this.editor?.isActive('heading', { level: 4 })) {
+            return icons.heading4;
+        }
+        if (this.editor?.isActive('heading', { level: 5 })) {
+            return icons.heading5;
+        }
+        if (this.editor?.isActive('heading', { level: 6 })) {
+            return icons.heading6;
+        }
+
         return icons.paragraph;
     }
 

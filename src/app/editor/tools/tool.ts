@@ -10,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, distinctUntilChanged, fromEvent, map, of, shareReplay, startWith, Subject, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, fromEvent, map, of, shareReplay, startWith, Subject, switchMap, take, tap } from 'rxjs';
 import { AbstractInsEditor } from '../common/editor-adapter';
 import { InsTiptapEditorService } from '../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../common/editor-options';
@@ -41,15 +41,16 @@ export abstract class InsToolbarTool implements OnInit {
   private appearance = inject(InsAppearance);
   private insToolbarButtonTool = inject(InsToolbarButtonTool, { optional: true });
   constructor() {
-    if (this.iconDir) {
-      this.iconDir.iconStart = this.getIcon(this.options.icons);
-    }
+
+    effect(()=> {
+      if(this.iconDir){this.iconDir.iconStart = this.iconStart()}
+    })
     effect(() => this.appearance.insAppearanceState.set(this.active()));
     effect(() => this.insToolbarButtonTool?.disabled.set(this.readOnly()));
   }
 
   protected readonly insHint = computed(() => this.getHint(this.texts()));
-  protected readonly iconStart = computed(() => this.getIcon(this.options.icons));
+  protected readonly iconStart = signal(this.getIcon(this.options.icons))
   protected readonly active = computed(() =>
     this.activeOnly() && this.isFocused() ? 'active' : null,
   );
@@ -83,12 +84,13 @@ export abstract class InsToolbarTool implements OnInit {
             ? editor.valueChange$.pipe(
                 startWith(null),
                 shareReplay({ bufferSize: 1, refCount: true }),
-                takeUntilDestroyed(this.destroy$),
-                // tap(()=>this.cd.markForCheck())
+                takeUntilDestroyed(this.destroy$)
               )
             : of(null);
         }),
         takeUntilDestroyed(this.destroy$),
+        // debounceTime(100),
+        // tap(()=>this.cd.markForCheck())
       )
       .subscribe(() => this.updateSignals());
   }
@@ -97,7 +99,8 @@ export abstract class InsToolbarTool implements OnInit {
     this.isFocused.set(this.editor?.isFocused ?? false);
     this.readOnly.set(this.getDisableState?.() ?? false);
     this.activeOnly.set(this.isActive?.() ?? false);
-
+    console.log(this.getIcon(this.options.icons))
+    this.iconStart.set(this.getIcon(this.options.icons))
     // caretaker note: trigger computed effect
     // this.cd.detectChanges();
   }
