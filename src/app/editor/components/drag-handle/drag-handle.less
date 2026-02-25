@@ -1,24 +1,22 @@
 :host {
-    position: absolute;
-    z-index: 50;
-    display: none;
-    pointer-events: auto;
+  position: absolute;
+  z-index: 50;
+  display: flex;
+  column-gap: 0.125rem;
+  pointer-events: auto;
+  visibility: hidden;
 
-    &.visible {
-        display: block;
-        animation: fadeIn 0.2s ease-in-out;
-    }
-}
-
-.drag-handle-button {
-    cursor: grab;
-
-    &:active {
-        cursor: grabbing;
-    }
+  &.visible {
+    visibility: visible;
+    animation: fadeIn 0.2s ease-in-out;
+  }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

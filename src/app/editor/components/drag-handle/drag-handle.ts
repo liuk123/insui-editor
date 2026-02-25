@@ -23,8 +23,6 @@ import { Node as ProseMirrorNode } from '@tiptap/pm/model';
     '[style.top.px]': 'top()',
     '[style.left.px]': 'left()',
     '[class.visible]': 'visible()',
-    '[attr.draggable]': 'true',
-    '(dragstart)': 'onDragStart($event)',
   },
 })
 export class InsDragHandle implements OnInit, OnDestroy {
@@ -193,7 +191,7 @@ export class InsDragHandle implements OnInit, OnDestroy {
       this.activeNode.set(node);
 
       this.top.set(rect.top - containerRect.top + scrollTop);
-      this.left.set(rect.left - containerRect.left + scrollLeft - 28);
+      this.left.set(rect.left - containerRect.left + scrollLeft - 52);
 
       this.visible.set(true);
     });
@@ -216,6 +214,15 @@ export class InsDragHandle implements OnInit, OnDestroy {
     // Set dragging flag on view
     (view as any).dragging = { slice, move: true };
 
+    if (event.dataTransfer) {
+      const node = view.nodeDOM(this.currentPos);
+      if (node && node.nodeType === 1) {
+        event.dataTransfer.setDragImage(node as HTMLElement, 0, 0);
+        event.dataTransfer.effectAllowed = 'copyMove';
+        event.dataTransfer.setData('text/html', (node as HTMLElement).outerHTML);
+        event.dataTransfer.setData('text/plain', this.currentNode.textContent || '');
+      }
+    }
   }
 
   // public onMenuAction(action: string) {

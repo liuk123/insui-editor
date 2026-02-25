@@ -10,4 +10,14 @@
   [(insDropdownOpen)]="open"
   style="background-color: #fff;"
 ></button>
+<button
+  insIconButton
+  appearance="outline"
+  iconStart="grip-vertical"
+  size="xs"
+  class="drag-handle-button"
+  style="background-color: #fff;"
+  draggable="true"
+  (dragstart)="onDragStart($event)"
+></button>
 
