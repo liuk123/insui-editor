@@ -30,13 +30,11 @@ import {
   WINDOW,
   PolymorpheusOutlet,
   InsTextfieldDropdownDirective,
-  InsPopup,
-  InsButton,
 } from '@liuk123/insui';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorAttachedFile } from '../../common/attached';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
-import { delay, fromEvent, map, merge } from 'rxjs';
+import { delay, fromEvent, map, merge, of } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_VALUE_TRANSFORMER } from '../../common/editor-value-transformer';
@@ -57,6 +55,7 @@ import {
 import { InsFloatMenu } from '../float-menu/float-menu';
 import { InsDragHandle } from '../drag-handle/drag-handle';
 import { DragHandleMenu } from '../drag-handle-menu/drag-handle-menu';
+import { INS_EDITOR_LANGUAGE_PROVIDERS } from '../../i18n/language.provide';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -78,7 +77,7 @@ interface ServerSideGlobal extends Global {
     InsFloatMenu,
     PolymorpheusOutlet,
     InsDragHandle,
-    DragHandleMenu
+    DragHandleMenu,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -89,6 +88,7 @@ interface ServerSideGlobal extends Global {
       useValue: { appearance: 'textfield' },
     },
     INS_EDITOR_PROVIDERS,
+    INS_EDITOR_LANGUAGE_PROVIDERS,
   ],
   hostDirectives: [
     InsAppearance,
@@ -190,7 +190,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
       Array.from(this.rootEl.querySelectorAll('ins-toolbar-host')).some((toolbar) =>
         toolbar.contains(event.target as Node | null),
       ) ||
-      (event.target as HTMLElement)?.nodeName === 'BUTTON'
+      (event.target as HTMLElement)?.nodeName === 'BUTTON';
 
     if (isSafeArea) {
       return;

@@ -2,6 +2,7 @@ import {Directive, signal} from '@angular/core';
 import { InsButton, insButtonOptionsProvider } from '@liuk123/insui';
 
 @Directive({
+    selector: 'button[ins-toolbar-button-tool]',
     standalone: true,
     providers: [
         insButtonOptionsProvider({
@@ -18,9 +19,9 @@ import { InsButton, insButtonOptionsProvider } from '@liuk123/insui';
     host: {
         insItem: '',
         insToolbarTool: '',
-        insIconButton: '',
+        insButton: '',
         type: 'button',
-        '[attr.disabled]': 'disabled() ? "disabled" : null',
+        '[disabled]': 'disabled()',
     },
 })
 export class InsToolbarButtonTool {

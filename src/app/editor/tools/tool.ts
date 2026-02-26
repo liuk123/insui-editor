@@ -10,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, debounceTime, distinctUntilChanged, fromEvent, map, of, shareReplay, startWith, Subject, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, of, shareReplay, startWith, switchMap } from 'rxjs';
 import { AbstractInsEditor } from '../common/editor-adapter';
 import { InsTiptapEditorService } from '../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../common/editor-options';
@@ -41,7 +41,6 @@ export abstract class InsToolbarTool implements OnInit {
   private appearance = inject(InsAppearance);
   private insToolbarButtonTool = inject(InsToolbarButtonTool, { optional: true });
   constructor() {
-
     effect(()=> {
       if(this.iconDir){this.iconDir.iconStart = this.iconStart()}
     })
@@ -49,8 +48,9 @@ export abstract class InsToolbarTool implements OnInit {
     effect(() => this.insToolbarButtonTool?.disabled.set(this.readOnly()));
   }
 
-  protected readonly insHint = computed(() => this.getHint(this.texts()));
-  protected readonly iconStart = signal(this.getIcon(this.options.icons))
+  // protected readonly insHint = computed(() => this.getHint(this.texts()));
+  protected readonly insHint = signal('');
+  protected readonly iconStart = signal('')
   protected readonly active = computed(() =>
     this.activeOnly() && this.isFocused() ? 'active' : null,
   );
@@ -78,7 +78,7 @@ export abstract class InsToolbarTool implements OnInit {
       .pipe(
         distinctUntilChanged(),
         switchMap((editor) => {
-          this.updateSignals();
+          // this.updateSignals();
 
           return editor
             ? editor.valueChange$.pipe(
@@ -99,8 +99,10 @@ export abstract class InsToolbarTool implements OnInit {
     this.isFocused.set(this.editor?.isFocused ?? false);
     this.readOnly.set(this.getDisableState?.() ?? false);
     this.activeOnly.set(this.isActive?.() ?? false);
-    console.log(this.getIcon(this.options.icons))
-    this.iconStart.set(this.getIcon(this.options.icons))
+    this.iconStart.set(this.getIcon?.(this.options.icons))
+    if(this.getHint){
+      this.insHint.set(this.getHint(this.texts()));
+    }
     // caretaker note: trigger computed effect
     // this.cd.detectChanges();
   }
