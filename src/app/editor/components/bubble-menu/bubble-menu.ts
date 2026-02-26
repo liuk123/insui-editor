@@ -24,6 +24,9 @@ import {
   InsItalicButtonTool,
   InsUnderlineButtonTool,
   InsStrikeButtonTool,
+  InsAlignLeftButtonTool,
+  InsAlignCenterButtonTool,
+  InsAlignRightButtonTool,
 } from '../../tools';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorToolType } from '../../common/editor-tool';
@@ -34,22 +37,22 @@ import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-ed
 @Component({
   selector: 'ins-bubble-menu',
   imports: [
-    InsAlignButtonTool,
-    InsBlockquoteButtonTool,
     InsClearButtonTool,
     InsCodeButtonTool,
     InsFontSizeButtonTool,
     InsHighlightColorButtonTool,
     InsLinkButtonTool,
-    InsListButtonTool,
-    InsRedoButtonTool,
+    // InsRedoButtonTool,
     InsTextColorButtonTool,
-    InsUndoButtonTool,
+    // InsUndoButtonTool,
     InsHeadingButtonTool,
     InsBoldButtonTool,
     InsItalicButtonTool,
     InsUnderlineButtonTool,
     InsStrikeButtonTool,
+    InsAlignLeftButtonTool,
+    InsAlignCenterButtonTool,
+    InsAlignRightButtonTool,
   ],
   templateUrl: './bubble-menu.html',
   encapsulation: ViewEncapsulation.None,

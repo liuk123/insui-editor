@@ -6,7 +6,7 @@ import { InsButton, insButtonOptionsProvider } from '@liuk123/insui';
     standalone: true,
     providers: [
         insButtonOptionsProvider({
-            size: 'm',
+            size: 's',
             appearance: 'icon',
         }),
     ],

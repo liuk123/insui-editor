@@ -13,7 +13,6 @@ import {
   InsDataList,
   InsDropdownDirective,
   InsDropdownPositionSided,
-  InsLanguageEditor,
   InsOption,
   InsTextfield,
   InsTextfieldDropdownDirective,
@@ -21,14 +20,13 @@ import {
 } from '@liuk123/insui';
 import { AsyncPipe } from '@angular/common';
 import { INS_EDITOR_CODE_OPTIONS } from '../../common/i18n';
+import { InsLanguageEditor } from '../../i18n/language';
 
 @Component({
   standalone: true,
   selector: 'button[insCodeTool]',
   imports: [AsyncPipe, InsDataList, InsOption, InsTextfield],
   template: `
-    {{ insHint() }}
-
     <ng-container *insTextfieldDropdown>
       <ins-data-list>
         @for (item of codeOptionsTexts$ | async; track index) {
@@ -44,6 +42,9 @@ import { INS_EDITOR_CODE_OPTIONS } from '../../common/i18n';
     directive: InsDropdownPositionSided,
     inputs: ['insDropdownSided']
   }],
+  host: {
+    '[attr.title]': 'insHint()'
+  },
 })
 export class InsCodeButtonTool extends InsToolbarTool {
   protected readonly codeOptionsTexts$ = inject(INS_EDITOR_CODE_OPTIONS);

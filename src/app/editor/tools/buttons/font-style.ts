@@ -1,13 +1,14 @@
-import { ChangeDetectionStrategy, Component, effect, forwardRef, inject, Input, TemplateRef, viewChild, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, Input, TemplateRef, viewChild } from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDropdownDirective, InsDropdownOpen, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import { InsDropdownDirective, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen } from '@liuk123/insui';
 import { InsBoldButtonTool } from './bold';
 import { InsItalicButtonTool } from './italic';
 import { InsStrikeButtonTool } from './strike';
 import { InsUnderlineButtonTool } from './underline';
 import { InsEditorTool, InsEditorToolType } from '../../common/editor-tool';
+import { InsLanguageEditor } from '../../i18n/language';
 
 type Tools = Set<InsEditorToolType> | readonly InsEditorToolType[];
 
@@ -22,8 +23,6 @@ type Tools = Set<InsEditorToolType> | readonly InsEditorToolType[];
     InsUnderlineButtonTool,
   ],
   template: `
-        {{ insHint() }}
-
         <ng-container *insTextfieldDropdown>
             <div insToolbarDropdownContent>
               @if(isEnabled(editorTool.Bold)){
@@ -65,6 +64,7 @@ type Tools = Set<InsEditorToolType> | readonly InsEditorToolType[];
   hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
   host: {
     '[attr.automation-id]': "'toolbar__font-style-button'",
+    '[attr.title]': 'insHint()',
   },
 })
 export class InsFontStyleButtonTool extends InsToolbarTool {

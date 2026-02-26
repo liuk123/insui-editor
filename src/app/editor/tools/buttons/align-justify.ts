@@ -2,16 +2,17 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsLanguageEditor } from '@liuk123/insui';
+import { InsLanguageEditor } from '../../i18n/language';
 
 @Component({
     standalone: true,
     selector: 'button[insAlignJustifyTool]',
-    template: '{{ insHint() }}',
+    template: '',
     changeDetection: ChangeDetectionStrategy.OnPush,
     hostDirectives: [InsToolbarButtonTool],
     host: {
         '(click)': 'editor?.onAlign("justify")',
+        '[attr.title]': 'insHint()'
     },
 })
 export class InsAlignJustifyButtonTool extends InsToolbarTool {

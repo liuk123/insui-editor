@@ -1,89 +1,78 @@
-import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  TemplateRef,
+  viewChild,
+} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDataList, InsDropdownDirective, InsItem, InsLanguageEditor, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
-import { AsyncPipe, NgClass, NgStyle } from '@angular/common';
-import { map } from 'rxjs';
-import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
-import { InsEditorFontOption } from '../../common/editor-font-option';
-import { INS_EDITOR_FONT_OPTIONS } from '../../common/i18n';
+import {
+  InsChevron,
+  InsDataList,
+  InsDropdownDirective,
+  InsItem,
+  InsOption,
+  InsTextfield,
+  InsTextfieldDropdownDirective,
+  InsWithDropdownOpen,
+} from '@liuk123/insui';
+import { InsEditorFontSizeOption } from '../../common/editor-font-option';
+import { InsLanguageEditor } from '../../i18n/language';
 
 @Component({
-    standalone: true,
-    selector: 'button[insFontSizeTool]',
-    imports: [
-        AsyncPipe,
-        NgClass,
-        NgStyle,
-        InsDataList,
-        InsItem,
-        InsOption,
-        InsTextfield,
-    ],
-    template: `
-        {{ insHint() }}
-
-        <ng-container *insTextfieldDropdown>
-            <ins-data-list>
-              @for(item of fontsOptions$ | async; track item.name){
-                <button
-                    insItem
-                    insOption
-                    type="button"
-                    [ngClass]="item?.ngClass || {}"
-                    [ngStyle]="item?.ngStyle || {}"
-                    [style.font-family]="item.family"
-                    [style.font-size.px]="item.px"
-                    [style.font-weight]="item.weight"
-                    (click)="setFontOption(item)"
-                >
-                    {{ item.name }}
-                </button>
-              }
-            </ins-data-list>
-        </ng-container>
-    `,
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
-    host: {
-        '[attr.automation-id]': '"toolbar__font-size-button"',
-    },
+  standalone: true,
+  selector: 'button[insFontSizeTool]',
+  imports: [InsDataList, InsItem, InsOption, InsTextfield],
+  template: `
+    {{ label() }}
+    <ng-container *insTextfieldDropdown>
+      <ins-data-list style="min-width: 4rem;">
+        @for (item of fontsOptions; track item.name) {
+          <button
+            insItem
+            insOption
+            type="button"
+            (click)="setFontOption(item)"
+          >
+            {{ item.name }}
+          </button>
+        }
+      </ins-data-list>
+    </ng-container>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen, InsChevron],
+  host: {
+    '[attr.automation-id]': '"toolbar__font-size-button"',
+    '[attr.title]': 'insHint()',
+  },
 })
 export class InsFontSizeButtonTool extends InsToolbarTool {
+  private readonly dropdown = inject(InsDropdownDirective);
+  protected readonly fontsOptions = this.options.fontSizeOptions();
 
-  private readonly dropdown = inject(InsDropdownDirective)
+  protected tem = viewChild(InsTextfieldDropdownDirective, { read: TemplateRef });
+  private e = effect(() => {
+    this.dropdown.insDropdown = this.tem();
+  });
 
-    protected readonly fontsOptions$ = inject(INS_EDITOR_FONT_OPTIONS).pipe(
-        map((texts) => this.options.fontOptions(texts)),
-    );
+  protected getIcon(icons: InsEditorOptions['icons']): string {
+    return icons.fontSize;
+  }
 
-    protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
-    private e = effect(()=>{
-            this.dropdown.insDropdown = this.tem();
-    })
+  protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
+    return texts?.fontSize ?? '';
+  }
+  protected override getLabel(): string {
+    const size = this.editor?.getFontSize();
+    return this.fontsOptions?.find(opt => opt.px === size)?.name??'';
+  }
 
-    protected getIcon(icons: InsEditorOptions['icons']): string {
-        return icons.fontSize;
-    }
+  protected setFontOption({ px }: Partial<InsEditorFontSizeOption>): void {
+    this.editor?.setParagraph({fontSize: (px ?? 0) + 'px'});
+  }
 
-    protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return texts?.font ?? ''
-    }
-
-    protected setFontOption({px}: Partial<InsEditorFontOption>): void {
-        const color = this.editor?.getFontColor() ?? EDITOR_BLANK_COLOR;
-
-        this.clearPreviousTextStyles();
-        this.editor?.setParagraph({fontSize: (px ?? 0) + 'px'});
-
-        if (color !== EDITOR_BLANK_COLOR) {
-            this.editor?.setFontColor(color);
-        }
-    }
-
-    private clearPreviousTextStyles(): void {
-        this.editor?.removeEmptyTextStyle();
-        this.editor?.toggleMark('textStyle');
-    }
 }

@@ -2,17 +2,18 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsLanguageEditor } from '@liuk123/insui';
+import { InsLanguageEditor } from '../../i18n/language';
 
 @Component({
     standalone: true,
     selector: 'button[insLinkTool]',
-    template: '{{ insHint() }}',
+    template: '',
     changeDetection: ChangeDetectionStrategy.OnPush,
     hostDirectives: [InsToolbarButtonTool],
     host: {
         '[attr.automation-id]': '"toolbar__link-button"',
         '(click)': 'onLink()',
+        '[attr.title]': 'insHint()'
     },
 })
 export class InsLinkButtonTool extends InsToolbarTool {

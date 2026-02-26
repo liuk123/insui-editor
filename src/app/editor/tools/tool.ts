@@ -15,8 +15,9 @@ import { AbstractInsEditor } from '../common/editor-adapter';
 import { InsTiptapEditorService } from '../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../common/editor-options';
 import { INS_EDITOR_TOOLBAR_TEXTS } from '../common/i18n';
-import { injectElement, InsAppearance, InsIcons, InsLanguageEditor } from '@liuk123/insui';
+import { injectElement, InsAppearance, InsIcons } from '@liuk123/insui';
 import { InsToolbarButtonTool } from './tool-button';
+import { InsLanguageEditor } from '../i18n/language';
 
 @Directive()
 export abstract class InsToolbarTool implements OnInit {
@@ -48,8 +49,8 @@ export abstract class InsToolbarTool implements OnInit {
     effect(() => this.insToolbarButtonTool?.disabled.set(this.readOnly()));
   }
 
-  // protected readonly insHint = computed(() => this.getHint(this.texts()));
-  protected readonly insHint = signal('');
+  protected readonly insHint = computed(() => this.getHint(this.texts()));
+  protected readonly label = signal('');
   protected readonly iconStart = signal('')
   protected readonly active = computed(() =>
     this.activeOnly() && this.isFocused() ? 'active' : null,
@@ -60,7 +61,7 @@ export abstract class InsToolbarTool implements OnInit {
   protected isActive?(): boolean;
 
   protected abstract getIcon(icons: InsEditorOptions['icons']): string;
-
+  protected getLabel?(options?: InsLanguageEditor['toolbarTools']):string
   protected abstract getHint(options?: InsLanguageEditor['toolbarTools']): string;
 
   @Input()
@@ -100,8 +101,8 @@ export abstract class InsToolbarTool implements OnInit {
     this.readOnly.set(this.getDisableState?.() ?? false);
     this.activeOnly.set(this.isActive?.() ?? false);
     this.iconStart.set(this.getIcon?.(this.options.icons))
-    if(this.getHint){
-      this.insHint.set(this.getHint(this.texts()));
+    if(this.getLabel){
+      this.label.set(this.getLabel(this.texts()));
     }
     // caretaker note: trigger computed effect
     // this.cd.detectChanges();

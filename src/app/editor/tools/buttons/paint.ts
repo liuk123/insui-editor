@@ -2,8 +2,9 @@ import {ChangeDetectionStrategy, Component, effect, inject, Input, TemplateRef, 
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDropdownDirective, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen } from '@liuk123/insui';
+import { InsDropdownDirective, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen } from '@liuk123/insui';
 import { AsyncPipe } from '@angular/common';
+import { InsLanguageEditor } from '../../i18n/language';
 
 @Component({
     standalone: true,

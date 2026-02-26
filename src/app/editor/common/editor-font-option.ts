@@ -1,13 +1,12 @@
-// @bad TODO: Make customizable
-export interface InsEditorFontOption {
-    family?: string;
-    name: string;
-    ngClass?: Record<string, any> | Set<string> | string[] | string;
-    ngStyle?: Record<string, any>;
-    px?: number;
-    weight?: string;
+export interface InsEditorFontSizeOption {
+  name: string;
+  px?: number;
 }
 export interface InsEditorHeadingOption {
-    name: string,
-    headingLevel: number,
+  name: string;
+  headingLevel: number;
+}
+export interface InsEditorFamilyOption {
+  name: string;
+  family: string;
 }

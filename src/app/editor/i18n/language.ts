@@ -7,13 +7,13 @@ export interface InsLanguageEditor extends InsLanguage {
         anchorExample: string;
         urlExample: string;
     };
-    editorFontOptions: {
-        large: string;
-        normal: string;
-        small: string;
-        subtitle: string;
-        title: string;
-    };
+    // editorFontOptions: {
+    //     large: string;
+    //     normal: string;
+    //     small: string;
+    //     subtitle: string;
+    //     title: string;
+    // };
     editorTableCommands: [[string, string], [string, string], [string, string]];
     toolbarTools: {
         attach: string;

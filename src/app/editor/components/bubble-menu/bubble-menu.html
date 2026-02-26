@@ -7,13 +7,14 @@
     <button insItalicTool [editor]="editor"></button>
     <button insUnderlineTool [editor]="editor"></button>
     <button insStrikeTool [editor]="editor"></button>
+
+    <button insAlignLeftTool [editor]="editor"></button>
+    <button insAlignCenterTool [editor]="editor"></button>
+    <button insAlignRightTool [editor]="editor"></button>
 </section>
 <section insToolbarBlock>
-    <button insAlignTool [editor]="editor"></button>
-    <button insListTool [editor]="editor"></button>
-    <button insBlockquoteTool [editor]="editor"></button>
     <button insLinkTool [editor]="editor"></button>
-    <button insCodeTool [editor]="editor"></button>
+    <button insCodeTool [editor]="editor" [insDropdownSided]="false"></button>
 </section>
 <section insToolbarBlock>
     <button insTextColorTool [colors]="options.textColors ?? options.colors" [editor]="editor"></button>

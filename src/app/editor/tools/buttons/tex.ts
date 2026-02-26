@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsLanguageEditor } from '@liuk123/insui';
+import { InsLanguageEditor } from '../../i18n/language';
 
 @Component({
     standalone: true,

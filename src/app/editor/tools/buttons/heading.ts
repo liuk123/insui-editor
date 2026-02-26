@@ -29,7 +29,7 @@ import { InsLanguageEditor } from '../../i18n/language';
   selector: 'button[insHeadingTool]',
   imports: [InsDataList, InsOption, InsTextfield, InsChevron],
   template: `
-    {{ insHint() }}
+    {{ label() }}
     <ng-container *insTextfieldDropdown>
       <ins-data-list>
         @for (item of headingOptions(); track item.name) {
@@ -44,6 +44,7 @@ import { InsLanguageEditor } from '../../i18n/language';
   hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen, InsChevron],
   host: {
     '[attr.automation-id]': '"toolbar__heading-button"',
+    '[attr.title]': 'insHint()',
   },
 })
 export class InsHeadingButtonTool extends InsToolbarTool {
@@ -79,8 +80,10 @@ export class InsHeadingButtonTool extends InsToolbarTool {
     }
     return icons.paragraph;
   }
-
   protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
+    return texts?.heading ?? ''
+  }
+  protected override getLabel(texts?: InsLanguageEditor['toolbarTools']): string {
     if(!texts){
       return ''
     }
@@ -113,13 +116,7 @@ export class InsHeadingButtonTool extends InsToolbarTool {
       this.editor?.setParagraph(undefined);
     }
   }
-  // protected override isActive(): boolean {
-  //     return (
-  //         this.editor?.isActive('paragraph') ||
-  //         this.editor?.isActive('heading') ||
-  //         false
-  //     );
-  // }
+
 
   private clearPreviousTextStyles(): void {
     this.editor?.removeEmptyTextStyle();

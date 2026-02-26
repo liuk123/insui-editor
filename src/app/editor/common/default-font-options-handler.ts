@@ -1,39 +1,51 @@
-import { InsEditorFontOption } from "./editor-font-option";
+import { InsEditorFontSizeOption } from "./editor-font-option";
 
 
-export function insDefaultFontOptionsHandler(
-    texts: {
-        large: string;
-        normal: string;
-        small: string;
-        subtitle: string;
-        title: string;
-    }
-): ReadonlyArray<Partial<InsEditorFontOption>> {
+export function insDefaultFontSizeOptionsHandler(): ReadonlyArray<Partial<InsEditorFontSizeOption>> {
     return [
         {
-            px: 13,
-            name: texts.small,
+            px: 12,
+            name: '12'
         },
         {
-            px: 15,
-            name: texts.normal,
+            px: 14,
+            name: '14'
         },
         {
-            px: 17,
-            name: texts.large,
+            px: 16,
+            name: '16'
         },
-        // {
-        //     px: 24,
-        //     family: 'var(--ins-font-heading)',
-        //     name: texts.subtitle,
-        //     weight: 'bold',
-        // },
-        // {
-        //     px: 30,
-        //     family: 'var(--ins-font-heading)',
-        //     name: texts.title,
-        //     weight: 'bold',
-        // },
+        {
+            px: 18,
+            name: '18'
+        },
+        {
+            px: 20,
+            name: '20'
+        },
+        {
+            px: 22,
+            name: '22'
+        },
+        {
+            px: 24,
+            name: '24'
+        },
+        {
+            px: 26,
+            name: '26'
+        },
+        {
+            px: 28,
+            name: '28'
+        },
+        {
+            px: 30,
+            name: '30'
+        },
+        {
+            px: 32,
+            name: '32'
+        },
     ];
 }

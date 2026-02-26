@@ -1,9 +1,10 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild } from '@angular/core';
-import { InsDataList, InsDropdownDirective, InsLanguageEditor, InsOptGroup, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
+import { InsDataList, InsDropdownDirective, InsOptGroup, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { INS_EDITOR_TABLE_COMMANDS } from '../../common/i18n';
+import { InsLanguageEditor } from '../../i18n/language';
 
 export const InsTableCommands = {
     InsertColumnBefore: 0,

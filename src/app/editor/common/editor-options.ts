@@ -2,7 +2,7 @@
 import {InjectionToken, type Provider} from '@angular/core';
 import {type EditorOptions} from '@tiptap/core';
 import {type EditorProps} from '@tiptap/pm/view';
-import { insDefaultFontOptionsHandler } from './default-font-options-handler';
+import { insDefaultFontSizeOptionsHandler } from './default-font-options-handler';
 import { insDefaultHeadingOptionsHandler } from './default-heading-options-handler';
 import { INS_DEFAULT_LINK_OPTIONS, InsEditorLinkOptions } from './default-link-options-handler';
 import { InsEditorToolType } from './editor-tool';
@@ -16,7 +16,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly colors: ReadonlyMap<string, string>;
     readonly textColors: ReadonlyMap<string, string> | null;
     readonly backgroundColors: ReadonlyMap<string, string> | null;
-    readonly fontOptions: typeof insDefaultFontOptionsHandler;
+    readonly fontSizeOptions: typeof insDefaultFontSizeOptionsHandler;
     readonly headingOptions: typeof insDefaultHeadingOptionsHandler;
     readonly icons: {
         readonly addRowTable: string;
@@ -110,7 +110,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     backgroundColors: null,
     blankColor: EDITOR_BLANK_COLOR,
     linkOptions: INS_DEFAULT_LINK_OPTIONS,
-    fontOptions: insDefaultFontOptionsHandler,
+    fontSizeOptions: insDefaultFontSizeOptionsHandler,
     headingOptions: insDefaultHeadingOptionsHandler,
     floatingToolbar: false,
     parseOptions: {},

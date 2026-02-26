@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, View
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsLanguageEditor } from '@liuk123/insui';
+import { InsLanguageEditor } from '../../i18n/language';
 import { take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { INS_IMAGE_LOADER } from '../../common/image-loader';

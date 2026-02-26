@@ -1,8 +1,9 @@
-import {ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, inject, TemplateRef, viewChild} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { getViewportWidth, InsDropdownDirective, InsDropdownOpen, InsLanguageEditor, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent, WINDOW } from '@liuk123/insui';
+import { getViewportWidth, InsDropdownDirective, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, WINDOW } from '@liuk123/insui';
+import { InsLanguageEditor } from '../../i18n/language';
 
 const MAX_COLS_NUMBER = 15;
 const MAX_ROWS_NUMBER = 15;
