@@ -5,9 +5,9 @@ import {type EditorProps} from '@tiptap/pm/view';
 import { insDefaultFontSizeOptionsHandler } from './default-font-options-handler';
 import { insDefaultHeadingOptionsHandler } from './default-heading-options-handler';
 import { INS_DEFAULT_LINK_OPTIONS, InsEditorLinkOptions } from './default-link-options-handler';
-import { InsEditorToolType } from './editor-tool';
+// import { InsEditorToolType } from './editor-tool';
 import { provideOptions } from '@liuk123/insui';
-import { INS_EDITOR_DEFAULT_TOOLS } from './default-editor-tools';
+// import { INS_EDITOR_DEFAULT_TOOLS } from './default-editor-tools';
 import { EDITOR_BLANK_COLOR, INS_EDITOR_DEFAULT_EDITOR_COLORS } from './default-editor-colors';
 
 
@@ -92,7 +92,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly spellcheck: boolean;
     readonly enableDefaultStyles: boolean;
     readonly translate: 'no' | 'yes';
-    readonly tools: Set<InsEditorToolType> | readonly InsEditorToolType[];
+    // readonly tools: Set<InsEditorToolType> | readonly InsEditorToolType[];
     readonly floatingToolbar: boolean;
 
     readonly placeholder: string;
@@ -104,7 +104,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     spellcheck: false,
     placeholder: '',
     enableDefaultStyles: true,
-    tools: INS_EDITOR_DEFAULT_TOOLS,
+    // tools: INS_EDITOR_DEFAULT_TOOLS,
     colors: INS_EDITOR_DEFAULT_EDITOR_COLORS,
     textColors: null,
     backgroundColors: null,

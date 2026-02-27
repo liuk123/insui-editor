@@ -12,7 +12,6 @@ export * from './buttons/clear';
 export * from './buttons/code';
 export * from './buttons/details-add';
 export * from './buttons/details-remove';
-export * from './buttons/font-style';
 export * from './buttons/highlight-color';
 export * from './buttons/hr';
 export * from './buttons/image';

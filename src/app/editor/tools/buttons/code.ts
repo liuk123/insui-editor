@@ -10,6 +10,7 @@ import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
 import {
+  InsChevron,
   InsDataList,
   InsDropdownDirective,
   InsDropdownPositionSided,
@@ -26,9 +27,8 @@ import { InsLanguageEditor } from '../../i18n/language';
 @Component({
   standalone: true,
   selector: 'button[insCodeTool]',
-  imports: [AsyncPipe, InsDataList, InsOption, InsTextfield, InsIcon],
+  imports: [AsyncPipe, InsDataList, InsOption, InsTextfield],
   template: `
-    <ins-icon icon="chevron-down"></ins-icon>
     <ng-container *insTextfieldDropdown>
       <ins-data-list>
         @for (item of codeOptionsTexts$ | async; track index) {
@@ -40,7 +40,7 @@ import { InsLanguageEditor } from '../../i18n/language';
     </ng-container>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen, {
+  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen, InsChevron, {
     directive: InsDropdownPositionSided,
     inputs: ['insDropdownSided']
   }],

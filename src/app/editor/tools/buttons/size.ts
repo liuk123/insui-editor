@@ -26,10 +26,9 @@ import { InsLanguageEditor } from '../../i18n/language';
 @Component({
   standalone: true,
   selector: 'button[insFontSizeTool]',
-  imports: [InsDataList, InsItem, InsOption, InsTextfield, InsIcon],
+  imports: [InsDataList, InsItem, InsOption, InsTextfield],
   template: `
     {{ label() }}
-    <ins-icon icon="chevron-down"></ins-icon>
     <ng-container *insTextfieldDropdown>
       <ins-data-list style="min-width: 4rem;">
         @for (item of fontsOptions; track item.name) {
@@ -46,7 +45,7 @@ import { InsLanguageEditor } from '../../i18n/language';
     </ng-container>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
+  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen, InsChevron],
   host: {
     '[attr.automation-id]': '"toolbar__font-size-button"',
     '[attr.title]': 'insHint()',

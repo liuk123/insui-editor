@@ -133,8 +133,8 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   public readonly focused = signal(false);
   private readonly appearance = inject(InsAppearance);
 
-  @Input()
-  public tools = this.options.tools;
+  // @Input()
+  // public tools = this.options.tools;
   @Output()
   public readonly fileAttached = new EventEmitter<Array<InsEditorAttachedFile<any>>>();
   @Input()

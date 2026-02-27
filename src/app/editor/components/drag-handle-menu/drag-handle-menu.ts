@@ -26,6 +26,7 @@ export class DragHandleMenu {
   items: MyCommand[] = [
     {
       name: '标题',
+      key: 'heading',
       children: [
         {
           key: 'heading1',
@@ -46,6 +47,7 @@ export class DragHandleMenu {
     },
     {
       name: '基础',
+      key: 'base',
       children: [
         {
           key: 'paragraph',
@@ -80,6 +82,7 @@ export class DragHandleMenu {
     },
     {
       name: '高级',
+      key: 'advanced',
       children: [
         {
           key: 'table',
@@ -89,6 +92,7 @@ export class DragHandleMenu {
     },
     {
       name: '媒体',
+      key: 'media',
       children: [
         {
           key: 'image',

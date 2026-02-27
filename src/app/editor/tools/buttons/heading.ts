@@ -28,10 +28,9 @@ import { InsLanguageEditor } from '../../i18n/language';
 @Component({
   standalone: true,
   selector: 'button[insHeadingTool]',
-  imports: [InsDataList, InsOption, InsTextfield, InsIcon],
+  imports: [InsDataList, InsOption, InsTextfield],
   template: `
     {{ label() }}
-    <ins-icon icon="chevron-down"></ins-icon>
     <ng-container *insTextfieldDropdown>
       <ins-data-list>
         @for (item of headingOptions(); track item.name) {
@@ -43,7 +42,7 @@ import { InsLanguageEditor } from '../../i18n/language';
     </ng-container>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
+  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen,InsChevron],
   host: {
     '[attr.automation-id]': '"toolbar__heading-button"',
     '[attr.title]': 'insHint()',

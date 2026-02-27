@@ -1,7 +1,7 @@
 import { Component, inject, Input } from '@angular/core';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
-import { InsEditorTool, InsEditorToolType } from '../../common/editor-tool';
-import { INS_EDITOR_DEFAULT_TOOLS } from '../../common/default-editor-tools';
+// import { InsEditorTool, InsEditorToolType } from '../../common/editor-tool';
+// import { INS_EDITOR_DEFAULT_TOOLS } from '../../common/default-editor-tools';
 import { AbstractInsEditor } from '../../common/editor-adapter';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 
@@ -30,8 +30,8 @@ interface MyCommand {
 })
 export class InsFloatMenu {
   protected readonly options = inject(INS_EDITOR_OPTIONS);
-  protected readonly tool: typeof InsEditorTool = InsEditorTool;
-  protected toolsSet = new Set<InsEditorToolType>(INS_EDITOR_DEFAULT_TOOLS);
+  // protected readonly tool: typeof InsEditorTool = InsEditorTool;
+  // protected toolsSet = new Set<InsEditorToolType>(INS_EDITOR_DEFAULT_TOOLS);
   protected el = injectElement();
 
   @Input('editor')
