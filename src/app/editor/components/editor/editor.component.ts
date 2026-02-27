@@ -210,8 +210,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
             return false;
           }
           return (
-            (this.value().trim() !== '' && !this.editor?.state?.selection.empty) ||
-            this.openDropdownWhen(range)
+            this.isBubbleMenu || this.openDropdownWhen(range)
           );
         }
       : this.openDropdownWhen;
@@ -239,11 +238,32 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     );
   }
 
+  // nodeFilter = (nodeName: string) => {
+  //   // 自定义可拖拽节点类型
+  //   const allowedNodes = [
+  //     'paragraph',
+  //     'heading',
+  //     'blockquote',
+  //     'codeBlock',
+  //     'bulletList',
+  //     'orderedList',
+  //     'taskList',
+  //     'text'
+  //   ];
+  //   return allowedNodes.includes(nodeName);
+  // }
+
   // public get isMentionMode(): boolean {
   //   return this.hasMentionPlugin && this.selectionState.before.startsWith('@');
   // }
   public get isFloatMenu(): boolean {
     return this.selectionState.before.startsWith('/');
+  }
+  public get isBubbleMenu(): boolean {
+    if (this.value().trim() === ''||this.editor?.state?.selection.empty) {
+      return false;
+    }
+    return true
   }
 
   public get selectionState(): InsSelectionState {
