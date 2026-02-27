@@ -10,9 +10,11 @@ import {
 } from '@angular/core';
 import { InsButton, InsDropdown } from '@liuk123/insui';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
+import { getHTMLFromFragment } from '@tiptap/core';
 import { Plugin, PluginKey, NodeSelection } from '@tiptap/pm/state';
 import { EditorView } from '@tiptap/pm/view';
-import { Node as ProseMirrorNode } from '@tiptap/pm/model';
+import { Fragment, Node as ProseMirrorNode } from '@tiptap/pm/model';
+import { MultipleNodeSelection } from './MultipleNodeSelection';
 
 @Component({
   selector: 'ins-drag-handle',
@@ -121,13 +123,16 @@ export class InsDragHandle implements OnInit, OnDestroy {
                 if (!editor) return;
 
                 const { selection } = editor.state;
-                if (!(selection instanceof NodeSelection)) {
+                if (!(selection instanceof NodeSelection) && !(selection instanceof MultipleNodeSelection)) {
                   this.isDraggingFromHandle = false;
                   return;
                 }
 
-                const pos =
-                  selection.from + (selection.node.isTextblock ? 1 : 0);
+                const node =
+                  selection instanceof NodeSelection
+                    ? selection.node
+                    : editor.state.doc.nodeAt(selection.from);
+                const pos = selection.from + (node?.isTextblock ? 1 : 0);
 
                 this.editorService.setTextSelection(pos);
                 this.isDraggingFromHandle = false;
@@ -207,23 +212,92 @@ export class InsDragHandle implements OnInit, OnDestroy {
     const view = this.editorService?.view;
     if (!view) return;
 
-    const selection = NodeSelection.create(view.state.doc, this.currentPos);
-    view.dispatch(view.state.tr.setSelection(selection));
+    const selection = view.state.selection;
 
-    // Create a slice for the drag
-    const slice = selection.content();
+    const findListItemDepth = (pos: typeof selection.$from): number | null => {
+      for (let d = pos.depth; d > 0; d--) {
+        const name = pos.node(d).type.name;
+        if (name === 'listItem' || name === 'taskItem') return d;
+      }
+      return null;
+    };
 
-    // Set dragging flag on view
+    let slice = null as any;
+    let sliceFrom = -1;
+    let sliceTo = -1;
+    let listParentNodeForHtml: ProseMirrorNode | null = null;
+
+    const multipleBlocksSelected =
+      selection.$anchor.node() !== selection.$head.node() ||
+      selection instanceof MultipleNodeSelection;
+
+    if (multipleBlocksSelected) {
+      const fromListDepth = findListItemDepth(selection.$from);
+      const toListDepth = findListItemDepth(selection.$to);
+      const listDepth =
+        fromListDepth &&
+        toListDepth &&
+        fromListDepth === toListDepth &&
+        selection.$from.node(fromListDepth - 1).eq(selection.$to.node(toListDepth - 1))
+          ? fromListDepth
+          : 1;
+
+      sliceFrom = selection.$from.before(listDepth);
+      sliceTo = selection.$to.after(listDepth);
+
+      view.dispatch(
+        view.state.tr.setSelection(
+          MultipleNodeSelection.create(view.state.doc, sliceFrom, sliceTo),
+        ),
+      );
+
+      slice = view.state.doc.slice(sliceFrom, sliceTo);
+
+      if (listDepth > 1) {
+        const parent = selection.$from.node(listDepth - 1);
+        if (
+          parent.type.name === 'bulletList' ||
+          parent.type.name === 'orderedList' ||
+          parent.type.name === 'taskList'
+        ) {
+          listParentNodeForHtml = parent;
+        }
+      }
+    } else {
+      const nodeSelection = NodeSelection.create(view.state.doc, this.currentPos);
+      view.dispatch(view.state.tr.setSelection(nodeSelection));
+      slice = nodeSelection.content();
+      sliceFrom = nodeSelection.from;
+      sliceTo = nodeSelection.to;
+
+      if (nodeSelection.node.type.name === 'listItem' || nodeSelection.node.type.name === 'taskItem') {
+        const parent = nodeSelection.$from.parent;
+        if (
+          parent.type.name === 'bulletList' ||
+          parent.type.name === 'orderedList' ||
+          parent.type.name === 'taskList'
+        ) {
+          listParentNodeForHtml = parent;
+        }
+      }
+    }
+
     (view as any).dragging = { slice, move: true };
 
     if (event.dataTransfer) {
-      const node = view.nodeDOM(this.currentPos);
-      if (node && node.nodeType === 1) {
-        event.dataTransfer.setDragImage(node as HTMLElement, 0, 0);
-        event.dataTransfer.effectAllowed = 'copyMove';
-        event.dataTransfer.setData('text/html', (node as HTMLElement).outerHTML);
-        event.dataTransfer.setData('text/plain', this.currentNode.textContent || '');
+      const dragDom = view.nodeDOM(this.currentPos);
+      if (dragDom && dragDom.nodeType === 1) {
+        event.dataTransfer.setDragImage(dragDom as HTMLElement, 0, 0);
       }
+
+      event.dataTransfer.effectAllowed = 'copyMove';
+
+      const fragmentForHtml = listParentNodeForHtml
+        ? Fragment.from(listParentNodeForHtml.type.create(listParentNodeForHtml.attrs, slice.content))
+        : slice.content;
+
+      event.dataTransfer.setData('text/html', getHTMLFromFragment(fragmentForHtml, view.state.schema));
+      event.dataTransfer.setData('text/plain', view.state.doc.textBetween(sliceFrom, sliceTo, '\n\n') || '');
     }
   }
 
