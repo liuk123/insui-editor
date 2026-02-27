@@ -53,10 +53,13 @@
 </ng-template>
 
 @if (editorLoaded()) {
-  <ins-drag-handle [dropdownContent]="dragHandle"></ins-drag-handle>
+  <ins-drag-handle [dragHandleContent]="dragHandle" [insertHandleContent]="insertHandle"></ins-drag-handle>
 }
 
 
 <ng-template #dragHandle>
   <ins-drag-handle-menu></ins-drag-handle-menu>
+</ng-template>
+<ng-template #insertHandle>
+  <ins-insert-handle-menu></ins-insert-handle-menu>
 </ng-template>

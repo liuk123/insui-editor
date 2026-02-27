@@ -1,23 +1,26 @@
 <button
   insIconButton
-  appearance="outline"
+  appearance="flat"
   iconStart="plus"
   size="xs"
   class="drag-handle-button"
-  [insDropdown]="dropdownContent()"
+  [insDropdown]="insertHandleContent()"
   insDropdownDirection="bottom"
   insDropdownLimitWidth="auto"
-  [(insDropdownOpen)]="open"
-  style="background-color: #fff;"
+  [(insDropdownOpen)]="insertOpen"
 ></button>
 <button
   insIconButton
-  appearance="outline"
+  appearance="flat"
   iconStart="grip-vertical"
   size="xs"
   class="drag-handle-button"
-  style="background-color: #fff;"
   draggable="true"
   (dragstart)="onDragStart($event)"
+
+  [insDropdown]="dragHandleContent()"
+  insDropdownDirection="bottom"
+  insDropdownLimitWidth="auto"
+  [(insDropdownOpen)]="dragOpen"
 ></button>
 

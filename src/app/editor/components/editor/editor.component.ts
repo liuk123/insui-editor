@@ -39,7 +39,6 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_VALUE_TRANSFORMER } from '../../common/editor-value-transformer';
 import { InsToolbarHost } from '../toolbar-host';
-import { InsToolbar } from '../toolbar';
 import { InsTiptapEditor } from '../../directives/tiptap-editor/tiptap-editor.directive';
 import { AbstractInsEditor } from '../../common/editor-adapter';
 import { INS_EDITOR_PROVIDERS } from './editor.providers';
@@ -54,8 +53,9 @@ import {
 } from '../../directives/tiptap-editor/utils/get-selection-state';
 import { InsFloatMenu } from '../float-menu/float-menu';
 import { InsDragHandle } from '../drag-handle/drag-handle';
-import { DragHandleMenu } from '../drag-handle-menu/drag-handle-menu';
 import { INS_EDITOR_LANGUAGE_PROVIDERS } from '../../i18n/language.provide';
+import { InsInsertHandleMenu } from '../insert-handle-menu/insert-handle-menu';
+import { InsDragHandleMenu } from '../drag-handle-menu/drag-handle-menu';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -67,7 +67,6 @@ interface ServerSideGlobal extends Global {
   styleUrls: ['./editor.component.less'],
   imports: [
     InsToolbarHost,
-    InsToolbar,
     InsTiptapEditor,
     InsDropdown,
     InsEditorSocket,
@@ -77,7 +76,8 @@ interface ServerSideGlobal extends Global {
     InsFloatMenu,
     PolymorpheusOutlet,
     InsDragHandle,
-    DragHandleMenu,
+    InsDragHandleMenu,
+    InsInsertHandleMenu,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,

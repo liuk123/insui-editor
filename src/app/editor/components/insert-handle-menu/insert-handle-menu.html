@@ -1,0 +1,11 @@
+<ins-data-list size="m">
+  @for (item of items; track item.name) {
+    <ins-opt-group [label]="item.name">
+      @for (sub of item.children || []; track sub.name) {
+        <button insOption [iconStart]="sub.icon" (click)="command(sub)">
+          {{ sub.name }}
+        </button>
+      }
+    </ins-opt-group>
+  }
+</ins-data-list>
