@@ -39,6 +39,7 @@ import { type TrailingNodeOptions } from '@tiptap/extensions'
 import { InsBackgroundColorOptions } from '../extensions/background-color';
 import { InsDetailsExtensionOptions } from '../extensions/details';
 import { DetailsContentOptions, DetailsSummaryOptions } from '@tiptap/extension-details';
+import { ColumnListOptions, ColumnOptions } from '../extensions/columns';
 
 interface Options {
   starterKit: Partial<StarterKitOptions> | boolean;
@@ -93,6 +94,9 @@ interface Options {
 
   typography: Partial<TypographyOptions> | boolean;
   trailingNode: Partial<TrailingNodeOptions> | boolean;
+  columnList: Partial<ColumnListOptions> | boolean;
+  column: Partial<ColumnOptions> | boolean;
+  columnResize: boolean;
 }
 
 const EXTENSIONS = [
@@ -562,6 +566,33 @@ const EXTENSIONS = [
           return insCreateIframeEditorExtension({injector});
       },
   },
+  {
+    key: 'columnList',
+    default: true,
+    async loader(options: Partial<ColumnListOptions>) {
+      const { ColumnList } = await import('../extensions/columns');
+
+      return ColumnList.configure(options);
+    },
+  },
+  {
+    key: 'column',
+    default: true,
+    async loader(options: Partial<ColumnOptions>) {
+      const { Column } = await import('../extensions/columns');
+
+      return Column.configure(options);
+    },
+  },
+  {
+    key: 'columnResize',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { ColumnResize } = await import('../extensions/columns');
+      return ColumnResize.configure(options);
+    },
+  },
+
 ] as const;
 
 const defaults = EXTENSIONS.reduce((options, extension) => {
