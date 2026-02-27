@@ -33,6 +33,9 @@ import { InsEditorToolType } from '../../common/editor-tool';
 import { INS_EDITOR_DEFAULT_TOOLS } from '../../common/default-editor-tools';
 import { AbstractInsEditor } from '../../common/editor-adapter';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
+import { InsTextColorDropdownTool } from '../../tools/buttons/text-color-dropdown';
+import { InsHighlightColorDropdownTool } from '../../tools/buttons/highlight-color-dropdown';
+import { InsGroup } from "@liuk123/insui";
 
 @Component({
   selector: 'ins-bubble-menu',
@@ -53,7 +56,10 @@ import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-ed
     InsAlignLeftButtonTool,
     InsAlignCenterButtonTool,
     InsAlignRightButtonTool,
-  ],
+    InsTextColorDropdownTool,
+    InsHighlightColorDropdownTool,
+    InsGroup
+],
   templateUrl: './bubble-menu.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,

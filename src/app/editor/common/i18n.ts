@@ -1,5 +1,6 @@
 import { InjectionToken } from "@angular/core";
-import { insExtractI18n } from "@liuk123/insui";
+import { InsLanguageEditor } from "../i18n/language";
+import { Observable } from "rxjs";
 
 
 /**
@@ -15,56 +16,32 @@ export const INS_EDITOR_COLOR_SELECTOR_MODE_NAMES = new InjectionToken<[string, 
 /**
  * ins-editor-toolbar i18n
  */
-export const INS_EDITOR_TOOLBAR_TEXTS = new InjectionToken(
-    '',
-    {
-        factory: insExtractI18n('toolbarTools'),
-    },
+export const INS_EDITOR_TOOLBAR_TEXTS = new InjectionToken<Observable<InsLanguageEditor['toolbarTools']>>(
+    ''
 );
 
 /**
  * ins-editor-toolbar table i18n
  */
-export const INS_EDITOR_TABLE_COMMANDS = new InjectionToken(
-    '',
-    {
-        factory: insExtractI18n('editorTableCommands'),
-    },
+export const INS_EDITOR_TABLE_COMMANDS = new InjectionToken<Observable<InsLanguageEditor['editorTableCommands']>>(
+    ''
 );
 
 /**
  * ins-editor-toolbar edit-link i18n
  */
-export const INS_EDITOR_LINK_TEXTS = new InjectionToken(
-    '',
-    {
-        factory: insExtractI18n('editorEditLink'),
-    },
+export const INS_EDITOR_LINK_TEXTS = new InjectionToken<Observable<InsLanguageEditor['editorEditLink']>>(
+    ''
 );
 
 /**
  * ins-editor-toolbar codes options
  */
-export const INS_EDITOR_CODE_OPTIONS = new InjectionToken(
-    '',
-    {
-        factory: insExtractI18n('editorCodeOptions'),
-    },
+export const INS_EDITOR_CODE_OPTIONS = new InjectionToken<Observable<InsLanguageEditor['editorCodeOptions']>>(
+    ''
 );
 
-/**
- * ins-editor-toolbar font options
- */
-export const INS_EDITOR_FONT_OPTIONS = new InjectionToken(
-    '',
-    {
-        factory: insExtractI18n('editorFontOptions'),
-    },
-);
 
-export const INS_EDITOR_HEADING_OPTIONS = new InjectionToken(
-    '',
-    {
-        factory: insExtractI18n('editorHeadingOptions'),
-    },
+export const INS_EDITOR_HEADING_OPTIONS = new InjectionToken<Observable<InsLanguageEditor['editorHeadingOptions']>>(
+    ''
 );

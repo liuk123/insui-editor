@@ -1,4 +1,7 @@
+import { inject, InjectionToken } from '@angular/core';
 import { InsLanguage } from '@liuk123/insui';
+import { Observable, of } from 'rxjs';
+import { INS_CHINESE_LANGUAGE_ADDON_EDITOR } from './addon-editor';
 
 export interface InsLanguageEditor extends InsLanguage {
     colorSelectorModeNames: [string, string];
@@ -78,3 +81,10 @@ export interface InsLanguageEditor extends InsLanguage {
         heading6: string;
     };
 }
+
+export const INS_LANGUAGE_EDITOR = new InjectionToken<Observable<InsLanguageEditor>>(
+    '[INS_LANGUAGE_EDITOR]',
+    {
+        factory: () => of(INS_CHINESE_LANGUAGE_ADDON_EDITOR),
+    },
+);

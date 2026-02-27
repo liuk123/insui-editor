@@ -7,11 +7,12 @@ import { InsLanguageEditor } from '../../i18n/language';
 @Component({
     standalone: true,
     selector: 'button[insClearTool]',
-    template: '{{ insHint() }}',
+    template: '',
     changeDetection: ChangeDetectionStrategy.OnPush,
     hostDirectives: [InsToolbarButtonTool],
     host: {
         '(click)': 'editor?.removeFormat()',
+        '[attr.title]': 'insHint()',
     },
 })
 export class InsClearButtonTool extends InsToolbarTool {

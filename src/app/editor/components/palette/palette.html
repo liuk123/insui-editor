@@ -1,0 +1,10 @@
+<div class="ins-block-grid">
+  @for (color of colors; track $index) {
+    <button
+      insButton
+      class="ins-color-item"
+      [style.background]="color[1]"
+      (click)="colorChange.emit(color[1])"
+    ></button>
+  }
+</div>

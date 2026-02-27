@@ -1,54 +1,26 @@
-import { ChangeDetectionStrategy, Component, forwardRef, inject, Input, TemplateRef, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component
+} from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
-import { InsDropdownDirective, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
-import { AsyncPipe } from '@angular/common';
+import { InsTextfield, InsButton } from '@liuk123/insui';
 import { InsLanguageEditor } from '../../i18n/language';
 
 @Component({
   standalone: true,
   selector: 'button[insHighlightColorTool]',
-  imports: [AsyncPipe, InsTextfield],
-  template: `
-        {{ insHint() }}
-
-        <ng-container *insTextfieldDropdown>
-            <ins-palette
-                insPalette
-                [colors]="colors"
-                (selectedColor)="editor?.setBackgroundColor($event)"
-            />
-        </ng-container>
-        @if(!isBlankColor()){
-        <div
-            insPlate
-            [style.background]="editor?.getBackgroundColor()"
-        >
-          @if(editor?.valueChange$ | async){}
-        </div>
-        }
-
-    `,
+  imports: [InsTextfield, InsButton],
+  template: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
+  hostDirectives: [InsToolbarButtonTool],
   host: {
-    insPlateHost: '',
     '[attr.automation-id]': '"toolbar__hilite-button"',
+    '[attr.title]': 'insHint()',
   },
 })
 export class InsHighlightColorButtonTool extends InsToolbarTool {
-  private readonly dropdown = inject(InsDropdownDirective)
-  // protected readonly open = inject(InsDropdownOpen);
-
-  @Input()
-  public colors: ReadonlyMap<string, string> =
-    this.options.backgroundColors ?? this.options.colors;
-
-  @ViewChild(forwardRef(() => InsTextfieldDropdownDirective), { read: TemplateRef })
-  protected set template(template: PolymorpheusContent) {
-    this.dropdown.insDropdown = template;
-  }
 
   protected override isActive(): boolean {
     return !this.isBlankColor();
@@ -66,11 +38,13 @@ export class InsHighlightColorButtonTool extends InsToolbarTool {
   }
 
   protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-    // return this.open.insDropdownOpen() ? '' : (texts?.backColor ?? '');
-    return texts?.backColor ?? ''
+    return texts?.backColor ?? '';
   }
 
   protected getBackgroundColor(): string {
     return this.editor?.getBackgroundColor() ?? '';
+  }
+  protected setBackgroundColor(color: string): void {
+    this.editor?.setBackgroundColor(color);
   }
 }

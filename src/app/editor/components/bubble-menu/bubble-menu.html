@@ -1,25 +1,41 @@
 <section insToolbarBlock>
-    <button insHeadingTool></button>
-    <button insFontSizeTool></button>
+  <button insHeadingTool></button>
+  <button insFontSizeTool></button>
 </section>
 <section insToolbarBlock>
-    <button insBoldTool [editor]="editor"></button>
-    <button insItalicTool [editor]="editor"></button>
-    <button insUnderlineTool [editor]="editor"></button>
-    <button insStrikeTool [editor]="editor"></button>
+  <button insBoldTool [editor]="editor"></button>
+  <button insItalicTool [editor]="editor"></button>
+  <button insUnderlineTool [editor]="editor"></button>
+  <button insStrikeTool [editor]="editor"></button>
 
-    <button insAlignLeftTool [editor]="editor"></button>
-    <button insAlignCenterTool [editor]="editor"></button>
-    <button insAlignRightTool [editor]="editor"></button>
+  <button insAlignLeftTool [editor]="editor"></button>
+  <button insAlignCenterTool [editor]="editor"></button>
+  <button insAlignRightTool [editor]="editor"></button>
 </section>
 <section insToolbarBlock>
-    <button insLinkTool [editor]="editor"></button>
-    <button insCodeTool [editor]="editor" [insDropdownSided]="false"></button>
+  <button insLinkTool [editor]="editor"></button>
+  <button insCodeTool [editor]="editor" [insDropdownSided]="false"></button>
 </section>
 <section insToolbarBlock>
-    <button insTextColorTool [colors]="options.textColors ?? options.colors" [editor]="editor"></button>
-    <button insHighlightColorTool [colors]="options.backgroundColors ?? options.colors" [editor]="editor"></button>
+  <div insGroup [collapsed]="true">
+    <button insTextColorTool [editor]="editor"></button>
+    <button
+      insTextColorDropdownTool
+      [colors]="options.textColors ?? options.colors"
+      [editor]="editor"
+      style="width: 0.5rem !important;"
+    ></button>
+  </div>
+  <div insGroup [collapsed]="true">
+    <button insHighlightColorTool [editor]="editor"></button>
+    <button
+      insHighlightColorDropdownTool
+      [colors]="options.backgroundColors ?? options.colors"
+      [editor]="editor"
+      style="width: 0.5rem !important;"
+    ></button>
+  </div>
 </section>
 <section insToolbarBlock>
-    <button insClearTool [editor]="editor"></button>
+  <button insClearTool [editor]="editor"></button>
 </section>

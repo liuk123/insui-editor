@@ -13,6 +13,7 @@ import {
   InsDataList,
   InsDropdownDirective,
   InsDropdownPositionSided,
+  InsIcon,
   InsOption,
   InsTextfield,
   InsTextfieldDropdownDirective,
@@ -25,8 +26,9 @@ import { InsLanguageEditor } from '../../i18n/language';
 @Component({
   standalone: true,
   selector: 'button[insCodeTool]',
-  imports: [AsyncPipe, InsDataList, InsOption, InsTextfield],
+  imports: [AsyncPipe, InsDataList, InsOption, InsTextfield, InsIcon],
   template: `
+    <ins-icon icon="chevron-down"></ins-icon>
     <ng-container *insTextfieldDropdown>
       <ins-data-list>
         @for (item of codeOptionsTexts$ | async; track index) {
