@@ -44,10 +44,10 @@ export class InsTiptapEditorService extends AbstractInsEditor {
         this.valueChange$.next('');
       });
       editor.on('selectionUpdate', () => {
-        console.log('selectionUpdate');
+        // console.log('selectionUpdate');
       });
       editor.on('update', () => {
-        console.log('update');
+        // console.log('update');
         requestAnimationFrame(() => {
           this.transactionStable = false;
         });
