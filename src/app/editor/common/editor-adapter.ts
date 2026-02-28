@@ -192,4 +192,8 @@ export abstract class AbstractInsEditor {
     // public abstract setYoutubeVideo(options: InsYoutubeOptions): void;
 
     public abstract setIframe(options: InsEditableIframe): void;
+
+    public abstract setColumns(n: number): void;
+
+    public abstract unsetColumns(): void;
 }

@@ -10,7 +10,7 @@ declare module '@tiptap/core' {
       /**
        * Add a column list
        */
-      setColumns: () => ReturnType;
+      setColumns: (n: number) => ReturnType;
       /**
        * Remove the column list
        */
@@ -37,14 +37,14 @@ export const ColumnList = Node.create<ColumnListOptions>({
   addCommands() {
     return {
       setColumns:
-        () =>
+        (n: number = 2) =>
         ({ commands }) => {
           return commands.insertContent({
             type: this.name,
-            content: [
-              { type: 'column', content: [{ type: 'paragraph' }] },
-              { type: 'column', content: [{ type: 'paragraph' }] },
-            ],
+            content: Array.from({ length: n }, () => ({
+              type: 'column',
+              content: [{ type: 'paragraph' }],
+            })),
           });
         },
       unsetColumns:
@@ -68,7 +68,7 @@ export const ColumnList = Node.create<ColumnListOptions>({
       'div',
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
         'data-type': 'columnList',
-        style: 'display: flex; gap: 1rem;',
+        style: 'display: flex; gap: 0.5rem;',
       }),
       0,
     ];

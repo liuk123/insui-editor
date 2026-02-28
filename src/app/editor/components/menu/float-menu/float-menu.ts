@@ -1,12 +1,12 @@
 import { Component, inject, Input } from '@angular/core';
-import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
-import { AbstractInsEditor } from '../../common/editor-adapter';
-import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
+import { INS_EDITOR_OPTIONS } from '../../../common/editor-options';
+import { AbstractInsEditor } from '../../../common/editor-adapter';
+import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 
 import {
   insGetSelectionState,
   InsSelectionState,
-} from '../../directives/tiptap-editor/utils/get-selection-state';
+} from '../../../directives/tiptap-editor/utils/get-selection-state';
 import { injectElement, InsDataList } from '@liuk123/insui';
 
 interface MyCommand {

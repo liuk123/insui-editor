@@ -22,10 +22,10 @@ import {
   InsAlignRightButtonTool,
   InsHighlightColorButtonTool,
   InsTextColorButtonTool
-} from '../../tools';
-import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
-import { AbstractInsEditor } from '../../common/editor-adapter';
-import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
+} from '../../../tools';
+import { INS_EDITOR_OPTIONS } from '../../../common/editor-options';
+import { AbstractInsEditor } from '../../../common/editor-adapter';
+import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 
 @Component({
   selector: 'ins-bubble-menu',

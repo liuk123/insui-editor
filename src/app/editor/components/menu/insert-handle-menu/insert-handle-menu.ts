@@ -1,13 +1,14 @@
 import { Component, inject, Input } from '@angular/core';
 import { InsDataList } from '@liuk123/insui';
-import { AbstractInsEditor } from '../../common/editor-adapter';
-import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
+import { AbstractInsEditor } from '../../../common/editor-adapter';
+import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 
 interface MyCommand {
   name: string;
   icon?:string;
   key?: string;
   desc?: string;
+  command?: ()=>void;
   children?: MyCommand[]
 }
 
@@ -88,6 +89,13 @@ export class InsInsertHandleMenu {
           key: 'table',
           name: '插入表格',
         },
+        {
+          key: 'columns',
+          name: '插入多列',
+          command: ()=>{
+            this.editor?.setColumns(6);
+          },
+        },
       ],
     },
     {
@@ -108,6 +116,9 @@ export class InsInsertHandleMenu {
 
     if (!editor) {
       return;
+    }
+    if (command.command) {
+      command.command();
     }
   }
 }

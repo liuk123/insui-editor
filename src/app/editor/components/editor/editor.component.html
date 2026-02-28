@@ -27,7 +27,11 @@
       <ins-toolbar-host [disabled]="!interactive()">
         <ins-float-menu></ins-float-menu>
       </ins-toolbar-host>
-    }@else {
+    }@else if(isImageMenu){
+      <ins-toolbar-host [disabled]="!interactive()">
+        img
+      </ins-toolbar-host>
+    }@else{
       <ins-toolbar-host [disabled]="!interactive()">
         <!-- <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
           <ng-content select="tools" />

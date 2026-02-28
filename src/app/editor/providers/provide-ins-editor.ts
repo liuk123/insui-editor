@@ -40,6 +40,7 @@ import { InsBackgroundColorOptions } from '../extensions/background-color';
 import { InsDetailsExtensionOptions } from '../extensions/details';
 import { DetailsContentOptions, DetailsSummaryOptions } from '@tiptap/extension-details';
 import { ColumnListOptions, ColumnOptions } from '../extensions/columns';
+import { ImageOptions } from '@tiptap/extension-image';
 
 interface Options {
   starterKit: Partial<StarterKitOptions> | boolean;
@@ -404,9 +405,20 @@ const EXTENSIONS = [
   {
     key: 'image',
     default: true,
-    async loader(options: Partial<InsImageExtensionOptions>, injector: Injector) {
-      const { insCreateImageEditorExtension } = await import('../extensions/image-editor/index');
-      return insCreateImageEditorExtension({ injector, ...options });
+    async loader(options: Partial<ImageOptions>, injector: Injector) {
+      // const { insCreateImageEditorExtension } = await import('../extensions/image-editor/index');
+      // return insCreateImageEditorExtension({ injector, ...options });
+      const {Image} = await import('@tiptap/extension-image');
+      return Image.configure({
+        resize: {
+          enabled: true,
+          // directions: ['left', 'right'],
+          minWidth: 50,
+          minHeight: 50,
+          alwaysPreserveAspectRatio: true,
+        },
+        ...options
+      });
     },
   },
   {

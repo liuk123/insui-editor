@@ -1,12 +1,17 @@
 @import '@liuk123/insui/styles/ins-ui-global.less';
 
-&._preview-image img {
-    cursor: pointer;
+[data-resize-wrapper] img {
+    vertical-align: bottom;
 }
 
 .ProseMirror {
-    video,
     audio {
-        pointer-events: none;
+        width: 100%;
+    }
+    video {
+        max-width: 100%;
+    }
+    img{
+      max-width: 100%;
     }
 }

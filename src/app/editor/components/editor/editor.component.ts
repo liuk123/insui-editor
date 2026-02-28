@@ -46,16 +46,16 @@ import { InsEditorSocket } from '../editor-socket';
 import { InsEditorDropdownToolbar } from './dropdown/dropdown-toolbar.directive';
 import { insIsSafeLinkRange } from '../../directives/tiptap-editor/utils/safe-link-range';
 import { InsEditLink } from '../edit-link/edit-link.component';
-import { InsBubbleMenu } from '../bubble-menu/bubble-menu';
+import { InsBubbleMenu } from '../menu/bubble-menu/bubble-menu';
 import {
   insGetSelectionState,
   InsSelectionState,
 } from '../../directives/tiptap-editor/utils/get-selection-state';
-import { InsFloatMenu } from '../float-menu/float-menu';
+import { InsFloatMenu } from '../menu/float-menu/float-menu';
 import { InsDragHandle } from '../drag-handle/drag-handle';
 import { INS_EDITOR_LANGUAGE_PROVIDERS } from '../../i18n/language.provide';
-import { InsInsertHandleMenu } from '../insert-handle-menu/insert-handle-menu';
-import { InsDragHandleMenu } from '../drag-handle-menu/drag-handle-menu';
+import { InsInsertHandleMenu } from '../menu/insert-handle-menu/insert-handle-menu';
+import { InsDragHandleMenu } from '../menu/drag-handle-menu/drag-handle-menu';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -264,6 +264,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
       return false;
     }
     return true
+  }
+  public get isImageMenu(): boolean {
+    return this.editor?.isActive('image')||false;
   }
 
   public get selectionState(): InsSelectionState {

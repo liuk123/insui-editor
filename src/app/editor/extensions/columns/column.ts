@@ -34,7 +34,7 @@ export const Column = Node.create<ColumnOptions>({
         renderHTML: (attributes) => {
           return {
             'data-width': attributes['width'],
-            style: `flex-grow: ${attributes['width']}; flex-basis: 0; min-width: 0;`,
+            style: `flex-grow: ${attributes['width']}; flex-basis: 0; min-width: 2rem;`,
           };
         },
       },

@@ -463,4 +463,11 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   private triggerTransaction(): void {
     this.editor?.view.dispatch(this.editor.state.tr);
   }
+
+  public setColumns(n: number): void {
+    this.editor?.commands.setColumns(n);
+  }
+  public unsetColumns(){
+    this.editor?.commands.unsetColumns();
+  }
 }

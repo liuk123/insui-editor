@@ -57,6 +57,8 @@ export class InsDragHandle implements OnInit, OnDestroy {
       'orderedList',
       'taskList',
       'image',
+      'video',
+      'audio',
       'table',
     ];
     return allowedNodes.includes(nodeName);

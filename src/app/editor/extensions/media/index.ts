@@ -1,4 +1,3 @@
-
 import {mergeAttributes, Node} from '@tiptap/core';
 import {type NodeSpec} from '@tiptap/pm/model';
 import { insParseNodeAttributes } from '../../directives/tiptap-editor/utils/parse-node-attributes';
@@ -9,9 +8,17 @@ export const InsAudio = Node.create({
     name: 'audio',
     group: 'block',
     content: 'source+',
+    draggable: true,
+    atom: true,
 
     addAttributes() {
-        return insParseNodeAttributes(INS_DEFAULT_HTML5_MEDIA_ATTRIBUTES);
+        return {
+            ...insParseNodeAttributes(INS_DEFAULT_HTML5_MEDIA_ATTRIBUTES),
+            controls: {
+                default: true,
+                parseHTML: (element) => element.hasAttribute('controls'),
+            },
+        };
     },
 
     parseHTML(): NodeSpec['parseDOM'] {
@@ -51,9 +58,17 @@ export const InsVideo = Node.create({
     name: 'video',
     group: 'block',
     content: 'source+',
+    draggable: true,
+    atom: true,
 
     addAttributes() {
-        return insParseNodeAttributes(INS_DEFAULT_HTML5_MEDIA_ATTRIBUTES);
+        return {
+            ...insParseNodeAttributes(INS_DEFAULT_HTML5_MEDIA_ATTRIBUTES),
+            controls: {
+                default: true,
+                parseHTML: (element) => element.hasAttribute('controls'),
+            },
+        };
     },
 
     parseHTML(): NodeSpec['parseDOM'] {
