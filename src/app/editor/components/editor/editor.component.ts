@@ -56,6 +56,7 @@ import { InsDragHandle } from '../drag-handle/drag-handle';
 import { INS_EDITOR_LANGUAGE_PROVIDERS } from '../../i18n/language.provide';
 import { InsInsertHandleMenu } from '../menu/insert-handle-menu/insert-handle-menu';
 import { InsDragHandleMenu } from '../menu/drag-handle-menu/drag-handle-menu';
+import { InsImageMenu } from '../menu/image-menu/image-menu';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -78,6 +79,7 @@ interface ServerSideGlobal extends Global {
     InsDragHandle,
     InsDragHandleMenu,
     InsInsertHandleMenu,
+    InsImageMenu
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
