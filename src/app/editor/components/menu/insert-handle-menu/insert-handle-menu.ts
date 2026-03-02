@@ -33,16 +33,25 @@ export class InsInsertHandleMenu {
           key: 'heading1',
           icon: 'heading-1',
           name: '一级标题',
+          command: ()=>{
+            this.editor?.setHeading(1);
+          },
         },
         {
           key: 'heading2',
           icon: 'heading-2',
           name: '二级标题',
+          command: ()=>{
+            this.editor?.setHeading(2);
+          },
         },
         {
           key: 'heading3',
           icon: 'heading-3',
           name: '三级标题',
+          command: ()=>{
+            this.editor?.setHeading(3);
+          },
         },
       ],
     },
@@ -54,30 +63,51 @@ export class InsInsertHandleMenu {
           key: 'paragraph',
           icon: 'pilcrow',
           name: '段落',
+          command: ()=>{
+            this.editor?.setParagraph();
+          },
         },
         {
           key: 'quote',
           name: '引用',
+          command: ()=>{
+            this.editor?.toggleBlockquote();
+          },
         },
         {
           key: 'bulletList',
           name: '无序列表',
+          command: ()=>{
+            this.editor?.toggleUnorderedList();
+          },
         },
         {
           key: 'orderedList',
           name: '有序列表',
+          command: ()=>{
+            this.editor?.toggleOrderedList();
+          },
         },
         {
           key: 'taskList',
           name: '任务列表',
+          command: ()=>{
+            this.editor?.toggleTaskList();
+          },
         },
         {
           key: 'codeBlock',
           name: '代码块',
+          command: ()=>{
+            this.editor?.toggleCodeBlock();
+          },
         },
         {
           key: 'divider',
           name: '分隔线',
+          command: ()=>{
+            this.editor?.setHorizontalRule();
+          },
         },
       ],
     },
@@ -88,6 +118,21 @@ export class InsInsertHandleMenu {
         {
           key: 'table',
           name: '插入表格',
+          command: ()=>{
+              this.editor?.enter(); // @note: clear previous styles
+
+              const prevLine = this.editor?.state?.selection.anchor;
+
+              // @note: don't use `setHardBreak`,
+              // it inherits styles of previous lines
+              // required two line after
+              this.editor?.enter();
+              this.editor?.enter();
+
+              this.editor?.setTextSelection(prevLine ?? 0);
+              this.editor?.insertTable(3, 5);
+
+          },
         },
         {
           key: 'columns',
@@ -105,6 +150,9 @@ export class InsInsertHandleMenu {
         {
           key: 'image',
           name: '插入图片',
+          command: ()=>{
+            // this.editor?.insertImage('https://picsum.photos/200/300');
+          },
         },
       ],
     },
