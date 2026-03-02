@@ -8,7 +8,6 @@ import { type Editor, type Range } from '@tiptap/core';
 import { type MarkType } from '@tiptap/pm/model';
 import { distinctUntilChanged, map, Observable, startWith } from 'rxjs';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
-import { insIsEmptyParagraph } from './utils/is-empty-paragraph';
 import { EditorState } from '@tiptap/pm/state';
 import { insParseStyle } from './utils/parse-style';
 import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
@@ -16,7 +15,6 @@ import { InsEditableImage } from '../../common/image';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { insGetMarkRange } from './utils/get-mark-range';
 import { InsEditorAttachedFile } from '../../common/attached';
-import { InsEditableIframe } from '../../common/iframe';
 import { EditorView } from '@tiptap/pm/view';
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
@@ -437,7 +435,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   //   this.editor?.commands.setYoutubeVideo(options as any);
   // }
 
-  public setIframe(options: InsEditableIframe): void {
+  public setIframe(options: { src: string }): void {
     this.editor?.commands.setIframe(options);
   }
 
@@ -469,5 +467,9 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   }
   public unsetColumns(){
     this.editor?.commands.unsetColumns();
+  }
+
+  public setFigure(options: {src: string, alt?: string, title?: string, caption?: string}): void {
+    this.editor?.commands.setFigure(options);
   }
 }

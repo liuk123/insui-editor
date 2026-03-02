@@ -32,7 +32,6 @@ import { type UnderlineOptions } from '@tiptap/extension-underline';
 import { type StarterKitOptions } from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import { type TypographyOptions } from '@tiptap/extension-typography';
-import { InsImageExtensionOptions } from '../extensions/image-editor/image-editor.extension';
 import { InsFontSizeOptions } from '../extensions/font-size';
 import { InsFontColorOptions } from '../extensions/font-color';
 import { type TrailingNodeOptions } from '@tiptap/extensions'
@@ -41,6 +40,7 @@ import { InsDetailsExtensionOptions } from '../extensions/details';
 import { DetailsContentOptions, DetailsSummaryOptions } from '@tiptap/extension-details';
 import { ColumnListOptions, ColumnOptions } from '../extensions/columns';
 import { ImageOptions } from '@tiptap/extension-image';
+import { IframeOptions } from '../extensions/iframe';
 
 interface Options {
   starterKit: Partial<StarterKitOptions> | boolean;
@@ -74,7 +74,7 @@ interface Options {
   superscript: Partial<SuperscriptExtensionOptions> | boolean;
   jumpAnchor: Partial<Record<string, unknown>> | boolean;
   link: Partial<LinkOptions> | boolean;
-  image: Partial<InsImageExtensionOptions> | boolean;
+  image: Partial<ImageOptions> | boolean;
   fileLink: Partial<Record<string, unknown>> | boolean;
 
   // enter: Partial<Record<string, unknown>> | boolean;
@@ -571,11 +571,11 @@ const EXTENSIONS = [
   {
       key: 'iframe',
       default: true,
-      async loader(_: Partial<Record<string, unknown>>, injector: Injector) {
-          const {insCreateIframeEditorExtension} =
-              await import('../extensions/iframe-editor');
+      async loader(options: Partial<IframeOptions>) {
+          const {Iframe} =
+              await import('../extensions/iframe');
 
-          return insCreateIframeEditorExtension({injector});
+          return Iframe.configure(options);
       },
   },
   {

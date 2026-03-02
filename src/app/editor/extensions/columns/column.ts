@@ -6,7 +6,7 @@ export interface ColumnOptions {
 
 export const Column = Node.create<ColumnOptions>({
   name: 'column',
-  group: 'column',
+  group: 'columnList',
   content: 'block+',
   defining: true,
   isolating: true,

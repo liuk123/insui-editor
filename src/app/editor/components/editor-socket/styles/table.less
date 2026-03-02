@@ -15,7 +15,7 @@ table .tableWrapper {
 
 /* stylelint-disable-next-line */
 .tableWrapper,
-.tui-table-wrapper {
+.ins-table-wrapper {
   overflow-x: auto;
 }
 
@@ -39,7 +39,7 @@ table th {
   word-break: break-word;
   font-weight: bold;
   text-align: start;
-  background-color: var(--tui-background-base-alt);
+  background-color: var(--ins-background-base-alt);
   min-block-size: 2rem;
 }
 
@@ -47,7 +47,7 @@ table td,
 table th {
   border: 0.125rem solid rgb(233, 233, 231);
 
-  [tuiTheme='dark'] & {
+  [insTheme='dark'] & {
     border: 0.125rem solid rgb(47, 47, 47);
   }
 }
@@ -84,7 +84,7 @@ table th > * {
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--tui-service-selected-text);
+    background: var(--ins-service-selected-text);
     pointer-events: none;
   }
 }

@@ -6,7 +6,6 @@ import {BehaviorSubject, type Observable, Subject} from 'rxjs';
 import { InsEditorAttachedFile } from './attached';
 
 // import {type InsEditorAttachedFile} from './attached';
-import {type InsEditableIframe} from './iframe';
 import { EditorView } from '@tiptap/pm/view';
 // import {type InsYoutubeOptions} from './youtube';
 
@@ -191,9 +190,11 @@ export abstract class AbstractInsEditor {
 
     // public abstract setYoutubeVideo(options: InsYoutubeOptions): void;
 
-    public abstract setIframe(options: InsEditableIframe): void;
+    public abstract setIframe(options: {src: string}): void;
 
     public abstract setColumns(n: number): void;
 
     public abstract unsetColumns(): void;
+
+    public abstract setFigure(options: {src: string, alt?: string, title?: string, caption?: string}): void;
 }

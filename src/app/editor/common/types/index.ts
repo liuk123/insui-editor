@@ -6,144 +6,164 @@
 // } from '@taiga-ui/editor/common';
 import type BulletList from '@tiptap/extension-bullet-list';
 // import type Highlight from '@tiptap/extension-highlight';
-import {type Image} from '@tiptap/extension-image';
+import { type Image } from '@tiptap/extension-image';
 import type Link from '@tiptap/extension-link';
 import type ListItem from '@tiptap/extension-list-item';
 import type Subscript from '@tiptap/extension-subscript';
 import type Superscript from '@tiptap/extension-superscript';
-import type {Table} from '@tiptap/extension-table';
+import type { Table } from '@tiptap/extension-table';
 import type TableCell from '@tiptap/extension-table-cell';
 import type TableHeader from '@tiptap/extension-table-header';
 import type TableRow from '@tiptap/extension-table-row';
 import type TaskItem from '@tiptap/extension-task-item';
 import type TaskList from '@tiptap/extension-task-list';
 import type TextAlign from '@tiptap/extension-text-align';
-import type {TextStyle} from '@tiptap/extension-text-style';
+import type { TextStyle } from '@tiptap/extension-text-style';
 import type Underline from '@tiptap/extension-underline';
 
 import type StarterKit from '@tiptap/starter-kit';
-import { InsEditableImage } from '../image';
 import { InsEditorAttachedFile } from '../attached';
-import { InsEditableIframe } from '../iframe';
 
 export type {
-    BulletList,
-    // Highlight,
-    Image,
-    Link,
-    ListItem,
-    StarterKit,
-    Subscript,
-    Superscript,
-    Table,
-    TableCell,
-    TableHeader,
-    TableRow,
-    TaskItem,
-    TaskList,
-    TextAlign,
-    TextStyle,
-    Underline,
-    // Youtube,
+  BulletList,
+  // Highlight,
+  Image,
+  Link,
+  ListItem,
+  StarterKit,
+  Subscript,
+  Superscript,
+  Table,
+  TableCell,
+  TableHeader,
+  TableRow,
+  TaskItem,
+  TaskList,
+  TextAlign,
+  TextStyle,
+  Underline,
+  // Youtube,
 };
 
 declare module '@tiptap/core' {
-    interface Commands<ReturnType> {
-        iframe: { setIframe(options: InsEditableIframe): ReturnType; }
-    }
+  interface Commands<ReturnType> {
+    iframe: { setIframe(options: { src: string }): ReturnType };
+  }
+  interface Commands<ReturnType> {
+    figure: {
+      /**
+       * Add a figure element
+       */
+      setFigure: (options: {
+        src: string;
+        alt?: string;
+        title?: string;
+        caption?: string;
+      }) => ReturnType;
 
-    interface Commands<ReturnType> {
-        imageEditor: {
-            setEditableImage(imageConfigs: InsEditableImage): ReturnType;
-            setImageLink(): ReturnType;
-        };
-    }
+      /**
+       * Converts an image to a figure
+       */
+      imageToFigure: () => ReturnType;
 
-    interface Commands<ReturnType> {
-        fontColor: {
-            /**
-             * Set the font color
-             */
-            setFontColor(fontColor: string): ReturnType;
-            /**
-             * Unset the font color
-             */
-            unsetFontColor(): ReturnType;
-        };
-    }
+      /**
+       * Converts a figure to an image
+       */
+      figureToImage: () => ReturnType;
+    };
+  }
+  // interface Commands<ReturnType> {
+  //     imageEditor: {
+  //         setEditableImage(imageConfigs: InsEditableImage): ReturnType;
+  //         setImageLink(): ReturnType;
+  //     };
+  // }
 
-    interface Commands<ReturnType> {
-        details: {
-            setDetails(): ReturnType;
-            unsetDetails(): ReturnType;
-        };
-    }
+  interface Commands<ReturnType> {
+    fontColor: {
+      /**
+       * Set the font color
+       */
+      setFontColor(fontColor: string): ReturnType;
+      /**
+       * Unset the font color
+       */
+      unsetFontColor(): ReturnType;
+    };
+  }
 
-    interface Commands<ReturnType> {
-        group: {
-            removeGroup(): ReturnType;
-            setGroup(): ReturnType;
-            setGroupHilite(color: string): ReturnType;
-        };
-    }
+  interface Commands<ReturnType> {
+    details: {
+      setDetails(): ReturnType;
+      unsetDetails(): ReturnType;
+    };
+  }
 
-    interface Commands<ReturnType> {
-        anchor: {
-            removeAnchor(): ReturnType;
-            setAnchor(id: string): ReturnType;
-        };
-    }
+  interface Commands<ReturnType> {
+    group: {
+      removeGroup(): ReturnType;
+      setGroup(): ReturnType;
+      setGroupHilite(color: string): ReturnType;
+    };
+  }
 
-    // interface Commands<ReturnType> {
-    //     youtube: {
-    //         /**
-    //          * Insert a youtube video
-    //          */
-    //         setYoutubeVideo(options: {
-    //             height?: number;
-    //             src: string;
-    //             start?: number;
-    //             width?: number;
-    //         }): ReturnType;
-    //     };
-    // }
+  interface Commands<ReturnType> {
+    anchor: {
+      removeAnchor(): ReturnType;
+      setAnchor(id: string): ReturnType;
+    };
+  }
 
-    interface Commands<ReturnType> {
-        cellBackground: {
-            setCellBackground(background: string): ReturnType;
-            unsetCellBackground(): ReturnType;
-        };
-    }
+  // interface Commands<ReturnType> {
+  //     youtube: {
+  //         /**
+  //          * Insert a youtube video
+  //          */
+  //         setYoutubeVideo(options: {
+  //             height?: number;
+  //             src: string;
+  //             start?: number;
+  //             width?: number;
+  //         }): ReturnType;
+  //     };
+  // }
 
-    interface Commands<ReturnType> {
-        fileLink: {
-            setFileLink(preview: InsEditorAttachedFile): ReturnType;
-        };
-    }
+  interface Commands<ReturnType> {
+    cellBackground: {
+      setCellBackground(background: string): ReturnType;
+      unsetCellBackground(): ReturnType;
+    };
+  }
 
-    interface Commands<ReturnType> {
-        fontSize: {
-            /**
-             * Set the font size
-             */
-            setFontSize(fontSize: string): ReturnType;
-            /**
-             * Unset the font size
-             */
-            unsetFontSize(): ReturnType;
-        };
-    }
+  interface Commands<ReturnType> {
+    fileLink: {
+      setFileLink(preview: InsEditorAttachedFile): ReturnType;
+    };
+  }
 
-    interface Commands<ReturnType> {
-        backgroundColor: {
-            /**
-             * Set the background color
-             */
-            setBackgroundColor(backgroundColor: string): ReturnType;
-            /**
-             * Unset the background color
-             */
-            unsetBackgroundColor(): ReturnType;
-        };
-    }
+  interface Commands<ReturnType> {
+    fontSize: {
+      /**
+       * Set the font size
+       */
+      setFontSize(fontSize: string): ReturnType;
+      /**
+       * Unset the font size
+       */
+      unsetFontSize(): ReturnType;
+    };
+  }
+
+  interface Commands<ReturnType> {
+    backgroundColor: {
+      /**
+       * Set the background color
+       */
+      setBackgroundColor(backgroundColor: string): ReturnType;
+      /**
+       * Unset the background color
+       */
+      unsetBackgroundColor(): ReturnType;
+    };
+  }
 }

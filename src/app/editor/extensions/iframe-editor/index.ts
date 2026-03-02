@@ -1,3 +1,0 @@
-export * from './iframe-editor.component';
-export * from './iframe-editor.extension';
-export * from './iframe-editor.options';

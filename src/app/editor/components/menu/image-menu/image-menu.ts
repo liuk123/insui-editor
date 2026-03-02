@@ -14,26 +14,26 @@ import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap
 })
 export class InsImageMenu implements OnInit {
   protected readonly options = inject(INS_EDITOR_OPTIONS);
-  protected style?: string | null = null;
   private editor = inject(InsTiptapEditorService);
 
   public ngOnInit(): void {
-    // this.style = this.attrs.style;
   }
 
-  // protected getAppearance(style: string | null, attrStr: string): 'outline' | 'flat' {
-  //   if (style?.replaceAll(/\s/g, '').includes(attrStr)) {
-  //     return 'outline';
-  //   } else {
-  //     return 'flat';
-  //   }
-  // }
+  public get style(): string | null {
+    return this.editor.getOriginTiptapEditor()?.getAttributes('image')['style'] ?? null;
+  }
+
+  protected getAppearance(style: string | null, attrStr: string): 'outline' | 'flat' {
+    if (style?.replaceAll(/\s/g, '').includes(attrStr)) {
+      return 'outline';
+    } else {
+      return 'flat';
+    }
+  }
 
 
-  // protected align(styles: string | null): void {
-  //   // this.style = styles;
-  //   // this.attrs.style = styles;
-  //   // this.notifyUpdate();
-  // }
+  protected align(styles: string | null): void {
+    this.editor.getOriginTiptapEditor()?.chain().focus().updateAttributes('image', { style: styles }).run();
+  }
 
 }
