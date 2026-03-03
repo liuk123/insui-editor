@@ -3,7 +3,6 @@ import { InsLanguageEditor } from './language';
 
 export const INS_CHINESE_LANGUAGE_ADDON_EDITOR: InsLanguageEditor = {
   ...INS_CHINESE_LANGUAGE,
-  colorSelectorModeNames: ['纯色', '渐变色'],
   toolbarTools: {
     undo: '撤消',
     redo: '重做',
@@ -67,20 +66,13 @@ export const INS_CHINESE_LANGUAGE_ADDON_EDITOR: InsLanguageEditor = {
     ['删除列', '删除行'],
   ],
   editorCodeOptions: ['文中代码', '代码块'],
-  // editorFontOptions: {
-  //   small: '小的',
-  //   large: '大的',
-  //   normal: '普通的',
-  //   title: '标题',
-  //   subtitle: '副标题',
+  // editorHeadingOptions: {
+  //   paragraph: '段落',
+  //   heading1: '一级标题',
+  //   heading2: '二级标题',
+  //   heading3: '三级标题',
+  //   heading4: '四级标题',
+  //   heading5: '五级标题',
+  //   heading6: '六级标题',
   // },
-  editorHeadingOptions: {
-    paragraph: '段落',
-    heading1: '一级标题',
-    heading2: '二级标题',
-    heading3: '三级标题',
-    heading4: '四级标题',
-    heading5: '五级标题',
-    heading6: '六级标题',
-  },
 };

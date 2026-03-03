@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { INS_CHINESE_LANGUAGE_ADDON_EDITOR } from './addon-editor';
 
 export interface InsLanguageEditor extends InsLanguage {
-    colorSelectorModeNames: [string, string];
+    // colorSelectorModeNames: [string, string];
     editorCodeOptions: [string, string];
     editorEditLink: {
         anchorExample: string;
@@ -71,15 +71,15 @@ export interface InsLanguageEditor extends InsLanguage {
         heading5: string;
         heading6: string;
     };
-    editorHeadingOptions: {
-        paragraph: string;
-        heading1: string;
-        heading2: string;
-        heading3: string;
-        heading4: string;
-        heading5: string;
-        heading6: string;
-    };
+    // editorHeadingOptions: {
+    //     paragraph: string;
+    //     heading1: string;
+    //     heading2: string;
+    //     heading3: string;
+    //     heading4: string;
+    //     heading5: string;
+    //     heading6: string;
+    // };
 }
 
 export const INS_LANGUAGE_EDITOR = new InjectionToken<Observable<InsLanguageEditor>>(

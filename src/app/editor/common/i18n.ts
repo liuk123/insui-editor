@@ -40,8 +40,3 @@ export const INS_EDITOR_LINK_TEXTS = new InjectionToken<Observable<InsLanguageEd
 export const INS_EDITOR_CODE_OPTIONS = new InjectionToken<Observable<InsLanguageEditor['editorCodeOptions']>>(
     ''
 );
-
-
-export const INS_EDITOR_HEADING_OPTIONS = new InjectionToken<Observable<InsLanguageEditor['editorHeadingOptions']>>(
-    ''
-);

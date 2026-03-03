@@ -22,7 +22,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { InsEditorHeadingOption } from '../../common/editor-font-option';
-import { INS_EDITOR_HEADING_OPTIONS } from '../../common/i18n';
+import { INS_EDITOR_TOOLBAR_TEXTS } from '../../common/i18n';
 import { InsLanguageEditor } from '../../i18n/language';
 
 @Component({
@@ -52,7 +52,7 @@ export class InsHeadingButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective);
 
   protected readonly headingOptions = toSignal(
-    inject(INS_EDITOR_HEADING_OPTIONS).pipe(map((texts) => this.options.headingOptions(texts))),
+    inject(INS_EDITOR_TOOLBAR_TEXTS).pipe(map((texts) => this.options.headingOptions(texts))),
   );
 
   protected tem = viewChild(InsTextfieldDropdownDirective, { read: TemplateRef });

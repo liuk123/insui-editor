@@ -4,7 +4,6 @@ import { INS_CHINESE_LANGUAGE_ADDON_EDITOR } from './addon-editor';
 import {
   INS_EDITOR_CODE_OPTIONS,
   INS_EDITOR_COLOR_SELECTOR_MODE_NAMES,
-  INS_EDITOR_HEADING_OPTIONS,
   INS_EDITOR_LINK_TEXTS,
   INS_EDITOR_TABLE_COMMANDS,
   INS_EDITOR_TOOLBAR_TEXTS,
@@ -36,8 +35,8 @@ export const INS_EDITOR_LANGUAGE_PROVIDERS = [
     provide: INS_EDITOR_CODE_OPTIONS,
     useFactory: insExtractI18n('editorCodeOptions'),
   },
-  {
-    provide: INS_EDITOR_HEADING_OPTIONS,
-    useFactory: insExtractI18n('editorHeadingOptions'),
-  },
+  // {
+  //   provide: INS_EDITOR_HEADING_OPTIONS,
+  //   useFactory: insExtractI18n('editorHeadingOptions'),
+  // },
 ];

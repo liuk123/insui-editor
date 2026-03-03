@@ -114,20 +114,6 @@ declare module '@tiptap/core' {
     };
   }
 
-  // interface Commands<ReturnType> {
-  //     youtube: {
-  //         /**
-  //          * Insert a youtube video
-  //          */
-  //         setYoutubeVideo(options: {
-  //             height?: number;
-  //             src: string;
-  //             start?: number;
-  //             width?: number;
-  //         }): ReturnType;
-  //     };
-  // }
-
   interface Commands<ReturnType> {
     cellBackground: {
       setCellBackground(background: string): ReturnType;
