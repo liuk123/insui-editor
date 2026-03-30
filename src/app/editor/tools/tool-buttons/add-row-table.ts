@@ -1,18 +1,17 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, effect, forwardRef, inject, TemplateRef, viewChild, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, TemplateRef, viewChild } from '@angular/core';
 import { InsDataList, InsDropdownDirective, InsOptGroup, InsOption, InsTextfield, InsTextfieldDropdownDirective, InsWithDropdownOpen, PolymorpheusContent } from '@liuk123/insui';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
-import { INS_EDITOR_TABLE_COMMANDS } from '../../common/i18n';
 import { InsLanguageEditor } from '../../i18n/language';
 
 export const InsTableCommands = {
-    InsertColumnBefore: 0,
-    InsertColumnAfter: 1,
-    InsertRowBefore: 2,
-    InsertRowAfter: 3,
-    DeleteColumn: 4,
-    DeleteRow: 5,
+    InsertColumnBefore: 'insertColumnBefore',
+    InsertColumnAfter: 'insertColumnAfter',
+    InsertRowBefore: 'insertRowBefore',
+    InsertRowAfter: 'insertRowAfter',
+    DeleteColumn: 'deleteColumn',
+    DeleteRow: 'deleteRow',
 } as const;
 
 @Component({
@@ -31,7 +30,7 @@ export const InsTableCommands = {
                     <button
                         insOption
                         type="button"
-                        (click)="onTableOption(i * 2 + j)"
+                        (click)="onTableOption(item)"
                     >
                         {{ item }}
                     </button>
@@ -46,8 +45,12 @@ export const InsTableCommands = {
     hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
 })
 export class InsAddRowTableButtonTool extends InsToolbarTool {
-    protected readonly tableCommandTexts$ = inject(INS_EDITOR_TABLE_COMMANDS);
     private readonly dropdown = inject(InsDropdownDirective);
+    protected readonly tableCommandTexts$ = [
+        [InsTableCommands.InsertColumnBefore, InsTableCommands.InsertColumnAfter],
+        [InsTableCommands.InsertRowBefore, InsTableCommands.InsertRowAfter],
+        [InsTableCommands.DeleteColumn, InsTableCommands.DeleteRow],
+    ];
 
     protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
     private e = effect(()=>{
@@ -66,8 +69,8 @@ export class InsAddRowTableButtonTool extends InsToolbarTool {
         return texts?.rowsColumnsManaging ?? '';
     }
 
-    protected onTableOption(command: number): void {
-        const registry: Record<number, () => void> | null = {
+    protected onTableOption(command: string): void {
+        const registry: Record<string, () => void> | null = {
             [InsTableCommands.InsertColumnAfter]: () => this.editor?.addColumnAfter(),
             [InsTableCommands.InsertColumnBefore]: () => this.editor?.addColumnBefore(),
             [InsTableCommands.InsertRowAfter]: () => this.editor?.addRowAfter(),
