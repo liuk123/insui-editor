@@ -9,6 +9,7 @@ import { InsCodeBlockButtonLabel } from '../../../tools/label-buttons/codeBlock'
 import { InsHrButtonLabel } from '../../../tools/label-buttons/hr';
 import { InsInsertTableButtonLabel } from '../../../tools/label-buttons/insert-table';
 import { InsImageButtonLabel } from '../../../tools/label-buttons/image';
+import { InsAttachLabel } from '../../../tools/label-buttons/attach';
 
 @Component({
   selector: 'ins-insert-handle-menu',
@@ -20,7 +21,8 @@ import { InsImageButtonLabel } from '../../../tools/label-buttons/image';
     InsCodeBlockButtonLabel,
     InsHrButtonLabel,
     InsInsertTableButtonLabel,
-    InsImageButtonLabel
+    InsImageButtonLabel,
+    InsAttachLabel
   ],
   templateUrl: './insert-handle-menu.html',
   styleUrl: './insert-handle-menu.less',

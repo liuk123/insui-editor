@@ -175,6 +175,46 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.commands.clearNodes();
   }
 
+  public removeBlocks(): void {
+
+
+
+    this.editor?.chain()
+      .focus()
+      .command(({ state, commands }) => {
+        const { selection } = state;
+
+        if (!selection.empty) {
+          return commands.deleteSelection();
+        }
+
+        // const maybeDeleteCurrentNode = (commands as Partial<{ deleteCurrentNode: () => boolean }>)
+        //   .deleteCurrentNode;
+
+        // if (maybeDeleteCurrentNode?.()) {
+        //   return true;
+        // }
+
+        const $from = selection.$from;
+
+        for (let depth = $from.depth; depth > 0; depth--) {
+          const node = $from.node(depth);
+
+          if (!node.isBlock) {
+            continue;
+          }
+
+          const from = $from.before(depth);
+          const to = $from.after(depth);
+
+          return commands.deleteRange({ from, to });
+        }
+
+        return commands.deleteSelection();
+      })
+      .run();
+  }
+
   public setFontColor(color: string): void {
     this.editor?.chain().focus().setFontColor(color).run();
   }

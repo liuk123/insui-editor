@@ -69,6 +69,8 @@ export abstract class AbstractInsEditor {
 
     public abstract removeFormat(): void;
 
+    public abstract removeBlocks(): void;
+
     public abstract setFontColor(color: string): void;
 
     public abstract setBackgroundColor(color: string): void;

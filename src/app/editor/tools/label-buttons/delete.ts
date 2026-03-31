@@ -10,16 +10,16 @@ import { InsToolbarBase } from '../tool-base';
     changeDetection: ChangeDetectionStrategy.OnPush,
     hostDirectives: [],
     host: {
-        '(click)': 'editor?.deleteContent()',
+        '(click)': 'editor?.removeBlocks()',
         '[attr.title]': 'insHint()',
     },
 })
 export class InsDeleteLabel extends InsToolbarBase {
     protected getIcon(icons: InsEditorOptions['icons']): string {
-        return icons.clear;
+        return icons.removeBlocks;
     }
 
     protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return texts?.clear ?? '';
+        return texts?.removeBlocks ?? '';
     }
 }

@@ -57,6 +57,7 @@ export interface InsLanguageEditor extends InsLanguage {
         redo: string;
         removeDetails: string;
         removeGroup: string;
+        removeBlocks: string;
         rowsColumnsManaging: string;
         setDetails: string;
         splitCells: string;
