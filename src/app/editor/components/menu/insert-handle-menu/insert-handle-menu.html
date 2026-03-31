@@ -1,11 +1,20 @@
 <ins-data-list size="m">
-  @for (item of items; track item.name) {
-    <ins-opt-group [label]="item.name">
-      @for (sub of item.children || []; track sub.name) {
-        <button insOption [iconStart]="sub.icon" (click)="command(sub)">
-          {{ sub.name }}
-        </button>
-      }
-    </ins-opt-group>
-  }
+  <ins-opt-group label="标题">
+    <button insOption insHeadNLabel [head]="1" size="m" [editor]="editor"></button>
+    <button insOption insHeadNLabel [head]="2" size="m" [editor]="editor"></button>
+    <button insOption insHeadNLabel [head]="3" size="m" [editor]="editor"></button>
+    <button insOption insHeadNLabel size="m" [editor]="editor"></button>
+  </ins-opt-group>
+  <ins-opt-group label="基础">
+    <button insOption insBlockquoteLabel size="m" [editor]="editor"></button>
+    <button insOption insUnorderedListLabel size="m" [editor]="editor"></button>
+    <button insOption insCodeBlockLabel size="m" [editor]="editor"></button>
+    <button insOption insHrLabel size="m" [editor]="editor"></button>
+  </ins-opt-group>
+  <ins-opt-group label="高级">
+    <button insOption insInsertTableLabel size="m" [editor]="editor"></button>
+  </ins-opt-group>
+  <ins-opt-group label="媒体">
+    <button insOption insImageLabel size="m" [editor]="editor"></button>
+  </ins-opt-group>
 </ins-data-list>

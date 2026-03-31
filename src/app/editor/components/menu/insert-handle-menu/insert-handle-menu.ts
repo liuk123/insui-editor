@@ -2,19 +2,26 @@ import { Component, inject, Input } from '@angular/core';
 import { InsDataList } from '@liuk123/insui';
 import { AbstractInsEditor } from '../../../common/editor-adapter';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
-
-interface MyCommand {
-  name: string;
-  icon?:string;
-  key?: string;
-  desc?: string;
-  command?: ()=>void;
-  children?: MyCommand[]
-}
+import { InsHeadNButtonLabel } from '../../../tools/label-buttons/head';
+import { InsBlockquoteLabel } from '../../../tools/label-buttons/quote';
+import { InsUnorderedListButtonLabel } from '../../../tools/label-buttons/unordered-list';
+import { InsCodeBlockButtonLabel } from '../../../tools/label-buttons/codeBlock';
+import { InsHrButtonLabel } from '../../../tools/label-buttons/hr';
+import { InsInsertTableButtonLabel } from '../../../tools/label-buttons/insert-table';
+import { InsImageButtonLabel } from '../../../tools/label-buttons/image';
 
 @Component({
   selector: 'ins-insert-handle-menu',
-  imports: [InsDataList],
+  imports: [
+    InsDataList,
+    InsHeadNButtonLabel,
+    InsBlockquoteLabel,
+    InsUnorderedListButtonLabel,
+    InsCodeBlockButtonLabel,
+    InsHrButtonLabel,
+    InsInsertTableButtonLabel,
+    InsImageButtonLabel
+  ],
   templateUrl: './insert-handle-menu.html',
   styleUrl: './insert-handle-menu.less',
 })
@@ -23,150 +30,4 @@ export class InsInsertHandleMenu {
   public editor: AbstractInsEditor | null = inject(InsTiptapEditorService, {
     optional: true,
   });
-
-  items: MyCommand[] = [
-    {
-      name: '标题',
-      key: 'heading',
-      children: [
-        {
-          key: 'heading1',
-          icon: 'heading-1',
-          name: '一级标题',
-          command: ()=>{
-            this.editor?.setHeading(1);
-          },
-        },
-        {
-          key: 'heading2',
-          icon: 'heading-2',
-          name: '二级标题',
-          command: ()=>{
-            this.editor?.setHeading(2);
-          },
-        },
-        {
-          key: 'heading3',
-          icon: 'heading-3',
-          name: '三级标题',
-          command: ()=>{
-            this.editor?.setHeading(3);
-          },
-        },
-      ],
-    },
-    {
-      name: '基础',
-      key: 'base',
-      children: [
-        {
-          key: 'paragraph',
-          icon: 'pilcrow',
-          name: '段落',
-          command: ()=>{
-            this.editor?.setParagraph();
-          },
-        },
-        {
-          key: 'quote',
-          name: '引用',
-          command: ()=>{
-            this.editor?.toggleBlockquote();
-          },
-        },
-        {
-          key: 'bulletList',
-          name: '无序列表',
-          command: ()=>{
-            this.editor?.toggleUnorderedList();
-          },
-        },
-        {
-          key: 'orderedList',
-          name: '有序列表',
-          command: ()=>{
-            this.editor?.toggleOrderedList();
-          },
-        },
-        {
-          key: 'taskList',
-          name: '任务列表',
-          command: ()=>{
-            this.editor?.toggleTaskList();
-          },
-        },
-        {
-          key: 'codeBlock',
-          name: '代码块',
-          command: ()=>{
-            this.editor?.toggleCodeBlock();
-          },
-        },
-        {
-          key: 'divider',
-          name: '分隔线',
-          command: ()=>{
-            this.editor?.setHorizontalRule();
-          },
-        },
-      ],
-    },
-    {
-      name: '高级',
-      key: 'advanced',
-      children: [
-        {
-          key: 'table',
-          name: '插入表格',
-          command: ()=>{
-              this.editor?.enter(); // @note: clear previous styles
-
-              const prevLine = this.editor?.state?.selection.anchor;
-
-              // @note: don't use `setHardBreak`,
-              // it inherits styles of previous lines
-              // required two line after
-              this.editor?.enter();
-              this.editor?.enter();
-
-              this.editor?.setTextSelection(prevLine ?? 0);
-              this.editor?.insertTable(3, 5);
-
-          },
-        },
-        {
-          key: 'columns',
-          name: '插入多列',
-          command: ()=>{
-            this.editor?.setColumns(6);
-          },
-        },
-      ],
-    },
-    {
-      name: '媒体',
-      key: 'media',
-      children: [
-        {
-          key: 'image',
-          name: '插入图片',
-          command: ()=>{
-            // this.editor?.insertImage('https://picsum.photos/200/300');
-          },
-        },
-      ],
-    },
-
-
-  ];
-  protected command(command: MyCommand): void {
-    const editor = this.editor?.getOriginTiptapEditor();
-
-    if (!editor) {
-      return;
-    }
-    if (command.command) {
-      command.command();
-    }
-  }
 }

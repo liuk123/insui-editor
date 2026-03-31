@@ -3,6 +3,7 @@ import {
   Component,
   effect,
   inject,
+  signal,
   TemplateRef,
   viewChild,
 } from '@angular/core';
@@ -32,12 +33,7 @@ import { InsLanguageEditor } from '../../i18n/language';
     <ng-container *insTextfieldDropdown>
       <ins-data-list style="min-width: 4rem;">
         @for (item of fontsOptions; track item.name) {
-          <button
-            insItem
-            insOption
-            type="button"
-            (click)="setFontOption(item)"
-          >
+          <button insItem insOption type="button" (click)="setFontOption(item)">
             {{ item.name }}
           </button>
         }
@@ -55,10 +51,19 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective);
   protected readonly fontsOptions = this.options.fontSizeOptions();
 
+  protected readonly label = signal('');
+
   protected tem = viewChild(InsTextfieldDropdownDirective, { read: TemplateRef });
-  private e = effect(() => {
+  protected readonly e = effect(() => {
     this.dropdown.insDropdown = this.tem();
   });
+  constructor() {
+    super();
+    this.editorChange$.subscribe(() => {
+      const size = this.editor?.getFontSize();
+      this.label.set(this.fontsOptions?.find((opt) => opt.px === size)?.name ?? '');
+    });
+  }
 
   protected getIcon(icons: InsEditorOptions['icons']): string {
     return icons.fontSize;
@@ -67,13 +72,8 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
   protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
     return texts?.fontSize ?? '';
   }
-  protected override getLabel(): string {
-    const size = this.editor?.getFontSize();
-    return this.fontsOptions?.find(opt => opt.px === size)?.name??'';
-  }
 
   protected setFontOption({ px }: Partial<InsEditorFontSizeOption>): void {
-    this.editor?.setParagraph({fontSize: (px ?? 0) + 'px'});
+    this.editor?.setParagraph({ fontSize: (px ?? 0) + 'px' });
   }
-
 }

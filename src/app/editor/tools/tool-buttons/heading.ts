@@ -3,6 +3,7 @@ import {
   Component,
   effect,
   inject,
+  signal,
   TemplateRef,
   viewChild,
 } from '@angular/core';
@@ -30,7 +31,7 @@ import { InsLanguageEditor } from '../../i18n/language';
   selector: 'button[insHeadingTool]',
   imports: [InsDataList, InsOption, InsTextfield],
   template: `
-    {{ label() }}
+    {{ insHint() }}
     <ng-container *insTextfieldDropdown>
       <ins-data-list>
         @for (item of headingOptions(); track item.name) {
@@ -60,6 +61,15 @@ export class InsHeadingButtonTool extends InsToolbarTool {
     this.dropdown.insDropdown = this.tem();
   });
 
+  constructor() {
+    super();
+    this.editorChange$.subscribe(() => {
+      if(this.iconDir){
+        this.iconDir.iconStart = this.getIcon?.(this.options.icons);
+      }
+      this.insHint.set(this.getHint(this.texts()));
+    });
+  }
   protected getIcon(icons: InsEditorOptions['icons']): string {
     if (this.editor?.isActive('heading', { level: 1 })) {
       return icons.heading1;
@@ -82,9 +92,6 @@ export class InsHeadingButtonTool extends InsToolbarTool {
     return icons.paragraph;
   }
   protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-    return texts?.heading ?? ''
-  }
-  protected override getLabel(texts?: InsLanguageEditor['toolbarTools']): string {
     if(!texts){
       return ''
     }

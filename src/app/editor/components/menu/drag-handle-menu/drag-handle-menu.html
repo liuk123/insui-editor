@@ -1,7 +1,4 @@
 <ins-data-list size="m">
-  @for (item of items; track item.name) {
-    <button insOption [iconStart]="item.icon" (click)="command(item)">
-      {{ item.name }}
-    </button>
-  }
+  <button insOption insClearLabel size="m" [editor]="editor"></button>
+  <button insOption insDeleteLabel size="m" [editor]="editor"></button>
 </ins-data-list>

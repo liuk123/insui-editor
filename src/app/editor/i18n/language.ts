@@ -25,6 +25,7 @@ export interface InsLanguageEditor extends InsLanguage {
         cellColor: string;
         clear: string;
         code: string;
+        codeBlock: string;
         font: string;
         heading: string;
         fontSize: string;
@@ -46,6 +47,9 @@ export interface InsLanguageEditor extends InsLanguage {
         justifyRight: string;
         link: string;
         list: string;
+        taskList: string;
+        orderList: string;
+        unorderedList: string;
         mergeCells: string;
         orderedList: string;
         outdent: string;
@@ -62,7 +66,6 @@ export interface InsLanguageEditor extends InsLanguage {
         tex: string;
         underline: string;
         undo: string;
-        unorderedList: string;
         paragraph: string;
         heading1: string;
         heading2: string;
