@@ -65,5 +65,5 @@
   <ins-drag-handle-menu></ins-drag-handle-menu>
 </ng-template>
 <ng-template #insertHandle>
-  <ins-insert-handle-menu></ins-insert-handle-menu>
+  <ins-insert-handle-menu (fileAttached)="fileAttached.emit($event)"></ins-insert-handle-menu>
 </ng-template>

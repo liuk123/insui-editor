@@ -1,6 +1,7 @@
 <ins-editor
   [formControl]="control"
   class="editor"
+  (fileAttached)="onFileAttached($event)"
   [floatingToolbar]="true"
   >
 

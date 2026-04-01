@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { InsDataList } from '@liuk123/insui';
 import { AbstractInsEditor } from '../../../common/editor-adapter';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
@@ -10,6 +10,7 @@ import { InsHrButtonLabel } from '../../../tools/label-buttons/hr';
 import { InsInsertTableButtonLabel } from '../../../tools/label-buttons/insert-table';
 import { InsImageButtonLabel } from '../../../tools/label-buttons/image';
 import { InsAttachLabel } from '../../../tools/label-buttons/attach';
+import { InsEditorAttachedFile } from '../../../common/attached';
 
 @Component({
   selector: 'ins-insert-handle-menu',
@@ -32,4 +33,7 @@ export class InsInsertHandleMenu {
   public editor: AbstractInsEditor | null = inject(InsTiptapEditorService, {
     optional: true,
   });
+
+  @Output()
+  public readonly fileAttached = new EventEmitter<Array<InsEditorAttachedFile<any>>>();
 }

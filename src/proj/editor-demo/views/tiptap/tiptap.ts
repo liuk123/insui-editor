@@ -58,6 +58,10 @@ export class HttpMockUploader {
   ],
 })
 export class Tiptap implements OnInit {
+
+  @ViewChild(InsEditor)
+  private readonly wysiwyg?: InsEditor;
+
   protected control = new FormControl('');
 
   ngOnInit(): void {
@@ -68,5 +72,9 @@ export class Tiptap implements OnInit {
     //     console.log('hasSlash',hasSlash)
     //     this.open.set(!!this.wysiwyg?.isLinkSelected?false: hasSlash)
     // })
+  }
+  onFileAttached(files: InsEditorAttachedFile[]) {
+    console.log('files',files)
+    files.forEach(file=> this.wysiwyg?.editor?.setFileLink(file))
   }
 }
