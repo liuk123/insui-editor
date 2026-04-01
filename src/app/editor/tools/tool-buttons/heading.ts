@@ -48,6 +48,7 @@ import { InsLanguageEditor } from '../../i18n/language';
   },
 })
 export class InsHeadingButtonTool extends InsToolbarTool {
+  private readonly levels = [1, 2, 3, 4, 5, 6] as const;
   private readonly dropdown = inject(InsDropdownDirective);
 
   protected readonly headingOptions = toSignal(
@@ -62,71 +63,68 @@ export class InsHeadingButtonTool extends InsToolbarTool {
   constructor() {
     super();
     this.editorChange$.subscribe(() => {
-      if(this.iconDir){
-        this.iconDir.iconStart = this.getIcon?.(this.options.icons);
-      }
-      this.insHint.set(this.getHint(this.texts()));
+      this.syncHeadingPresentation();
     });
   }
 
   protected getIcon(icons: InsEditorOptions['icons']): string {
-    if (this.editor?.isActive('heading', { level: 1 })) {
-      return icons.heading1;
-    }
-    if (this.editor?.isActive('heading', { level: 2 })) {
-      return icons.heading2;
-    }
-    if (this.editor?.isActive('heading', { level: 3 })) {
-      return icons.heading3;
-    }
-    if (this.editor?.isActive('heading', { level: 4 })) {
-      return icons.heading4;
-    }
-    if (this.editor?.isActive('heading', { level: 5 })) {
-      return icons.heading5;
-    }
-    if (this.editor?.isActive('heading', { level: 6 })) {
-      return icons.heading6;
-    }
-    return icons.paragraph;
+    const level = this.getActiveHeadingLevel();
+    const headingIcons: Record<typeof this.levels[number], string> = {
+      1: icons.heading1,
+      2: icons.heading2,
+      3: icons.heading3,
+      4: icons.heading4,
+      5: icons.heading5,
+      6: icons.heading6,
+    };
+
+    return level ? headingIcons[level] : icons.paragraph;
   }
   protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-    if(!texts){
-      return ''
+    if (!texts) {
+      return '';
     }
-    if (this.editor?.isActive('heading', { level: 1 })) {
-      return texts.heading1;
-    }
-    if (this.editor?.isActive('heading', { level: 2 })) {
-      return texts.heading2;
-    }
-    if (this.editor?.isActive('heading', { level: 3 })) {
-      return texts.heading3;
-    }
-    if (this.editor?.isActive('heading', { level: 4 })) {
-      return texts.heading4;
-    }
-    if (this.editor?.isActive('heading', { level: 5 })) {
-      return texts.heading5;
-    }
-    if (this.editor?.isActive('heading', { level: 6 })) {
-      return texts.heading6;
-    }
-    return texts.paragraph;
+    const level = this.getActiveHeadingLevel();
+    const headingHints: Record<typeof this.levels[number], string> = {
+      1: texts.heading1,
+      2: texts.heading2,
+      3: texts.heading3,
+      4: texts.heading4,
+      5: texts.heading5,
+      6: texts.heading6,
+    };
+
+    return level ? headingHints[level] : texts.paragraph;
   }
 
   protected setHeaderOption({ value }: Partial<InsEditorLabelOption<number>>): void {
     this.clearPreviousTextStyles();
-    if (value) {
+    if (value !== undefined && value !== null) {
       this.editor?.setHeading(value);
     } else {
       this.editor?.setParagraph(undefined);
     }
   }
 
-
   private clearPreviousTextStyles(): void {
     this.editor?.removeEmptyTextStyle();
     this.editor?.toggleMark('textStyle');
+  }
+
+  private getActiveHeadingLevel(): typeof this.levels[number] | null {
+    for (const level of this.levels) {
+      if (this.editor?.isActive('heading', { level })) {
+        return level;
+      }
+    }
+
+    return null;
+  }
+
+  private syncHeadingPresentation(): void {
+    if (this.iconDir) {
+      this.iconDir.iconStart = this.getIcon(this.options.icons);
+    }
+    this.insHint.set(this.getHint(this.texts()));
   }
 }
