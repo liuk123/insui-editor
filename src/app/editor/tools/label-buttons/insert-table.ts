@@ -6,8 +6,6 @@ import {
   TemplateRef,
   viewChild,
 } from '@angular/core';
-import { InsToolbarButtonTool } from '../tool-button';
-import { InsToolbarTool } from '../tool';
 import { InsEditorOptions } from '../../common/editor-options';
 import {
   getViewportWidth,
@@ -85,7 +83,7 @@ const MIN_DISTANCE_PX = 70;
   changeDetection: ChangeDetectionStrategy.OnPush,
   hostDirectives: [InsDropdownDirective, InsWithDropdownOpen, InsDropdownPositionSided],
   providers:[
-    // insDropdownOptionsProvider({align: 'right'})
+    insDropdownOptionsProvider({align: 'right'})
   ]
 })
 export class InsInsertTableButtonLabel extends InsToolbarBase {

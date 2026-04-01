@@ -90,7 +90,7 @@ interface ServerSideGlobal extends Global {
       useValue: { appearance: 'textfield' },
     },
     INS_EDITOR_PROVIDERS,
-    INS_EDITOR_LANGUAGE_PROVIDERS,
+    INS_EDITOR_LANGUAGE_PROVIDERS
   ],
   hostDirectives: [
     InsAppearance,
