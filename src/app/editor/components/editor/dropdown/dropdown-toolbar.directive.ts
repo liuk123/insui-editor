@@ -20,7 +20,7 @@ import {
   isElement,
   WINDOW,
 } from '@liuk123/insui';
-import { BehaviorSubject, combineLatest, map } from 'rxjs';
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map } from 'rxjs';
 import { INS_EDITOR_PM_SELECTED_NODE } from '../../../common/pm-css-classes';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 
@@ -53,6 +53,7 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
     this.handler$,
     this.selection$.pipe(map(() => this.getRange())),
   ]).pipe(
+    distinctUntilChanged(),
     map(([handler, range]) => {
       const contained =
         this.el.nativeElement.contains(range.commonAncestorContainer) ||

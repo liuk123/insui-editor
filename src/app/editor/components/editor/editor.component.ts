@@ -198,7 +198,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
       return;
     }
     event.preventDefault();
-    this.nativeFocusableElement?.focus();
+    this.editor?.focus();
   }
 
   protected get dropdownSelectionHandler(): InsBooleanHandler<Range> {
@@ -211,9 +211,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
           if ((this.editor?.view as any)?.dragging !== null) {
             return false;
           }
-          return (
-            this.isBubbleMenu || this.openDropdownWhen(range)
-          );
+          return this.isBubbleMenu || this.openDropdownWhen(range);
         }
       : this.openDropdownWhen;
   }
@@ -222,22 +220,24 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     this.isFloatMenu ||
     Boolean(this.insDropdownOpen?.insDropdownOpen());
 
-  private get focusNode(): Node | null {
-    return this.doc?.getSelection()?.focusNode ?? null;
-  }
-  /**
-   * @description:
-   * The commonAncestorContainer not always relevant node element in Range,
-   * so the focusNode is used for the correct behaviour from the selection,
-   * which is the actual element at the moment
-   */
   private currentFocusedNodeIsTextAnchor(range: Range): boolean {
-    return (
-      this.focusNode?.nodeName === 'A' ||
-      !!this.focusNode?.parentElement?.closest('a') ||
-      !!this.focusNode?.parentElement?.closest('[insEditorRootEditLink]') ||
-      (!!range.startContainer.parentElement?.closest('a') && insIsSafeLinkRange(range))
-    );
+    const startContainer = range.startContainer;
+    const startElement =
+      startContainer instanceof Element ? startContainer : startContainer.parentElement;
+
+    if (!startElement) {
+      return false;
+    }
+
+    if (startElement.closest('[insEditorRootEditLink]')) {
+      return true;
+    }
+
+    if (!this.nativeFocusableElement?.contains(startElement)) {
+      return false;
+    }
+
+    return !!startElement.closest('a') && insIsSafeLinkRange(range);
   }
 
   // nodeFilter = (nodeName: string) => {
@@ -311,6 +311,14 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   public get isLinkSelected(): boolean {
     const focusElement = this.doc?.getSelection()?.focusNode;
     const parentFocusElement = focusElement?.parentNode;
+    const focusAsElement =
+      focusElement instanceof Element ? focusElement : focusElement?.parentElement ?? null;
+    const inEditor = !!focusAsElement && !!this.nativeFocusableElement?.contains(focusAsElement);
+    const inEditorDropdown = !!focusAsElement?.closest('[insEditorRootEditLink]');
+
+    if (!inEditor && !inEditorDropdown) {
+      return false;
+    }
 
     return (
       parentFocusElement?.nodeName.toLowerCase() === 'a' ||
