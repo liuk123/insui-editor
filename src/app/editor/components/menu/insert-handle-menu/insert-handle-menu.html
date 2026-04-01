@@ -1,23 +1,27 @@
 <ins-data-list size="m">
   <ins-opt-group label="标题">
+    <button insOption insHeadNLabel size="m" [editor]="editor"></button>
     <button insOption insHeadNLabel [head]="1" size="m" [editor]="editor"></button>
     <button insOption insHeadNLabel [head]="2" size="m" [editor]="editor"></button>
     <button insOption insHeadNLabel [head]="3" size="m" [editor]="editor"></button>
-    <button insOption insHeadNLabel size="m" [editor]="editor"></button>
   </ins-opt-group>
   <ins-opt-group label="基础">
     <button insOption insBlockquoteLabel size="m" [editor]="editor"></button>
     <button insOption insUnorderedListLabel size="m" [editor]="editor"></button>
+    <button insOption insOrderedListLabel size="m" [editor]="editor"></button>
+    <button insOption insTaskListLabel size="m" [editor]="editor"></button>
     <button insOption insCodeBlockLabel size="m" [editor]="editor"></button>
     <button insOption insHrLabel size="m" [editor]="editor"></button>
   </ins-opt-group>
   <ins-opt-group label="高级">
     <button insOption insInsertTableLabel size="m" [editor]="editor"></button>
-  </ins-opt-group>
-  <ins-opt-group label="媒体">
     <button insOption insImageLabel size="m" [editor]="editor"></button>
     <button insOption insAttachLabel size="m" [editor]="editor" (fileAttached)="fileAttached.emit($event)"></button>
-    <!-- <button insOption insImageLabel size="m" [editor]="editor"></button>
-    <button insOption insImageLabel size="m" [editor]="editor"></button> -->
+  </ins-opt-group>
+
+  <ins-opt-group label="更多">
+    <button insOption insHeadNLabel [head]="4" size="m" [editor]="editor"></button>
+    <button insOption insHeadNLabel [head]="5" size="m" [editor]="editor"></button>
+    <button insOption insHeadNLabel [head]="6" size="m" [editor]="editor"></button>
   </ins-opt-group>
 </ins-data-list>

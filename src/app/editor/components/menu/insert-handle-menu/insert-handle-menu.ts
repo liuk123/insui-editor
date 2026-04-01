@@ -11,6 +11,8 @@ import { InsInsertTableButtonLabel } from '../../../tools/label-buttons/insert-t
 import { InsImageButtonLabel } from '../../../tools/label-buttons/image';
 import { InsAttachLabel } from '../../../tools/label-buttons/attach';
 import { InsEditorAttachedFile } from '../../../common/attached';
+import { InsOrderedListButtonLabel } from '../../../tools/label-buttons/ordered-list';
+import { InsTaskListButtonLabel } from '../../../tools/label-buttons/task-list';
 
 @Component({
   selector: 'ins-insert-handle-menu',
@@ -19,6 +21,8 @@ import { InsEditorAttachedFile } from '../../../common/attached';
     InsHeadNButtonLabel,
     InsBlockquoteLabel,
     InsUnorderedListButtonLabel,
+    InsOrderedListButtonLabel,
+    InsTaskListButtonLabel,
     InsCodeBlockButtonLabel,
     InsHrButtonLabel,
     InsInsertTableButtonLabel,
