@@ -44,7 +44,7 @@ export class InsPaintButtonTool extends InsToolbarTool {
         this.options.backgroundColors ?? this.options.colors;
 
     protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
-    private e = effect(()=>{
+    protected e = effect(()=>{
           this.dropdown.insDropdown = this.tem();
         })
     protected override isActive(): boolean {

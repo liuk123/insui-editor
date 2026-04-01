@@ -55,7 +55,7 @@ export class InsHighlightColorButtonTool extends InsToolbarTool {
   public colors: ReadonlyMap<string, string> = this.options.backgroundColors ?? this.options.colors;
 
   protected tem = viewChild(InsTextfieldDropdownDirective, { read: TemplateRef });
-  private e = effect(() => {
+  protected e = effect(() => {
     this.dropdown.insDropdown = this.tem();
   });
 

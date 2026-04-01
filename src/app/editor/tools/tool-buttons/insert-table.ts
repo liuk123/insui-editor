@@ -84,7 +84,7 @@ export class InsInsertTableButtonTool extends InsToolbarTool {
 
 
     protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
-    private e = effect(()=>{
+    protected e = effect(()=>{
         this.dropdown.insDropdown = this.tem();
     })
 

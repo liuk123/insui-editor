@@ -3,7 +3,6 @@ import {
   Component,
   effect,
   inject,
-  signal,
   TemplateRef,
   viewChild,
 } from '@angular/core';
@@ -14,7 +13,6 @@ import {
   InsChevron,
   InsDataList,
   InsDropdownDirective,
-  InsIcon,
   InsOption,
   InsTextfield,
   InsTextfieldDropdownDirective,
@@ -22,7 +20,7 @@ import {
 } from '@liuk123/insui';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
-import { InsEditorHeadingOption } from '../../common/editor-font-option';
+import { InsEditorLabelOption } from '../../common/editor-font-option';
 import { INS_EDITOR_TOOLBAR_TEXTS } from '../../common/i18n';
 import { InsLanguageEditor } from '../../i18n/language';
 
@@ -57,7 +55,7 @@ export class InsHeadingButtonTool extends InsToolbarTool {
   );
 
   protected tem = viewChild(InsTextfieldDropdownDirective, { read: TemplateRef });
-  private e = effect(() => {
+  protected e = effect(() => {
     this.dropdown.insDropdown = this.tem();
   });
 
@@ -70,6 +68,7 @@ export class InsHeadingButtonTool extends InsToolbarTool {
       this.insHint.set(this.getHint(this.texts()));
     });
   }
+
   protected getIcon(icons: InsEditorOptions['icons']): string {
     if (this.editor?.isActive('heading', { level: 1 })) {
       return icons.heading1;
@@ -116,10 +115,10 @@ export class InsHeadingButtonTool extends InsToolbarTool {
     return texts.paragraph;
   }
 
-  protected setHeaderOption({ headingLevel }: Partial<InsEditorHeadingOption>): void {
+  protected setHeaderOption({ value }: Partial<InsEditorLabelOption<number>>): void {
     this.clearPreviousTextStyles();
-    if (headingLevel) {
-      this.editor?.setHeading(headingLevel);
+    if (value) {
+      this.editor?.setHeading(value);
     } else {
       this.editor?.setParagraph(undefined);
     }

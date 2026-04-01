@@ -1,12 +1,9 @@
-export interface InsEditorFontSizeOption {
+// export interface InsEditorHeadingOption {
+//   name: string;
+//   headingLevel: number;
+// }
+
+export interface InsEditorLabelOption<T> {
   name: string;
-  px?: number;
-}
-export interface InsEditorHeadingOption {
-  name: string;
-  headingLevel: number;
-}
-export interface InsEditorFamilyOption {
-  name: string;
-  family: string;
+  value?: T;
 }

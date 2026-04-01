@@ -30,7 +30,7 @@ export class InsTextColorButtonTool extends InsToolbarTool {
         this.options.textColors ?? this.options.colors;
 
     protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
-    private e = effect(()=>{
+    protected e = effect(()=>{
         this.dropdown.insDropdown = this.tem();
     })
 

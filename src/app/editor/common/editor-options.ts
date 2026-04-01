@@ -8,6 +8,7 @@ import { INS_DEFAULT_LINK_OPTIONS, InsEditorLinkOptions } from './default-link-o
 import { provideOptions } from '@liuk123/insui';
 // import { INS_EDITOR_DEFAULT_TOOLS } from './default-editor-tools';
 import { EDITOR_BLANK_COLOR, INS_EDITOR_DEFAULT_EDITOR_COLORS } from './default-editor-colors';
+import { insDefaultAlignOptionsHandler } from './default-align-options-handler';
 
 export interface InsEditorOptions extends Partial<EditorOptions> {
   readonly blankColor: string;
@@ -16,6 +17,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
   readonly backgroundColors: ReadonlyMap<string, string> | null;
   readonly fontSizeOptions: typeof insDefaultFontSizeOptionsHandler;
   readonly headingOptions: typeof insDefaultHeadingOptionsHandler;
+  readonly alignOptions: typeof insDefaultAlignOptionsHandler;
   readonly icons: {
     readonly addRowTable: string;
     readonly anchor: string;
@@ -112,6 +114,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
   linkOptions: INS_DEFAULT_LINK_OPTIONS,
   fontSizeOptions: insDefaultFontSizeOptionsHandler,
   headingOptions: insDefaultHeadingOptionsHandler,
+  alignOptions: insDefaultAlignOptionsHandler,
   floatingToolbar: false,
   parseOptions: {},
   icons: {

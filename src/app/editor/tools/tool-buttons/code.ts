@@ -53,7 +53,7 @@ export class InsCodeButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective);
 
   protected tem = viewChild(InsTextfieldDropdownDirective, {read: TemplateRef})
-    private e = effect(()=>{
+    protected e = effect(()=>{
       this.dropdown.insDropdown = this.tem();
     })
 

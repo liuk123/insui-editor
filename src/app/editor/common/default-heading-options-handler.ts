@@ -1,4 +1,4 @@
-import { InsEditorHeadingOption } from "./editor-font-option";
+import { InsEditorLabelOption } from "./editor-font-option";
 
 export function insDefaultHeadingOptionsHandler(
     texts: {
@@ -10,35 +10,34 @@ export function insDefaultHeadingOptionsHandler(
         heading5: string;
         heading6: string;
     }
-): ReadonlyArray<Partial<InsEditorHeadingOption>> {
+): ReadonlyArray<Partial<InsEditorLabelOption<number>>> {
     return [
         {
             name: texts.paragraph,
-            // px is undefined, so it won't set font size, just setParagraph
         },
         {
             name: texts.heading1,
-            headingLevel: 1,
+            value: 1,
         },
         {
             name: texts.heading2,
-            headingLevel: 2,
+            value: 2,
         },
         {
             name: texts.heading3,
-            headingLevel: 3,
+            value: 3,
         },
         {
             name: texts.heading4,
-            headingLevel: 4,
+            value: 4,
         },
         {
             name: texts.heading5,
-            headingLevel: 5,
+            value: 5,
         },
         {
             name: texts.heading6,
-            headingLevel: 6,
+            value: 6,
         },
     ];
 }

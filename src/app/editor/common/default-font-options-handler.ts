@@ -1,50 +1,50 @@
-import { InsEditorFontSizeOption } from "./editor-font-option";
+import { InsEditorLabelOption } from "./editor-font-option";
 
 
-export function insDefaultFontSizeOptionsHandler(): ReadonlyArray<Partial<InsEditorFontSizeOption>> {
+export function insDefaultFontSizeOptionsHandler(): ReadonlyArray<Partial<InsEditorLabelOption<number>>>  {
     return [
         {
-            px: 12,
+            value: 12,
             name: '12'
         },
         {
-            px: 14,
+            value: 14,
             name: '14'
         },
         {
-            px: 16,
+            value: 16,
             name: '16'
         },
         {
-            px: 18,
+            value: 18,
             name: '18'
         },
         {
-            px: 20,
+            value: 20,
             name: '20'
         },
         {
-            px: 22,
+            value: 22,
             name: '22'
         },
         {
-            px: 24,
+            value: 24,
             name: '24'
         },
         {
-            px: 26,
+            value: 26,
             name: '26'
         },
         {
-            px: 28,
+            value: 28,
             name: '28'
         },
         {
-            px: 30,
+            value: 30,
             name: '30'
         },
         {
-            px: 32,
+            value: 32,
             name: '32'
         },
     ];

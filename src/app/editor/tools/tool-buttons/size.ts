@@ -21,7 +21,7 @@ import {
   InsTextfieldDropdownDirective,
   InsWithDropdownOpen,
 } from '@liuk123/insui';
-import { InsEditorFontSizeOption } from '../../common/editor-font-option';
+import { InsEditorLabelOption } from '../../common/editor-font-option';
 import { InsLanguageEditor } from '../../i18n/language';
 
 @Component({
@@ -61,7 +61,7 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
     super();
     this.editorChange$.subscribe(() => {
       const size = this.editor?.getFontSize();
-      this.label.set(this.fontsOptions?.find((opt) => opt.px === size)?.name ?? '');
+      this.label.set(this.fontsOptions?.find((opt) => opt.value === size)?.name ?? '');
     });
   }
 
@@ -73,7 +73,7 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
     return texts?.fontSize ?? '';
   }
 
-  protected setFontOption({ px }: Partial<InsEditorFontSizeOption>): void {
-    this.editor?.setParagraph({ fontSize: (px ?? 0) + 'px' });
+  protected setFontOption({ value }: Partial<InsEditorLabelOption<number>>): void {
+    this.editor?.setParagraph({ fontSize: (value ?? 0) + 'px' });
   }
 }

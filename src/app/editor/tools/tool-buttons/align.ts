@@ -3,12 +3,15 @@ import {
   Component,
   effect,
   inject,
+  signal,
   TemplateRef,
   viewChild,
   ViewChild,
 } from '@angular/core';
 import { InsEditorOptions } from '../../common/editor-options';
 import {
+  InsChevron,
+  InsDataList,
   InsDropdownDirective,
   InsTextfield,
   InsTextfieldDropdownDirective,
@@ -22,30 +25,27 @@ import { InsAlignJustifyButtonTool } from './align-justify';
 import { InsAlignLeftButtonTool } from './align-left';
 import { InsAlignRightButtonTool } from './align-right';
 import { InsLanguageEditor } from '../../i18n/language';
+import { INS_EDITOR_TOOLBAR_TEXTS } from '../../common/i18n';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
 
 @Component({
   standalone: true,
   selector: 'button[insAlignTool]',
-  imports: [
-    InsAlignCenterButtonTool,
-    InsAlignJustifyButtonTool,
-    InsAlignLeftButtonTool,
-    InsAlignRightButtonTool,
-    InsTextfield,
-  ],
+  imports: [InsDataList, InsTextfield],
   template: `
-
     <ng-container *insTextfieldDropdown>
-      <div insToolbarDropdownContent>
-        <button insAlignLeftTool [editor]="editor"></button>
-        <button insAlignCenterTool [editor]="editor"></button>
-        <button insAlignRightTool [editor]="editor"></button>
-        <button insAlignJustifyTool [editor]="editor"></button>
-      </div>
+      <ins-data-list>
+        @for (item of alignOptions(); track item.name) {
+          <button insOption type="button" (click)="setAlignOption(item)">
+            {{ item.name }}
+          </button>
+        }
+      </ins-data-list>
     </ng-container>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen],
+  hostDirectives: [InsToolbarButtonTool, InsDropdownDirective, InsWithDropdownOpen, InsChevron],
   host: {
     '[attr.automation-id]': '"toolbar__align-button"',
     '[attr.title]': 'insHint()',
@@ -55,19 +55,25 @@ export class InsAlignButtonTool extends InsToolbarTool {
   private readonly dropdown = inject(InsDropdownDirective);
 
   protected tem = viewChild(InsTextfieldDropdownDirective, { read: TemplateRef });
-  private e = effect(() => {
+  protected e = effect(() => {
     this.dropdown.insDropdown = this.tem();
   });
+  protected alignOptions =toSignal(
+    inject(INS_EDITOR_TOOLBAR_TEXTS).pipe(map((texts) => this.options.alignOptions(texts)))
+  )
 
-  protected override isActive(): boolean {
-    return (
-      this.editor?.isActive({ textAlign: 'center' }) ||
-      this.editor?.isActive({ textAlign: 'justify' }) ||
-      this.editor?.isActive({ textAlign: 'left' }) ||
-      this.editor?.isActive({ textAlign: 'right' }) ||
-      false
-    );
+  protected setAlignOption({ value }: { value: string }): void {
+    this.editor?.onAlign(value);
   }
+  // protected override isActive(): boolean {
+  //   return (
+  //     this.editor?.isActive({ textAlign: 'center' }) ||
+  //     this.editor?.isActive({ textAlign: 'justify' }) ||
+  //     this.editor?.isActive({ textAlign: 'left' }) ||
+  //     this.editor?.isActive({ textAlign: 'right' }) ||
+  //     false
+  //   );
+  // }
 
   protected getIcon(icons: InsEditorOptions['icons']): string {
     return icons.textAlignPreview;
