@@ -200,7 +200,7 @@ export class InsDragHandle implements OnInit, OnDestroy {
       this.activeNode.set(node);
 
       this.top.set(rect.top - containerRect.top + scrollTop);
-      this.left.set(rect.left - containerRect.left + scrollLeft - 45);
+      this.left.set(rect.left - containerRect.left + scrollLeft - 56);
 
       this.visible.set(true);
     });

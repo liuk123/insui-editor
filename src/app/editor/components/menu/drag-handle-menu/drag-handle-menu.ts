@@ -16,4 +16,14 @@ export class InsDragHandleMenu {
   public editor: AbstractInsEditor | null = inject(InsTiptapEditorService, {
     optional: true,
   });
+
+  get isDeleteGroup() {
+    return this.editor?.isActive('group') ?? false;
+  }
+  get isDeleteTable() {
+    return this.editor?.isActive('table') ?? false;
+  }
+  get isDeleteDetail() {
+    return this.editor?.isActive('detail') ?? false;
+  }
 }

@@ -161,9 +161,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
       fromEvent(this.el, 'mouseleave').pipe(map(() => false)),
     ),
   );
-  private readonly a1 = effect(() => this.appearance.insAppearanceState.set(this.state()));
-  private readonly a2 = effect(() => this.appearance.insAppearanceMode.set(this.mode()));
-  private readonly a3 = effect(() => this.appearance.insAppearanceFocus.set(this.focused()));
+  protected readonly a1 = effect(() => this.appearance.insAppearanceState.set(this.state()));
+  protected readonly a2 = effect(() => this.appearance.insAppearanceMode.set(this.mode()));
+  protected readonly a3 = effect(() => this.appearance.insAppearanceFocus.set(this.focused()));
 
   ngOnInit(): void {
     if (this.insDropdownOpen) {
@@ -262,7 +262,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     return this.selectionState.before.startsWith('/');
   }
   public get isBubbleMenu(): boolean {
-    if (this.value().trim() === ''||this.editor?.state?.selection.empty) {
+    if (this.editor?.state?.selection.empty) {
       return false;
     }
     return true
