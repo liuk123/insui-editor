@@ -120,16 +120,16 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     );
   }
 
-  public getGroupColor(): string {
-    if (this.editor?.isActive('group')) {
-      const style = this.editor.getAttributes('group')['style'] ?? '';
-      const styles = insParseStyle(style);
+  // public getGroupColor(): string {
+  //   if (this.editor?.isActive('group')) {
+  //     const style = this.editor.getAttributes('group')['style'] ?? '';
+  //     const styles = insParseStyle(style);
 
-      return styles['background-color'] ?? styles['background'] ?? '';
-    }
+  //     return styles['background-color'] ?? styles['background'] ?? '';
+  //   }
 
-    return '';
-  }
+  //   return '';
+  // }
 
   public onAlign(align: string): void {
     this.editor?.chain().focus().setTextAlign(align).run();
@@ -215,12 +215,31 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       .run();
   }
 
+  // public setFontColor(color: string): void {
+  //   this.editor?.chain().focus().setFontColor(color).run();
+  // }
+
+  public setHighlightColor(color: string): void {
+    this.editor?.chain().focus().setHighlight({color}).run();
+  }
+  public unsetHighlight(): void {
+    this.editor?.chain().focus().unsetHighlight().run();
+  }
+  public toggleHighlight(): void {
+    this.editor?.chain().focus().toggleHighlight().run();
+  }
   public setFontColor(color: string): void {
-    this.editor?.chain().focus().setFontColor(color).run();
+    this.editor?.chain().focus().setColor(color).run();
+  }
+  public unsetFontColor(): void {
+    this.editor?.chain().focus().unsetColor().run();
   }
 
   public setBackgroundColor(color: string): void {
     this.editor?.chain().focus().setBackgroundColor(color).run();
+  }
+  public unsetBackgroundColor(): void {
+    this.editor?.chain().focus().unsetBackgroundColor().run();
   }
 
   public toggleUnderline(): void {

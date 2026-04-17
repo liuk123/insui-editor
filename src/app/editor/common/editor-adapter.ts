@@ -55,7 +55,7 @@ export abstract class AbstractInsEditor {
 
     public abstract getCellColor(): string;
 
-    public abstract getGroupColor(): string;
+    // public abstract getGroupColor(): string;
 
     public abstract onAlign(align: string): void;
 
@@ -71,9 +71,18 @@ export abstract class AbstractInsEditor {
 
     public abstract removeBlocks(): void;
 
+    // public abstract setFontColor(color: string): void;
+
+    public abstract setHighlightColor(color: string): void;
+    public abstract unsetHighlight(): void;
+    public abstract toggleHighlight(): void;
+
     public abstract setFontColor(color: string): void;
+    public abstract unsetFontColor(): void;
 
     public abstract setBackgroundColor(color: string): void;
+    public abstract unsetBackgroundColor(): void;
+
 
     public abstract toggleBold(): void;
 

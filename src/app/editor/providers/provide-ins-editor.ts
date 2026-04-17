@@ -27,21 +27,20 @@ import { type TableRowOptions } from '@tiptap/extension-table-row';
 import { type TaskItemOptions } from '@tiptap/extension-task-item';
 import { type TaskListOptions } from '@tiptap/extension-task-list';
 import { type TextAlignOptions } from '@tiptap/extension-text-align';
-import { type TextStyleOptions } from '@tiptap/extension-text-style';
+import { ColorOptions, FontSizeOptions, type TextStyleOptions } from '@tiptap/extension-text-style';
 import { type UnderlineOptions } from '@tiptap/extension-underline';
-import { type AudioOptions } from '@tiptap/extension-audio';
 import { type StarterKitOptions } from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import { type TypographyOptions } from '@tiptap/extension-typography';
-import { InsFontSizeOptions } from '../extensions/font-size';
-import { InsFontColorOptions } from '../extensions/font-color';
 import { type TrailingNodeOptions } from '@tiptap/extensions'
-import { InsBackgroundColorOptions } from '../extensions/background-color';
 import { InsDetailsExtensionOptions } from '../extensions/details';
 import { DetailsContentOptions, DetailsSummaryOptions } from '@tiptap/extension-details';
 import { ColumnListOptions, ColumnOptions } from '../extensions/columns';
 import { ImageOptions } from '@tiptap/extension-image';
 import { IframeOptions } from '../extensions/iframe';
+import { HighlightOptions } from '@tiptap/extension-highlight';
+import { BackgroundColorOptions } from '@tiptap/extension-text-style';
+import { FontFamilyOptions } from '@tiptap/extension-text-style';
 
 interface Options {
   starterKit: Partial<StarterKitOptions> | boolean;
@@ -67,8 +66,9 @@ interface Options {
   text: Partial<Record<string, unknown>> | boolean;
   placeholder: Partial<PlaceholderOptions> | boolean;
   textStyle: Partial<TextStyleOptions> | boolean;
-  fontColor: Partial<InsFontColorOptions> | boolean;
-  fontSize: Partial<InsFontSizeOptions> | boolean;
+  color: Partial<ColorOptions> | boolean;
+  fontSize: Partial<FontSizeOptions> | boolean;
+  fontFamily: Partial<FontFamilyOptions> | boolean;
   textAlign: Partial<TextAlignOptions> | boolean;
   underline: Partial<UnderlineOptions> | boolean;
   subscript: Partial<SubscriptExtensionOptions> | boolean;
@@ -79,7 +79,8 @@ interface Options {
   fileLink: Partial<Record<string, unknown>> | boolean;
 
   // enter: Partial<Record<string, unknown>> | boolean;
-  backgroundColor: Partial<InsBackgroundColorOptions> | boolean;
+  backgroundColor: Partial<BackgroundColorOptions> | boolean;
+  highlight: Partial<HighlightOptions> | boolean;
   table: Partial<TableOptions> | boolean;
   tableCell: Partial<TableCellOptions> | boolean;
   tableRow: Partial<TableRowOptions> | boolean;
@@ -334,20 +335,29 @@ const EXTENSIONS = [
   //     },
   // },
   {
-    key: 'fontColor',
+    key: 'color',
     default: true,
-    async loader(options: Partial<InsFontColorOptions>) {
-      const { InsFontColor } = await import('../extensions/font-color');
-      return InsFontColor.configure(options);
+    async loader(options: Partial<ColorOptions>) {
+      const { Color } = await import('@tiptap/extension-text-style');
+      return Color.configure(options);
     },
   },
   {
     key: 'fontSize',
     default: true,
-    async loader(options: Partial<InsFontSizeOptions>) {
-      const { InsFontSizeExtension } = await import('../extensions/font-size');
+    async loader(options: Partial<FontSizeOptions>) {
+      const { FontSize } = await import('@tiptap/extension-text-style');
 
-      return InsFontSizeExtension.configure(options);
+      return FontSize.configure(options);
+    },
+  },
+  {
+    key: 'fontFamily',
+    default: true,
+    async loader(options: Partial<FontFamilyOptions>) {
+      const { FontFamily } = await import('@tiptap/extension-text-style');
+
+      return FontFamily.configure(options);
     },
   },
   {
@@ -407,8 +417,6 @@ const EXTENSIONS = [
     key: 'image',
     default: true,
     async loader(options: Partial<ImageOptions>, injector: Injector) {
-      // const { insCreateImageEditorExtension } = await import('../extensions/image-editor/index');
-      // return insCreateImageEditorExtension({ injector, ...options });
       const {Image} = await import('@tiptap/extension-image');
       return Image.configure({
         resize: {
@@ -440,13 +448,21 @@ const EXTENSIONS = [
     },
   },
   {
+    key: 'highlight',
+    default: true,
+    async loader(options: Partial<HighlightOptions>) {
+      const { Highlight } = await import('@tiptap/extension-highlight');
+
+      return Highlight.configure(options);
+    },
+  },
+  {
       key: 'backgroundColor',
       default: true,
-      async loader(options: Partial<InsBackgroundColorOptions>) {
-          const {InsBackgroundColor} =
-              await import('../extensions/background-color');
+      async loader(options: Partial<BackgroundColorOptions>) {
+          const {BackgroundColor} = await import('@tiptap/extension-text-style');
 
-          return InsBackgroundColor.configure(options);
+          return BackgroundColor.configure(options);
       },
   },
   // {

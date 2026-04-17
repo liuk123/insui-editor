@@ -129,37 +129,37 @@ declare module '@tiptap/core' {
 
   interface Commands<ReturnType> {
     fontSize: {
-            /**
-             * Set the font size
-             */
-            setFontSize(fontSize: string): ReturnType;
-            /**
-             * Unset the font size
-             */
-            unsetFontSize(): ReturnType;
-        };
-        textStyle: {
-            /**
-             * Remove spans without inline style attributes.
-             * @example editor.commands.removeEmptyTextStyle()
-             */
-            removeEmptyTextStyle(): ReturnType;
-            toggleTextStyle: (attributes?: TextStyleAttributes | undefined) => ReturnType;
-        };
+      /**
+       * Set the font size
+       */
+      setFontSize(fontSize: string): ReturnType;
+      /**
+       * Unset the font size
+       */
+      unsetFontSize(): ReturnType;
+    };
+    // textStyle: {
+    //   /**
+    //    * Remove spans without inline style attributes.
+    //    * @example editor.commands.removeEmptyTextStyle()
+    //    */
+    //   removeEmptyTextStyle(): ReturnType;
+    //   toggleTextStyle: (attributes?: TextStyleAttributes | undefined) => ReturnType;
+    // };
   }
 
-  interface Commands<ReturnType> {
-    backgroundColor: {
-      /**
-       * Set the background color
-       */
-      setBackgroundColor(backgroundColor: string): ReturnType;
-      /**
-       * Unset the background color
-       */
-      unsetBackgroundColor(): ReturnType;
-    };
-  }
+  // interface Commands<ReturnType> {
+  //   backgroundColor: {
+  //     /**
+  //      * Set the background color
+  //      */
+  //     setBackgroundColor(backgroundColor: string): ReturnType;
+  //     /**
+  //      * Unset the background color
+  //      */
+  //     unsetBackgroundColor(): ReturnType;
+  //   };
+  // }
 
   interface Commands<ReturnType> {
     columnList: {
