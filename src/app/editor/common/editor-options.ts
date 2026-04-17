@@ -98,6 +98,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
 
   readonly placeholder: string;
   readonly editorProps?: EditorProps;
+  readonly injectCSS?: boolean;
 }
 
 export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
@@ -105,6 +106,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
   spellcheck: false,
   placeholder: '',
   enableDefaultStyles: true,
+  injectCSS: false,
 
   colors: INS_EDITOR_DEFAULT_EDITOR_COLORS,
   textColors: null,

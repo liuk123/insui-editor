@@ -71,7 +71,7 @@ export class InsPaintButtonTool extends InsToolbarTool {
 
     protected setCellColor(color: string): void {
         if (this.editor?.isActive('group')) {
-            this.editor.setGroupHilite(color);
+            // this.editor.setGroupHilite(color);
         } else if (this.editor?.isActive('table')) {
             this.editor.setCellColor(color);
         }

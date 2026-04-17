@@ -14,7 +14,7 @@ export const Column = Node.create<ColumnOptions>({
   addOptions() {
     return {
       HTMLAttributes: {
-        class: 'column',
+        class: 'ins-column',
       },
     };
   },

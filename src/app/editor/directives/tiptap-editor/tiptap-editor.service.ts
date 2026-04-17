@@ -447,17 +447,17 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.commands.unsetDetails();
   }
 
-  public setGroup(): void {
-    this.editor?.commands.setGroup();
-  }
+  // public setGroup(): void {
+  //   this.editor?.commands.setGroup();
+  // }
 
-  public removeGroup(): void {
-    this.editor?.commands.removeGroup();
-  }
+  // public removeGroup(): void {
+  //   this.editor?.commands.removeGroup();
+  // }
 
-  public setGroupHilite(color: string): void {
-    this.editor?.commands.setGroupHilite(color);
-  }
+  // public setGroupHilite(color: string): void {
+  //   this.editor?.commands.setGroupHilite(color);
+  // }
 
   public setAnchor(anchor: string): void {
     this.editor?.commands.setAnchor(anchor.replace('#', ''));

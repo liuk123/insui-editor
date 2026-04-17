@@ -18,32 +18,32 @@ import type TableRow from '@tiptap/extension-table-row';
 import type TaskItem from '@tiptap/extension-task-item';
 import type TaskList from '@tiptap/extension-task-list';
 import type TextAlign from '@tiptap/extension-text-align';
-import type { TextStyle } from '@tiptap/extension-text-style';
+import type { TextStyle, TextStyleAttributes } from '@tiptap/extension-text-style';
 import type Underline from '@tiptap/extension-underline';
 
 import type StarterKit from '@tiptap/starter-kit';
 import { InsEditorAttachedFile } from '../attached';
 
-export type {
-  BulletList,
-  // Highlight,
-  Image,
-  Link,
-  ListItem,
-  StarterKit,
-  Subscript,
-  Superscript,
-  Table,
-  TableCell,
-  TableHeader,
-  TableRow,
-  TaskItem,
-  TaskList,
-  TextAlign,
-  TextStyle,
-  Underline,
-  // Youtube,
-};
+// export type {
+//   BulletList,
+//   // Highlight,
+//   Image,
+//   Link,
+//   ListItem,
+//   StarterKit,
+//   Subscript,
+//   Superscript,
+//   Table,
+//   TableCell,
+//   TableHeader,
+//   TableRow,
+//   TaskItem,
+//   TaskList,
+//   TextAlign,
+//   TextStyle,
+//   Underline,
+//   // Youtube,
+// };
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -99,13 +99,13 @@ declare module '@tiptap/core' {
     };
   }
 
-  interface Commands<ReturnType> {
-    group: {
-      removeGroup(): ReturnType;
-      setGroup(): ReturnType;
-      setGroupHilite(color: string): ReturnType;
-    };
-  }
+  // interface Commands<ReturnType> {
+  //   group: {
+  //     removeGroup(): ReturnType;
+  //     setGroup(): ReturnType;
+  //     setGroupHilite(color: string): ReturnType;
+  //   };
+  // }
 
   interface Commands<ReturnType> {
     anchor: {
@@ -129,15 +129,23 @@ declare module '@tiptap/core' {
 
   interface Commands<ReturnType> {
     fontSize: {
-      /**
-       * Set the font size
-       */
-      setFontSize(fontSize: string): ReturnType;
-      /**
-       * Unset the font size
-       */
-      unsetFontSize(): ReturnType;
-    };
+            /**
+             * Set the font size
+             */
+            setFontSize(fontSize: string): ReturnType;
+            /**
+             * Unset the font size
+             */
+            unsetFontSize(): ReturnType;
+        };
+        textStyle: {
+            /**
+             * Remove spans without inline style attributes.
+             * @example editor.commands.removeEmptyTextStyle()
+             */
+            removeEmptyTextStyle(): ReturnType;
+            toggleTextStyle: (attributes?: TextStyleAttributes | undefined) => ReturnType;
+        };
   }
 
   interface Commands<ReturnType> {
@@ -150,6 +158,19 @@ declare module '@tiptap/core' {
        * Unset the background color
        */
       unsetBackgroundColor(): ReturnType;
+    };
+  }
+
+  interface Commands<ReturnType> {
+    columnList: {
+      /**
+       * Add a column list
+       */
+      setColumns: (n: number) => ReturnType;
+      /**
+       * Remove the column list
+       */
+      unsetColumns: () => ReturnType;
     };
   }
 }

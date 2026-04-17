@@ -1,32 +1,27 @@
-import {mergeAttributes} from '@tiptap/core';
-import {createColGroup, Table} from '@tiptap/extension-table';
+import { mergeAttributes } from '@tiptap/core';
+import { createColGroup, Table } from '@tiptap/extension-table';
 
 export const InsTable = Table.extend({
-    renderHTML({node, HTMLAttributes}) {
-        const {colgroup, tableWidth, tableMinWidth} = createColGroup(
-            node,
-            this.options.cellMinWidth,
-        );
+  renderHTML({ node, HTMLAttributes }) {
+    const { colgroup, tableWidth, tableMinWidth } = createColGroup(node, this.options.cellMinWidth);
 
-        return [
-            'div',
-            {class: 'tableWrapper'},
-            [
-                'table',
-                mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
-                    style: tableWidth
-                        ? `width: ${tableWidth}`
-                        : `min-width: ${tableMinWidth}`,
-                }),
-                colgroup,
-                ['tbody', 0],
-            ],
-        ];
-    },
+    return [
+      'div',
+      { class: 'tableWrapper' },
+      [
+        'table',
+        mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
+          style: tableWidth ? `width: ${tableWidth}` : `min-width: ${tableMinWidth}`,
+        }),
+        colgroup,
+        ['tbody', 0],
+      ],
+    ];
+  },
 })
-    .configure({
-        resizable: true,
-        lastColumnResizable: true,
-        allowTableNodeSelection: true,
-    })
-    .extend();
+  .configure({
+    resizable: true,
+    lastColumnResizable: true,
+    allowTableNodeSelection: true,
+  })
+  .extend();

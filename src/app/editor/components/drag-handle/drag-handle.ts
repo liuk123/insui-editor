@@ -40,8 +40,8 @@ export class InsDragHandle implements OnInit, OnDestroy {
   private currentNode: ProseMirrorNode | null = null;
   private pluginKey = new PluginKey('ins-drag-handle');
   private isDraggingFromHandle = false;
-  protected insertOpen=signal(false)
-  protected dragOpen=signal(false)
+
+
 
   get editor() {
     return this.editorService.getOriginTiptapEditor();
@@ -64,6 +64,8 @@ export class InsDragHandle implements OnInit, OnDestroy {
     return allowedNodes.includes(nodeName);
   }
 
+  protected insertOpen=signal(false)
+  protected dragOpen=signal(false)
   public readonly dragHandleContent = input<TemplateRef<any> | null>(null);
   public readonly insertHandleContent = input<TemplateRef<any> | null>(null);
   // Menu Items Logic

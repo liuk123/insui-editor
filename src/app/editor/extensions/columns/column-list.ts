@@ -4,21 +4,6 @@ export interface ColumnListOptions {
   HTMLAttributes: Record<string, any>;
 }
 
-declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
-    columnList: {
-      /**
-       * Add a column list
-       */
-      setColumns: (n: number) => ReturnType;
-      /**
-       * Remove the column list
-       */
-      unsetColumns: () => ReturnType;
-    };
-  }
-}
-
 export const ColumnList = Node.create<ColumnListOptions>({
   name: 'columnList',
   group: 'block',
@@ -29,7 +14,7 @@ export const ColumnList = Node.create<ColumnListOptions>({
   addOptions() {
     return {
       HTMLAttributes: {
-        class: 'column-list',
+        class: 'ins-column-list',
       },
     };
   },

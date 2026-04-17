@@ -57,7 +57,7 @@
 </ng-template>
 
 @if (editorLoaded()) {
-  <ins-drag-handle [dragHandleContent]="dragHandle" [insertHandleContent]="insertHandle"></ins-drag-handle>
+  <ins-drag-handle [dragHandleContent]="dragHandle" [insertHandleContent]="insertHandle" [style.display]="focused() ? 'block' : 'none'"></ins-drag-handle>
 }
 
 

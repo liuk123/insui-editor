@@ -7,67 +7,61 @@ import { INS_TIPTAP_WHITESPACE_HACK } from '../../common/hack';
 
 export const InsLink = Link.extend<LinkOptions>({
   addAttributes() {
-        return {
-            ...this.parent?.(),
-            ...insParseNodeAttributes(['download']),
-        };
-    },
-    addCommands() {
-        return {
-            ...this.parent?.(),
-            toggleLink:
-                (attributes) =>
-                ({chain, state, editor}) => {
-                    {
-                        const pos = state.selection.from;
-                        const resolvedPos = state.doc.resolve(pos);
-                        const node = resolvedPos.nodeAfter || resolvedPos.nodeBefore;
-                        const isImageNode = node?.type === editor.schema.nodes['image'];
+    return {
+      ...this.parent?.(),
+      ...insParseNodeAttributes(['download']),
+    };
+  },
+  addCommands() {
+    return {
+      ...this.parent?.(),
+      toggleLink:
+        (attributes) =>
+        ({ chain, state, editor }) => {
+          {
+            const pos = state.selection.from;
+            const resolvedPos = state.doc.resolve(pos);
+            const node = resolvedPos.nodeAfter || resolvedPos.nodeBefore;
+            const isImageNode = node?.type === editor.schema.nodes['image'];
 
-                        if (isImageNode) {
-                            return typeof (editor.commands as any).setImageLink ===
-                                'function'
-                                ? (chain() as any).setImageLink().run()
-                                : false;
-                        }
+            if (isImageNode) {
+              return typeof (editor.commands as any).setImageLink === 'function'
+                ? (chain() as any).setImageLink().run()
+                : false;
+            }
 
-                        if (!insGetSlicedFragment(state).trim()) {
-                            return false;
-                        }
+            if (!insGetSlicedFragment(state).trim()) {
+              return false;
+            }
 
-                        const {from, to} = insGetCurrentWordBounds(editor);
-                        const forwardSymbol =
-                            state.selection.to < state.doc.content.size
-                                ? state.doc.textBetween(
-                                      state.selection.to,
-                                      state.selection.to + 1,
-                                  )
-                                : '';
+            const { from, to } = insGetCurrentWordBounds(editor);
+            const forwardSymbol =
+              state.selection.to < state.doc.content.size
+                ? state.doc.textBetween(state.selection.to, state.selection.to + 1)
+                : '';
 
-                        let toggleMark = chain()
-                            .setTextSelection({from, to})
-                            .toggleMark(this.name, attributes, {
-                                extendEmptyMarkRange: true,
-                            })
-                            .setMeta('preventAutolink', true)
-                            .setTextSelection(to);
+            let toggleMark = chain()
+              .setTextSelection({ from, to })
+              .toggleMark(this.name, attributes, {
+                extendEmptyMarkRange: true,
+              })
+              .setMeta('preventAutolink', true)
+              .setTextSelection(to);
 
-                        if (forwardSymbol === '') {
-                            toggleMark = toggleMark.insertContent(
-                                INS_TIPTAP_WHITESPACE_HACK,
-                            );
-                        }
+            if (forwardSymbol === '') {
+              toggleMark = toggleMark.insertContent(INS_TIPTAP_WHITESPACE_HACK);
+            }
 
-                        return toggleMark
-                            .setTextSelection({
-                                from,
-                                to,
-                            })
-                            .run();
-                    }
-                },
-        };
-    },
+            return toggleMark
+              .setTextSelection({
+                from,
+                to,
+              })
+              .run();
+          }
+        },
+    };
+  },
 
   renderHTML({ HTMLAttributes }) {
     return [
@@ -90,8 +84,8 @@ export const InsLink = Link.extend<LinkOptions>({
     };
   },
   addPasteRules() {
-        return [
-            // Workaround for issue: https://github.com/ueberdosis/tiptap/issues/5957
-        ];
-    },
-}).configure({openOnClick: false});
+    return [
+      // Workaround for issue: https://github.com/ueberdosis/tiptap/issues/5957
+    ];
+  },
+}).configure({ openOnClick: false });

@@ -178,11 +178,11 @@ export abstract class AbstractInsEditor {
 
     public abstract unsetDetails(): void;
 
-    public abstract setGroup(): void;
+    // public abstract setGroup(): void;
 
-    public abstract setGroupHilite(color: string): void;
+    // public abstract setGroupHilite(color: string): void;
 
-    public abstract removeGroup(): void;
+    // public abstract removeGroup(): void;
 
     public abstract setAnchor(id: string): void;
 

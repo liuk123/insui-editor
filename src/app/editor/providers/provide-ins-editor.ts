@@ -29,6 +29,7 @@ import { type TaskListOptions } from '@tiptap/extension-task-list';
 import { type TextAlignOptions } from '@tiptap/extension-text-align';
 import { type TextStyleOptions } from '@tiptap/extension-text-style';
 import { type UnderlineOptions } from '@tiptap/extension-underline';
+import { type AudioOptions } from '@tiptap/extension-audio';
 import { type StarterKitOptions } from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import { type TypographyOptions } from '@tiptap/extension-typography';
@@ -554,9 +555,8 @@ const EXTENSIONS = [
       key: 'audio',
       default: true,
       async loader(options: Partial<Record<string, unknown>>) {
-          const {InsAudio} = await import('../extensions/media');
-
-          return InsAudio.configure(options);
+        const { Audio } = await import('@tiptap/extension-audio');
+        return Audio.configure(options);
       },
   },
   {

@@ -1,14 +1,14 @@
-import {mergeAttributes} from '@tiptap/core';
-import {TableCell} from '@tiptap/extension-table-cell';
+import { mergeAttributes } from '@tiptap/core';
+import { TableCell } from '@tiptap/extension-table-cell';
 
 export const InsTableCell = TableCell.extend({
-    renderHTML({HTMLAttributes}) {
-        const attrs = mergeAttributes(this.options.HTMLAttributes, HTMLAttributes);
+  renderHTML({ HTMLAttributes }) {
+    const attrs = mergeAttributes(this.options.HTMLAttributes, HTMLAttributes);
 
-        if (attrs['colwidth']) {
-            attrs['style'] = `width: ${attrs['colwidth']}px; ${attrs['style']}`;
-        }
+    if (attrs['colwidth']) {
+      attrs['style'] = `width: ${attrs['colwidth']}px; ${attrs['style']}`;
+    }
 
-        return ['td', attrs, 0];
-    },
+    return ['td', attrs, 0];
+  },
 });

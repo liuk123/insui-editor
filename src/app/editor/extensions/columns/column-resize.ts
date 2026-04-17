@@ -65,7 +65,10 @@ class ColumnResizeView {
 
     if (isNearRight && column.nextElementSibling?.getAttribute('data-type') === 'column') {
       this.view.dom.style.cursor = 'col-resize';
-    } else if (isNearLeft && column.previousElementSibling?.getAttribute('data-type') === 'column') {
+    } else if (
+      isNearLeft &&
+      column.previousElementSibling?.getAttribute('data-type') === 'column'
+    ) {
       this.view.dom.style.cursor = 'col-resize';
     } else {
       this.view.dom.style.cursor = '';
@@ -84,7 +87,10 @@ class ColumnResizeView {
 
     if (isNearRight && column.nextElementSibling?.getAttribute('data-type') === 'column') {
       this.startResize(event, column, column.nextElementSibling as HTMLElement);
-    } else if (isNearLeft && column.previousElementSibling?.getAttribute('data-type') === 'column') {
+    } else if (
+      isNearLeft &&
+      column.previousElementSibling?.getAttribute('data-type') === 'column'
+    ) {
       this.startResize(event, column.previousElementSibling as HTMLElement, column);
     }
   }
@@ -138,7 +144,7 @@ class ColumnResizeView {
       this.view.dispatch(
         this.view.state.tr
           .setNodeAttribute(this.leftColumn.pos, 'width', newLeftFlex)
-          .setNodeAttribute(this.rightColumn.pos, 'width', newRightFlex)
+          .setNodeAttribute(this.rightColumn.pos, 'width', newRightFlex),
       );
     }
   }
