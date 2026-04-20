@@ -15,9 +15,9 @@
   size="s"
   insIconButton
   type="button"
-  [appearance]="style | insMapper: getAppearance : 'float:left'"
+  [appearance]="style | insMapper: getAppearance : 'left'"
   [iconStart]="options.icons.imageExtension.alignLeft"
-  (click)="align('float: left')"
+  (click)="align('left')"
 >
   Left align
 </button>
@@ -26,9 +26,9 @@
   size="s"
   insIconButton
   type="button"
-  [appearance]="style | insMapper: getAppearance : 'justify-content:center'"
+  [appearance]="style | insMapper: getAppearance : 'center'"
   [iconStart]="options.icons.imageExtension.alignCenter"
-  (click)="align('display: flex; justify-content: center; margin-left: auto; margin-right: auto;')"
+  (click)="align('center')"
 >
   Center align
 </button>
@@ -37,9 +37,9 @@
   size="s"
   insIconButton
   type="button"
-  [appearance]="style | insMapper: getAppearance : 'float:right'"
+  [appearance]="style | insMapper: getAppearance : 'right'"
   [iconStart]="options.icons.imageExtension.alignRight"
-  (click)="align('float: right')"
+  (click)="align('right')"
 >
   Right align
 </button>

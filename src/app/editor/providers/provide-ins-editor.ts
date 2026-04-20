@@ -417,16 +417,16 @@ const EXTENSIONS = [
     key: 'image',
     default: true,
     async loader(options: Partial<ImageOptions>, injector: Injector) {
-      const {Image} = await import('@tiptap/extension-image');
-      return Image.configure({
+      const { InsImage } = await import('../extensions/image');
+
+      return InsImage.configure({
         resize: {
           enabled: true,
-          // directions: ['left', 'right'],
           minWidth: 50,
           minHeight: 50,
           alwaysPreserveAspectRatio: true,
         },
-        ...options
+        ...options,
       });
     },
   },

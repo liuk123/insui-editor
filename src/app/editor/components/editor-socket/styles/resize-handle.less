@@ -1,4 +1,16 @@
 [data-resize-container] {
+  &:has([data-align='center']){
+    justify-content: center;
+  }
+  &:has([data-align='left']){
+    justify-content: flex-start;
+  }
+  &:has([data-align='right']){
+    justify-content: flex-end;
+  }
+
+
+
   &.ProseMirror-selectednode [data-resize-wrapper] {
     border-radius: 0.25rem;
     overflow: hidden;

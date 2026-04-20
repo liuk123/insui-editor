@@ -5,10 +5,7 @@ import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap
 
 @Component({
   selector: 'ins-image-menu',
-  imports: [
-    InsButton,
-    InsMapperPipe
-  ],
+  imports: [InsButton, InsMapperPipe],
   templateUrl: './image-menu.html',
   styleUrl: './image-menu.less',
 })
@@ -16,24 +13,21 @@ export class InsImageMenu implements OnInit {
   protected readonly options = inject(INS_EDITOR_OPTIONS);
   private editor = inject(InsTiptapEditorService);
 
-  public ngOnInit(): void {
-  }
+  public ngOnInit(): void {}
 
   public get style(): string | null {
-    return this.editor.getOriginTiptapEditor()?.getAttributes('image')['style'] ?? null;
+    return this.editor.getOriginTiptapEditor()?.getAttributes('image')['align'] ?? null;
   }
 
   protected getAppearance(style: string | null, attrStr: string): 'outline' | 'flat' {
-    if (style?.replaceAll(/\s/g, '').includes(attrStr)) {
+    if (style === attrStr) {
       return 'outline';
     } else {
       return 'flat';
     }
   }
 
-
-  protected align(styles: string | null): void {
-    this.editor.getOriginTiptapEditor()?.chain().focus().updateAttributes('image', { style: styles }).run();
+  protected align(align: string | null): void {
+    this.editor.getOriginTiptapEditor()?.chain().focus().updateAttributes('image', { align }).run();
   }
-
 }
