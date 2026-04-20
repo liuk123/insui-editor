@@ -87,6 +87,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly heading4: string;
     readonly heading5: string;
     readonly heading6: string;
+    readonly header: string;
     readonly removeBlocks: string;
   };
   readonly linkOptions?: InsEditorLinkOptions;
@@ -189,6 +190,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     heading4: 'heading-4',
     heading5: 'heading-5',
     heading6: 'heading-6',
+    header: 'header',
   },
 };
 

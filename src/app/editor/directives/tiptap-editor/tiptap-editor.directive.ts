@@ -23,7 +23,7 @@ export class InsTiptapEditor {
         });
 
     @Output()
-    public readonly valueChange = this.editor.valueChange$.pipe(
+    public readonly valueChange = this.editor.transactionChange$.pipe(
       map(()=>{
         return this.outputFormat === 'html' ? this.editor.html : this.editor.json;
       }),

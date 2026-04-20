@@ -4,12 +4,11 @@ import { Fragment, Node as ProseMirrorNode, ResolvedPos } from '@tiptap/pm/model
 import { NodeSelection } from '@tiptap/pm/state';
 import { MultipleNodeSelection } from './MultipleNodeSelection';
 import { getHTMLFromFragment } from '@tiptap/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class PositionSelectionService {
-
   private readonly destroyRef = inject(DestroyRef);
   public activeNode$ = new BehaviorSubject<{ node: ProseMirrorNode | null; nodePos: number }>({
     node: null,
@@ -39,7 +38,11 @@ export class PositionSelectionService {
     return allowedNodes.includes(nodeName);
   };
 
-  public setActiveNode(view: EditorView | null) {
+  public refreshActiveNode(view: EditorView | null) {
+    // // Update if document or selection changed
+    // if (!view.state.doc.eq(prevState.doc) || !view.state.selection.eq(prevState.selection)) {
+    //   this.updatePositionForSelection(view, this.nodeFilter);
+    // }
     this.view = view;
     if (!this.view) return;
     const selection = this.view.state.selection;
@@ -49,9 +52,19 @@ export class PositionSelectionService {
   }
 
   constructor() {
-    this.activeNode$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ node, nodePos }) => {
-      this.updatePositionForSelection(node, nodePos);
-    });
+    this.activeNode$
+      .pipe(
+        distinctUntilChanged((a, b) => {
+          if (a.nodePos !== b.nodePos) return false;
+          if (a.node === b.node) return true;
+          if (!a.node || !b.node) return false;
+          return a.node.eq(b.node);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(({ node, nodePos }) => {
+        this.updatePositionForSelection(node, nodePos);
+      });
   }
 
   public updatePositionForSelection(node: ProseMirrorNode | null, nodePos: number) {
@@ -137,7 +150,10 @@ export class PositionSelectionService {
       sliceFrom = nodeSelection.from;
       sliceTo = nodeSelection.to;
 
-      if (nodeSelection.node.type.name === 'listItem' || nodeSelection.node.type.name === 'taskItem') {
+      if (
+        nodeSelection.node.type.name === 'listItem' ||
+        nodeSelection.node.type.name === 'taskItem'
+      ) {
         const parent = nodeSelection.$from.parent;
         if (
           parent.type.name === 'bulletList' ||
@@ -160,7 +176,9 @@ export class PositionSelectionService {
       event.dataTransfer.effectAllowed = 'move';
 
       const fragmentForHtml = listParentNodeForHtml
-        ? Fragment.from(listParentNodeForHtml.type.create(listParentNodeForHtml.attrs, slice.content))
+        ? Fragment.from(
+            listParentNodeForHtml.type.create(listParentNodeForHtml.attrs, slice.content),
+          )
         : slice.content;
 
       event.dataTransfer.setData(
@@ -180,7 +198,7 @@ export class PositionSelectionService {
       if (name === 'listItem' || name === 'taskItem') return d;
     }
     return null;
-  };
+  }
   findActiveNode($pos: ResolvedPos) {
     let node = null;
     let nodePos = -1;

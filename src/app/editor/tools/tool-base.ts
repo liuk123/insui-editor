@@ -9,7 +9,7 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, distinctUntilChanged, of, shareReplay, startWith, switchMap } from 'rxjs';
+import { auditTime, BehaviorSubject, distinctUntilChanged, of, shareReplay, startWith, switchMap } from 'rxjs';
 import { AbstractInsEditor } from '../common/editor-adapter';
 import { InsTiptapEditorService } from '../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../common/editor-options';
@@ -38,8 +38,9 @@ export abstract class InsToolbarBase {
     distinctUntilChanged(),
     switchMap((editor) => {
       return editor
-        ? editor.valueChange$.pipe(
+        ? editor.transactionChange$.pipe(
             startWith(null),
+            auditTime(30),
             shareReplay({ bufferSize: 1, refCount: true }),
             takeUntilDestroyed(this.destroy$),
           )

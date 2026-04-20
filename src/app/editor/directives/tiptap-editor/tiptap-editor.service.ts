@@ -9,7 +9,6 @@ import { type MarkType } from '@tiptap/pm/model';
 import { distinctUntilChanged, map, Observable, startWith } from 'rxjs';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
 import { EditorState } from '@tiptap/pm/state';
-import { insParseStyle } from './utils/parse-style';
 import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
 import { InsEditableImage } from '../../common/image';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
@@ -39,12 +38,12 @@ export class InsTiptapEditorService extends AbstractInsEditor {
         // const json = editor.getJSON().content;
         // const value: string = insIsEmptyParagraph(json) ? '' : editor.getHTML();
         // console.log('transaction')
-        this.valueChange$.next('');
+        this.transactionChange$.next();
       });
-      editor.on('selectionUpdate', () => {
-        this.selectionChange$.next()
+      // editor.on('selectionUpdate', () => {
+        // this.selectionChange$.next()
         // console.log('selectionUpdate');
-      });
+      // });
       editor.on('drop', ({event}) => {
         this.drop$.next(event)
         // console.log('drop');
@@ -296,7 +295,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   public isActive$(attributes: Attrs): Observable<boolean>;
   public isActive$(name: string, attributes?: Record<string, unknown>): Observable<boolean>;
   public isActive$(name: Attrs | string, attributes?: Attrs): Observable<boolean> {
-    return this.valueChange$.pipe(
+    return this.transactionChange$.pipe(
       startWith(null),
       map(() => (typeof name === 'string' ? this.isActive(name, attributes) : this.isActive(name))),
       distinctUntilChanged(),

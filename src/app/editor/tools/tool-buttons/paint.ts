@@ -26,7 +26,7 @@ import { InsLanguageEditor } from '../../i18n/language';
             insPlate
             [style.background]="editor?.getCellColor() ?? editor?.getGroupColor()"
         >
-            @if(editor?.valueChange$ | async){}
+            @if(editor?.transactionChange$ | async){}
         </div>
         }
     `,

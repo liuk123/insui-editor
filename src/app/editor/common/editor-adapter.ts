@@ -30,8 +30,8 @@ export abstract class AbstractInsEditor {
     public transactionStable = false
 
 
-    public readonly valueChange$ = new BehaviorSubject<string>('');
-    public readonly selectionChange$ = new Subject<void>();
+    public readonly transactionChange$ = new Subject<void>();
+    // public readonly selectionChange$ = new Subject<void>();
     public readonly drop$ = new Subject<DragEvent>();
 
     public abstract get state(): EditorState | null;

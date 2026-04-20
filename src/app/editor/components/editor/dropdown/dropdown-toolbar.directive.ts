@@ -20,7 +20,7 @@ import {
   isElement,
   WINDOW,
 } from '@liuk123/insui';
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, map } from 'rxjs';
 import { INS_EDITOR_PM_SELECTED_NODE } from '../../../common/pm-css-classes';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 
