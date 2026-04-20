@@ -82,6 +82,6 @@ export class InsPaintButtonTool extends InsToolbarTool {
     }
 
     protected getColor(): string {
-        return this.editor?.getCellColor() ?? this.editor?.getGroupColor() ?? '';
+        return this.editor?.getCellColor() ?? '';
     }
 }

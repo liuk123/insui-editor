@@ -10,13 +10,13 @@
   [(insDropdownOpen)]="insertOpen"
 ></button>
 <button
+  #dragHandleBtn
   insIconButton
   appearance="flat"
   iconStart="grip-vertical"
   size="xs"
   class="drag-handle-button"
   draggable="true"
-  (dragstart)="onDragStart($event)"
 
   [insDropdown]="dragHandleContent()"
   insDropdownDirection="bottom"

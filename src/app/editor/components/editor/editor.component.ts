@@ -34,7 +34,7 @@ import {
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorAttachedFile } from '../../common/attached';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
-import { delay, fromEvent, map, merge, of } from 'rxjs';
+import { delay, filter, fromEvent, map, merge, of } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_VALUE_TRANSFORMER } from '../../common/editor-value-transformer';
@@ -79,7 +79,7 @@ interface ServerSideGlobal extends Global {
     InsDragHandle,
     InsDragHandleMenu,
     InsInsertHandleMenu,
-    InsImageMenu
+    InsImageMenu,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -90,7 +90,7 @@ interface ServerSideGlobal extends Global {
       useValue: { appearance: 'textfield' },
     },
     INS_EDITOR_PROVIDERS,
-    INS_EDITOR_LANGUAGE_PROVIDERS
+    INS_EDITOR_LANGUAGE_PROVIDERS,
   ],
   hostDirectives: [
     InsAppearance,
@@ -265,10 +265,10 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     if (this.editor?.state?.selection.empty) {
       return false;
     }
-    return true
+    return true;
   }
   public get isImageMenu(): boolean {
-    return this.editor?.isActive('image')||false;
+    return this.editor?.isActive('image') || false;
   }
 
   public get selectionState(): InsSelectionState {
@@ -312,7 +312,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     const focusElement = this.doc?.getSelection()?.focusNode;
     const parentFocusElement = focusElement?.parentNode;
     const focusAsElement =
-      focusElement instanceof Element ? focusElement : focusElement?.parentElement ?? null;
+      focusElement instanceof Element ? focusElement : (focusElement?.parentElement ?? null);
     const inEditor = !!focusAsElement && !!this.nativeFocusableElement?.contains(focusAsElement);
     const inEditorDropdown = !!focusAsElement?.closest('[insEditorRootEditLink]');
 

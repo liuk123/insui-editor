@@ -42,7 +42,12 @@ export class InsTiptapEditorService extends AbstractInsEditor {
         this.valueChange$.next('');
       });
       editor.on('selectionUpdate', () => {
+        this.selectionChange$.next()
         // console.log('selectionUpdate');
+      });
+      editor.on('drop', ({event}) => {
+        this.drop$.next(event)
+        // console.log('drop');
       });
       editor.on('update', () => {
         // console.log('update');
