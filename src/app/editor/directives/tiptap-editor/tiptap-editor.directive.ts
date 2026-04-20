@@ -1,6 +1,6 @@
 import {Directive, ElementRef, inject, Input, Output, Renderer2} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {distinctUntilChanged, map} from 'rxjs';
+import {debounceTime, distinctUntilChanged, map} from 'rxjs';
 import { InsTiptapEditorService } from './tiptap-editor.service';
 import { INITIALIZATION_TIPTAP_CONTAINER, TIPTAP_EDITOR } from '../../common/tiptap-editor';
 
@@ -24,6 +24,7 @@ export class InsTiptapEditor {
 
     @Output()
     public readonly valueChange = this.editor.transactionChange$.pipe(
+      debounceTime(30),
       map(()=>{
         return this.outputFormat === 'html' ? this.editor.html : this.editor.json;
       }),

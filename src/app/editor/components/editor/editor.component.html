@@ -16,26 +16,27 @@
   [insDropdown]="dropdownTemp"
   [insToolbarDropdown]="dropdownSelectionHandler"
   [insToolbarDropdownPosition]="floatingToolbar ? 'selection' : 'tag'"
-  (transactionChange)="onModelChange($event)"
+  (valueChange)="onModelChange($event)"
 ></div>
 
 <ins-editor-socket />
 
 <ng-template #dropdownTemp>
   @if (floatingToolbar) {
+
     @if (isFloatMenu) {
+      <!-- /命令菜单 -->
       <ins-toolbar-host [disabled]="!interactive()">
         <ins-float-menu></ins-float-menu>
       </ins-toolbar-host>
     }@else if(isImageMenu){
+      <!-- 图片菜单 -->
       <ins-toolbar-host [disabled]="!interactive()">
         <ins-image-menu></ins-image-menu>
       </ins-toolbar-host>
     }@else{
+      <!-- 气泡菜单 -->
       <ins-toolbar-host [disabled]="!interactive()">
-        <!-- <ins-toolbar  [tools]="tools" (fileAttached)="fileAttached.emit($event)">
-          <ng-content select="tools" />
-        </ins-toolbar> -->
         <ins-bubble-menu></ins-bubble-menu>
       </ins-toolbar-host>
       @if (isLinkSelected) {
@@ -48,7 +49,7 @@
       }
     }
   }
-
+  <!-- 自定义菜单 -->
   <ng-container
     *polymorpheusOutlet="insDropdownOpen?.insDropdownOpen() ? dropdownContent : null as text"
   >
@@ -56,11 +57,12 @@
   </ng-container>
 </ng-template>
 
+<!-- 拖拽菜单 -->
 @if (editorLoaded()) {
   <ins-drag-handle [dragHandleContent]="dragHandle" [insertHandleContent]="insertHandle" [style.display]="focused() ? 'block' : 'none'"></ins-drag-handle>
 }
 
-
+<!-- 拖拽菜单的下拉框 -->
 <ng-template #dragHandle>
   <ins-drag-handle-menu></ins-drag-handle-menu>
 </ng-template>
