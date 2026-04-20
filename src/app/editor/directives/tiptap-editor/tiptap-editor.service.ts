@@ -140,26 +140,27 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   }
 
   public setImage(src: string): void {
-    this.editor
-      ?.chain()
-      .focus()
-      .command(({ commands, state }) => {
-        const setImage = ((commands as any).setEditableImage ?? commands.setImage) as
-          | ((config: InsEditableImage) => boolean)
-          | undefined;
+    this.editor?.chain().focus().setImage({ src }).run();
+    // this.editor
+    //   ?.chain()
+    //   .focus()
+    //   .command(({ commands, state }) => {
+    //     const setImage = ((commands as any).setEditableImage ?? commands.setImage) as
+    //       | ((config: InsEditableImage) => boolean)
+    //       | undefined;
 
-        if (setImage) {
-          const anchor = state.selection.anchor;
+    //     if (setImage) {
+    //       const anchor = state.selection.anchor;
 
-          setImage({ src });
-          commands.setTextSelection(anchor);
+    //       setImage({ src });
+    //       commands.setTextSelection(anchor);
 
-          return true;
-        }
+    //       return true;
+    //     }
 
-        return false;
-      })
-      .run();
+    //     return false;
+    //   })
+    //   .run();
   }
 
   public undo(): void {
