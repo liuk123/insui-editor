@@ -9,7 +9,7 @@ import { type CodeBlockOptions } from '@tiptap/extension-code-block';
 import { type DropcursorOptions } from '@tiptap/extension-dropcursor';
 import { type HardBreakOptions } from '@tiptap/extension-hard-break';
 import { type HeadingOptions } from '@tiptap/extension-heading';
-import {type HistoryOptions} from '@tiptap/extension-history';
+import { type HistoryOptions } from '@tiptap/extension-history';
 import { type HorizontalRuleOptions } from '@tiptap/extension-horizontal-rule';
 import { type ItalicOptions } from '@tiptap/extension-italic';
 import { type LinkOptions } from '@tiptap/extension-link';
@@ -32,7 +32,7 @@ import { type UnderlineOptions } from '@tiptap/extension-underline';
 import { type StarterKitOptions } from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import { type TypographyOptions } from '@tiptap/extension-typography';
-import { type TrailingNodeOptions } from '@tiptap/extensions'
+import { type TrailingNodeOptions } from '@tiptap/extensions';
 import { InsDetailsExtensionOptions } from '../extensions/details';
 import { DetailsContentOptions, DetailsSummaryOptions } from '@tiptap/extension-details';
 import { ColumnListOptions, ColumnOptions } from '../extensions/columns';
@@ -318,7 +318,7 @@ const EXTENSIONS = [
       const { Placeholder } = await import('@tiptap/extension-placeholder');
 
       return Placeholder.configure({
-        emptyNodeClass: 't-editor-placeholder',
+        // emptyNodeClass: 't-editor-placeholder',
         includeChildren: true,
         showOnlyCurrent: true,
         showOnlyWhenEditable: true,
@@ -458,23 +458,14 @@ const EXTENSIONS = [
     },
   },
   {
-      key: 'backgroundColor',
-      default: true,
-      async loader(options: Partial<BackgroundColorOptions>) {
-          const {BackgroundColor} = await import('@tiptap/extension-text-style');
+    key: 'backgroundColor',
+    default: true,
+    async loader(options: Partial<BackgroundColorOptions>) {
+      const { BackgroundColor } = await import('@tiptap/extension-text-style');
 
-          return BackgroundColor.configure(options);
-      },
+      return BackgroundColor.configure(options);
+    },
   },
-  // {
-  //   key: 'tableDnd',
-  //   default: false,
-  //   async loader(options: Partial<TableOptions>) {
-  //     const { TableDndExtension } = await import('../extensions/table/dnd/dnd-extension');
-
-  //     return TableDndExtension.configure(options);
-  //   },
-  // },
   {
     key: 'table',
     default: true,
@@ -539,70 +530,66 @@ const EXTENSIONS = [
     },
   },
   {
-      key: 'details',
-      default: true,
-      async loader(options: Partial<InsDetailsExtensionOptions>) {
-          const {InsDetailsExtension} =
-              await import('../extensions/details');
+    key: 'details',
+    default: true,
+    async loader(options: Partial<InsDetailsExtensionOptions>) {
+      const { InsDetailsExtension } = await import('../extensions/details');
 
-          return InsDetailsExtension.configure(options);
-      },
+      return InsDetailsExtension.configure(options);
+    },
   },
   {
-      key: 'detailsSummary',
-      default: true,
-      async loader(options: Partial<DetailsSummaryOptions>) {
-          const {InsDetailsSummary} =
-              await import('../extensions/details');
+    key: 'detailsSummary',
+    default: true,
+    async loader(options: Partial<DetailsSummaryOptions>) {
+      const { InsDetailsSummary } = await import('../extensions/details');
 
-          return InsDetailsSummary.configure(options);
-      },
+      return InsDetailsSummary.configure(options);
+    },
   },
   {
-      key: 'detailsContent',
-      default: true,
-      async loader(options: Partial<DetailsContentOptions>) {
-          const {InsDetailsContent} =
-              await import('../extensions/details');
+    key: 'detailsContent',
+    default: true,
+    async loader(options: Partial<DetailsContentOptions>) {
+      const { InsDetailsContent } = await import('../extensions/details');
 
-          return InsDetailsContent.configure(options);
-      },
+      return InsDetailsContent.configure(options);
+    },
   },
   {
-      key: 'video',
-      default: true,
-      async loader(options: Partial<Record<string, unknown>>) {
-          const {InsVideo} = await import('../extensions/media');
+    key: 'video',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { InsVideo } = await import('../extensions/media');
 
-          return InsVideo.configure(options);
-      },
+      return InsVideo.configure(options);
+    },
   },
   {
-      key: 'audio',
-      default: true,
-      async loader(options: Partial<Record<string, unknown>>) {
-        const { Audio } = await import('@tiptap/extension-audio');
-        return Audio.configure(options);
-      },
+    key: 'audio',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { Audio } = await import('@tiptap/extension-audio');
+      return Audio.configure(options);
+    },
   },
   {
-      key: 'source',
-      default: true,
-      async loader(options: Partial<Record<string, unknown>>) {
-          const {InsSource} = await import('../extensions/media');
+    key: 'source',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { InsSource } = await import('../extensions/media');
 
-          return InsSource.configure(options);
-      },
+      return InsSource.configure(options);
+    },
   },
   {
-      key: 'iframe',
-      default: true,
-      async loader(options: Partial<IframeOptions>) {
-          const {Iframe} =
-              await import('../extensions/iframe');
+    key: 'iframe',
+    default: true,
+    async loader(options: Partial<IframeOptions>) {
+      const { Iframe } = await import('../extensions/iframe');
 
-          return Iframe.configure(options);
-      },
+      return Iframe.configure(options);
+    },
   },
   {
     key: 'columnList',
@@ -630,7 +617,6 @@ const EXTENSIONS = [
       return ColumnResize.configure(options);
     },
   },
-
 ] as const;
 
 const defaults = EXTENSIONS.reduce((options, extension) => {
