@@ -60,6 +60,7 @@
 <!-- 拖拽菜单 -->
 @if (editorLoaded()) {
   <ins-drag-handle [dragHandleContent]="dragHandle" [insertHandleContent]="insertHandle" [style.display]="focused() ? 'block' : 'none'"></ins-drag-handle>
+  <ins-table-handle [style.display]="focused() ? 'block' : 'none'"></ins-table-handle>
 }
 
 <!-- 拖拽菜单的下拉框 -->

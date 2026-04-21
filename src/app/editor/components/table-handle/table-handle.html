@@ -1,0 +1,86 @@
+<div
+  #hostRef
+  class="ins-table-handle-layer"
+  (mouseenter)="onPanelMouseEnter()"
+>
+  <div
+    class="ins-table-handle-controls row"
+    [style.top.px]="rowTop()"
+    [style.left.px]="rowLeft()"
+  >
+    <button
+      type="button"
+      class="ins-table-handle-btn"
+      draggable="true"
+      title="选中并拖拽行"
+      aria-label="选中并拖拽行"
+      (dragstart)="onRowDragStart($event)"
+      (dragend)="onDragEnd()"
+    >
+      ::
+    </button>
+    <!-- <button
+      type="button"
+      class="ins-table-handle-btn"
+      title="下方插入行"
+      aria-label="下方插入行"
+      (click)="onAddRow($event)"
+    >
+      +
+    </button>
+    <button
+      type="button"
+      class="ins-table-handle-btn"
+      title="删除当前行"
+      aria-label="删除当前行"
+      (click)="onRemoveRow($event)"
+    >
+      -
+    </button> -->
+  </div>
+
+  <div
+    class="ins-table-handle-controls col"
+    [style.top.px]="colTop()"
+    [style.left.px]="colLeft()"
+  >
+    <button
+      type="button"
+      class="ins-table-handle-btn"
+      draggable="true"
+      title="选中并拖拽列"
+      aria-label="选中并拖拽列"
+      (dragstart)="onColumnDragStart($event)"
+      (dragend)="onDragEnd()"
+    >
+      ::
+    </button>
+    <!-- <button
+      type="button"
+      class="ins-table-handle-btn"
+      title="右侧插入列"
+      aria-label="右侧插入列"
+      (click)="onAddColumn($event)"
+    >
+      +
+    </button>
+    <button
+      type="button"
+      class="ins-table-handle-btn"
+      title="删除当前列"
+      aria-label="删除当前列"
+      (click)="onRemoveColumn($event)"
+    >
+      -
+    </button> -->
+  </div>
+
+  <div
+    class="ins-table-drop-indicator"
+    [class.show]="dropIndicatorVisible()"
+    [style.top.px]="dropIndicatorTop()"
+    [style.left.px]="dropIndicatorLeft()"
+    [style.width.px]="dropIndicatorWidth()"
+    [style.height.px]="dropIndicatorHeight()"
+  ></div>
+</div>

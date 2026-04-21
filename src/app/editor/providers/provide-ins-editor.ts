@@ -513,7 +513,7 @@ const EXTENSIONS = [
   },
   {
     key: 'tableHandles',
-    default: true,
+    default: false,
     async loader(options: Partial<Record<string, unknown>>) {
       const { TableHandles } = await import('../extensions/table/table-handles');
 
