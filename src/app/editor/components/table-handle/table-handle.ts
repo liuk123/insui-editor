@@ -28,6 +28,7 @@ import {
 } from 'rxjs';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { AbstractInsEditor } from '../../common/editor-adapter';
+import { InsButton } from "@liuk123/insui";
 
 type DragOrientation = 'row' | 'column';
 
@@ -50,6 +51,7 @@ interface TableNodeInfo {
   host: {
     '[class.visible]': 'visible()'
   },
+  imports: [InsButton],
 })
 export class InsTableHandle implements OnInit {
   private editorInstance: AbstractInsEditor | null = inject(InsTiptapEditorService, {
@@ -238,7 +240,7 @@ export class InsTableHandle implements OnInit {
     for (let d = $pos.depth; d > 0; d--) {
       const parent = $pos.node(d);
       const nodeName = parent.type.name;
-      if (nodeName === 'tableCell') {
+      if (nodeName === 'tableCell' || nodeName === 'tableHeader') {
         node = parent;
         nodePos = $pos.before(d);
         break;
@@ -282,10 +284,10 @@ export class InsTableHandle implements OnInit {
     const scrollLeft = container.scrollLeft;
     const cellRect = cell.getBoundingClientRect();
 
-    this.rowTop.set(cellRect.top - containerRect.top + scrollTop + cellRect.height / 2);
-    this.rowLeft.set(cellRect.left - containerRect.left + scrollLeft - 8);
-    this.colTop.set(cellRect.top - containerRect.top + scrollTop);
-    this.colLeft.set(cellRect.left - containerRect.left + scrollLeft + cellRect.width / 2);
+    this.rowTop.set(cellRect.top - containerRect.top + scrollTop + cellRect.height / 2 - 8);
+    this.rowLeft.set(cellRect.left - containerRect.left + scrollLeft - 16);
+    this.colTop.set(cellRect.top - containerRect.top + scrollTop  - 16);
+    this.colLeft.set(cellRect.left - containerRect.left + scrollLeft + cellRect.width / 2 - 8);
   }
 
   private getCellElementByPos(nodePos: number): HTMLTableCellElement | null {
@@ -376,9 +378,9 @@ export class InsTableHandle implements OnInit {
     this.resetDraggingState();
   }
 
-  protected onPanelMouseEnter(): void {
-    this.visible.set(true);
-  }
+  // protected onPanelMouseEnter(): void {
+  //   this.visible.set(true);
+  // }
 
   private readonly handleDragOver = (event: DragEvent): void => {
     if (!this.dragState || !this.activeTable) {

@@ -1,24 +1,17 @@
-<div
-  #hostRef
-  class="ins-table-handle-layer"
-  (mouseenter)="onPanelMouseEnter()"
->
-  <div
-    class="ins-table-handle-controls row"
-    [style.top.px]="rowTop()"
-    [style.left.px]="rowLeft()"
-  >
-    <button
-      #rowDragHandleBtn
-      type="button"
-      class="ins-table-handle-btn"
-      draggable="true"
-      title="选中并拖拽行"
-      aria-label="选中并拖拽行"
-    >
-      ::
-    </button>
-    <!-- <button
+<div class="ins-table-handle-controls row" [style.top.px]="rowTop()" [style.left.px]="rowLeft()">
+  <button
+    class="ins-table-handle-btn"
+    #rowDragHandleBtn
+    type="button"
+    insIconButton
+    appearance="outline"
+    iconStart="grip-vertical"
+    size="xs"
+    draggable="true"
+    title="选中并拖拽行"
+    aria-label="选中并拖拽行"
+  ></button>
+  <!-- <button
       type="button"
       class="ins-table-handle-btn"
       title="下方插入行"
@@ -36,24 +29,22 @@
     >
       -
     </button> -->
-  </div>
+</div>
 
-  <div
-    class="ins-table-handle-controls col"
-    [style.top.px]="colTop()"
-    [style.left.px]="colLeft()"
-  >
-    <button
-      #colDragHandleBtn
-      type="button"
-      class="ins-table-handle-btn"
-      draggable="true"
-      title="选中并拖拽列"
-      aria-label="选中并拖拽列"
-    >
-      ::
-    </button>
-    <!-- <button
+<div class="ins-table-handle-controls col" [style.top.px]="colTop()" [style.left.px]="colLeft()">
+  <button
+    class="ins-table-handle-btn"
+    #colDragHandleBtn
+    type="button"
+    insIconButton
+    appearance="outline"
+    iconStart="grip-horizontal"
+    size="xs"
+    draggable="true"
+    title="选中并拖拽列"
+    aria-label="选中并拖拽列"
+  ></button>
+  <!-- <button
       type="button"
       class="ins-table-handle-btn"
       title="右侧插入列"
@@ -71,15 +62,13 @@
     >
       -
     </button> -->
-  </div>
-
-  <div
-    class="ins-table-drop-indicator"
-    [class.show]="dropIndicatorVisible()"
-    [style.top.px]="dropIndicatorTop()"
-    [style.left.px]="dropIndicatorLeft()"
-    [style.width.px]="dropIndicatorWidth()"
-    [style.height.px]="dropIndicatorHeight()"
-  ></div>
 </div>
-<!-- {{dropIndicatorVisible()}} -->
+
+<div
+  class="ins-table-drop-indicator"
+  [class.show]="dropIndicatorVisible()"
+  [style.top.px]="dropIndicatorTop()"
+  [style.left.px]="dropIndicatorLeft()"
+  [style.width.px]="dropIndicatorWidth()"
+  [style.height.px]="dropIndicatorHeight()"
+></div>

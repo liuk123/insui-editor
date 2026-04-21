@@ -1,6 +1,5 @@
 :host {
   position: absolute;
-  inset: 0;
   z-index: 70;
   pointer-events: none;
   opacity: 0;
@@ -13,14 +12,10 @@
 
 .ins-table-handle-layer {
   position: absolute;
-  inset: 0;
 }
 
 .ins-table-handle-controls {
   position: absolute;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
   pointer-events: auto;
 }
 
@@ -32,27 +27,32 @@
 //   transform: translate(-50%, -100%);
 // }
 
-.ins-table-handle-btn {
-  border: 1px solid var(--ins-divider-color, #d9d9d9);
-  background: var(--ins-basic-primary, #fff);
-  color: var(--ins-text-primary, #222);
-  border-radius: 4px;
-  min-width: 20px;
-  height: 20px;
-  line-height: 18px;
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-  padding: 0;
-  font-size: 12px;
-}
+// .ins-table-handle-btn {
+//   border: 1px solid var(--ins-divider-color, #d9d9d9);
+//   background: var(--ins-basic-primary, #fff);
+//   color: var(--ins-text-primary, #222);
+//   border-radius: 4px;
+//   min-width: 20px;
+//   height: 20px;
+//   line-height: 18px;
+//   text-align: center;
+//   cursor: pointer;
+//   user-select: none;
+//   padding: 0;
+//   font-size: 12px;
+// }
 
-.ins-table-handle-btn:hover {
-  background: var(--ins-bg-control-hover, #f5f5f5);
-}
+// .ins-table-handle-btn:hover {
+//   background: var(--ins-bg-control-hover, #f5f5f5);
+// }
 
-.ins-table-handle-btn:active {
-  cursor: grabbing;
+// .ins-table-handle-btn:active {
+//   cursor: grabbing;
+// }
+.ins-table-handle-btn{
+  block-size: 20px;
+  inline-size: 20px;
+  background-color: #fff;
 }
 
 .ins-table-drop-indicator {
