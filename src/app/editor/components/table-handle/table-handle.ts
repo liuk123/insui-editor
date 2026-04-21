@@ -48,8 +48,7 @@ interface TableNodeInfo {
   styleUrl: './table-handle.less',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.visible]': 'visible()',
-    // '[class.dragging]': 'isDragging()',
+    '[class.visible]': 'visible()'
   },
 })
 export class InsTableHandle implements OnInit {
@@ -284,8 +283,8 @@ export class InsTableHandle implements OnInit {
     const cellRect = cell.getBoundingClientRect();
 
     this.rowTop.set(cellRect.top - containerRect.top + scrollTop + cellRect.height / 2);
-    this.rowLeft.set(cellRect.left - containerRect.left + scrollLeft - 10);
-    this.colTop.set(cellRect.top - containerRect.top + scrollTop - 10);
+    this.rowLeft.set(cellRect.left - containerRect.left + scrollLeft - 8);
+    this.colTop.set(cellRect.top - containerRect.top + scrollTop);
     this.colLeft.set(cellRect.left - containerRect.left + scrollLeft + cellRect.width / 2);
   }
 
