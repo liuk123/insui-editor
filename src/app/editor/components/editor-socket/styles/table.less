@@ -19,6 +19,68 @@ table .tableWrapper {
   overflow-x: auto;
 }
 
+.ins-table-handles-host {
+  position: relative;
+}
+
+.ins-table-handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  display: none;
+}
+
+.ins-table-row-controls,
+.ins-table-col-controls {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  pointer-events: auto;
+}
+
+.ins-table-col-controls {
+  flex-direction: row;
+}
+
+.ins-table-row-controls {
+  flex-direction: column;
+}
+
+.ins-table-handle-button {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  border: 0.0625rem solid rgb(201, 201, 198);
+  border-radius: 0.25rem;
+  background: var(--ins-background-base);
+  color: var(--ins-text-color-base);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.625rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.ins-table-handle-main {
+  font-size: 0.5625rem;
+  letter-spacing: -0.0625rem;
+}
+
+.ins-table-handle-button:hover {
+  background: var(--ins-background-base-alt);
+}
+
+.ins-table-drop-indicator {
+  position: absolute;
+  display: none;
+  background: rgb(64, 158, 255);
+  pointer-events: none;
+}
+
 table td {
   position: relative;
   min-inline-size: 1em;

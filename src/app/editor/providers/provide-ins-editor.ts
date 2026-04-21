@@ -86,6 +86,7 @@ interface Options {
   tableRow: Partial<TableRowOptions> | boolean;
   tableHeader: Partial<TableHeaderOptions> | boolean;
   tableCellBackground: Partial<Record<string, unknown>> | boolean;
+  tableHandles: Partial<Record<string, unknown>> | boolean;
   tab: Partial<Record<string, unknown>> | boolean;
   details: Partial<InsDetailsExtensionOptions> | boolean;
   detailsSummary: Partial<DetailsSummaryOptions> | boolean;
@@ -517,6 +518,15 @@ const EXTENSIONS = [
       const { TableCellBackground } = await import('../extensions/table/table-cell-background');
 
       return TableCellBackground.configure(options);
+    },
+  },
+  {
+    key: 'tableHandles',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { TableHandles } = await import('../extensions/table/table-handles');
+
+      return TableHandles.configure(options);
     },
   },
   {

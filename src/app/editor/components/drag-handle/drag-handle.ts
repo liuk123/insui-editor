@@ -84,7 +84,7 @@ export class InsDragHandle implements OnInit, OnDestroy {
           return editor
             ? editor.transactionChange$.pipe(
                 startWith(null),
-                auditTime(30),
+                auditTime(100),
                 takeUntilDestroyed(this.destroyRef),
               )
             : of(null);
@@ -94,6 +94,7 @@ export class InsDragHandle implements OnInit, OnDestroy {
       .subscribe(() => {
         if (!this.editorView) return;
         this.positionSelectionSrv.refreshActiveNode(this.editorView);
+
       });
 
     this.editor$
