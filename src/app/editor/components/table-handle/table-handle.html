@@ -9,13 +9,12 @@
     [style.left.px]="rowLeft()"
   >
     <button
+      #rowDragHandleBtn
       type="button"
       class="ins-table-handle-btn"
       draggable="true"
       title="选中并拖拽行"
       aria-label="选中并拖拽行"
-      (dragstart)="onRowDragStart($event)"
-      (dragend)="onDragEnd()"
     >
       ::
     </button>
@@ -45,13 +44,12 @@
     [style.left.px]="colLeft()"
   >
     <button
+      #colDragHandleBtn
       type="button"
       class="ins-table-handle-btn"
       draggable="true"
       title="选中并拖拽列"
       aria-label="选中并拖拽列"
-      (dragstart)="onColumnDragStart($event)"
-      (dragend)="onDragEnd()"
     >
       ::
     </button>
@@ -84,3 +82,4 @@
     [style.height.px]="dropIndicatorHeight()"
   ></div>
 </div>
+<!-- {{dropIndicatorVisible()}} -->

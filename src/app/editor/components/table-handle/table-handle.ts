@@ -14,7 +14,18 @@ import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { CellSelection } from '@tiptap/pm/tables';
 import type { EditorView } from '@tiptap/pm/view';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { auditTime, BehaviorSubject, distinctUntilChanged, of, startWith, switchMap } from 'rxjs';
+import {
+  auditTime,
+  BehaviorSubject,
+  distinctUntilChanged,
+  fromEvent,
+  map,
+  of,
+  race,
+  startWith,
+  switchMap,
+  take,
+} from 'rxjs';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { AbstractInsEditor } from '../../common/editor-adapter';
 
@@ -38,7 +49,7 @@ interface TableNodeInfo {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.visible]': 'visible()',
-    '[class.dragging]': 'isDragging()',
+    // '[class.dragging]': 'isDragging()',
   },
 })
 export class InsTableHandle implements OnInit {
@@ -57,11 +68,7 @@ export class InsTableHandle implements OnInit {
 
   private dragState: DragState | null = null;
 
-  private domBound = false;
-
   protected readonly visible = signal(false);
-
-  protected readonly isDragging = signal(false);
 
   protected readonly rowTop = signal(0);
 
@@ -81,8 +88,14 @@ export class InsTableHandle implements OnInit {
 
   protected readonly dropIndicatorVisible = signal(false);
 
-  @ViewChild('hostRef', { static: true })
-  private readonly hostRef!: ElementRef<HTMLElement>;
+  @ViewChild('rowDragHandleBtn', { static: true, read: ElementRef })
+  private readonly rowDragHandleBtn!: ElementRef<HTMLButtonElement>;
+  @ViewChild('colDragHandleBtn', { static: true, read: ElementRef })
+  private readonly colDragHandleBtn!: ElementRef<HTMLButtonElement>;
+  public activeNode$ = new BehaviorSubject<{ node: ProseMirrorNode | null; nodePos: number }>({
+    node: null,
+    nodePos: -1,
+  });
 
   @Input()
   public set editor(editor: AbstractInsEditor | null) {
@@ -98,37 +111,204 @@ export class InsTableHandle implements OnInit {
     return this.editor?.view ?? null;
   }
 
-  private get tiptapEditor(): Editor | null {
-    return this.editor?.getOriginTiptapEditor() ?? null;
-  }
-
   ngOnInit(): void {
-    this.editor$.pipe(
-      distinctUntilChanged(),
-      switchMap((editor) => {
-        return editor
-          ? editor.transactionChange$.pipe(
-              startWith(null),
-              auditTime(80),
-              takeUntilDestroyed(this.destroyRef),
-            )
-          : of(null);
-      }),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(()=>{
-      this.refreshAfterTransaction()
-    })
+    this.editor$
+      .pipe(
+        distinctUntilChanged(),
+        switchMap((editor) => {
+          return editor
+            ? editor.transactionChange$.pipe(
+                startWith(null),
+                auditTime(100),
+                takeUntilDestroyed(this.destroyRef),
+              )
+            : of(null);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.refreshActiveNode(this.editorView);
+      });
 
-    this.bindDomEvents();
-    this.destroyRef.onDestroy(() => this.unbindDomEvents());
+    this.activeNode$
+      .pipe(
+        distinctUntilChanged((a, b) => {
+          if (a.nodePos !== b.nodePos) return false;
+          if (a.node === b.node) return true;
+          if (!a.node || !b.node) return false;
+          return a.node.eq(b.node);
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(({ node, nodePos }) => {
+        if (!node || nodePos < 0 || node.type.name !== 'tableCell') {
+          this.hide();
+          return;
+        }
+
+        const cell = this.getCellElementByPos(nodePos);
+        if (!cell) {
+          return;
+        }
+
+        this.updateActiveContext(cell);
+      });
+    this.editor$
+      .pipe(
+        distinctUntilChanged(),
+        switchMap((editor) => {
+          return editor
+            ? fromEvent<DragEvent>(this.rowDragHandleBtn.nativeElement, 'dragstart').pipe(
+                switchMap((event) => {
+                  this.onRowDragStart(event);
+                  return race(
+                    editor!.drop$.pipe(
+                      take(1),
+                      map(() => 'drop' as const),
+                    ),
+                    fromEvent<DragEvent>(this.rowDragHandleBtn.nativeElement, 'dragend').pipe(
+                      take(1),
+                      map(() => 'dragend' as const),
+                    ),
+                  );
+                }),
+                takeUntilDestroyed(this.destroyRef),
+              )
+            : of(null);
+        }),
+      )
+      .subscribe((v) => {
+        if (!v) return;
+        this.handleDrop();
+        this.onDragEnd();
+      });
+    this.editor$
+      .pipe(
+        distinctUntilChanged(),
+        switchMap((editor) => {
+          return editor
+            ? fromEvent<DragEvent>(this.colDragHandleBtn.nativeElement, 'dragstart').pipe(
+                switchMap((event) => {
+                  // this.positionSelectionSrv.onDragStart(event);
+                  this.onColumnDragStart(event);
+                  return race(
+                    editor!.drop$.pipe(
+                      take(1),
+                      map(() => 'drop' as const),
+                    ),
+                    fromEvent<DragEvent>(this.colDragHandleBtn.nativeElement, 'dragend').pipe(
+                      take(1),
+                      map(() => 'dragend' as const),
+                    ),
+                  );
+                }),
+                takeUntilDestroyed(this.destroyRef),
+              )
+            : of(null);
+        }),
+      )
+      .subscribe((v) => {
+        if (!v) return;
+        this.handleDrop();
+        this.onDragEnd();
+      });
+
+    this.editor$
+      .pipe(
+        distinctUntilChanged(),
+        switchMap((editor) =>
+          editor?.view ? fromEvent<DragEvent>(editor.view.root, 'dragover') : of(null),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((event) => {
+        if (!event) {
+          return;
+        }
+        this.handleDragOver(event);
+      });
+  }
+  refreshActiveNode(view: EditorView | null) {
+    if (!view) return;
+    const selection = view.state.selection;
+    if (!selection) return;
+    let $pos = selection.$from;
+    let node = null;
+    let nodePos = -1;
+
+    for (let d = $pos.depth; d > 0; d--) {
+      const parent = $pos.node(d);
+      const nodeName = parent.type.name;
+      if (nodeName === 'tableCell') {
+        node = parent;
+        nodePos = $pos.before(d);
+        break;
+      }
+    }
+    this.activeNode$.next({ node, nodePos });
+  }
+  updateActiveContext(cell: HTMLTableCellElement | null) {
+    if (!cell) return;
+    const table = cell.closest('table');
+    if (!(table instanceof HTMLTableElement)) {
+      return;
+    }
+    this.activeTable = table;
+    this.visible.set(true);
+
+    const row = cell.parentElement;
+    if (!(row instanceof HTMLTableRowElement)) {
+      return;
+    }
+    this.activeRowIndex = Array.prototype.indexOf.call(
+      row.parentElement?.children ?? [],
+      row,
+    ) as number;
+    this.activeColIndex = Array.prototype.indexOf.call(row.children, cell) as number;
+
+    this.updatePosition(cell);
+  }
+  updatePosition(cell: HTMLTableCellElement) {
+    const view = this.editorView;
+    if (!view) {
+      return;
+    }
+
+    const container = view.dom.parentElement;
+    if (!container) {
+      return;
+    }
+    const containerRect = container.getBoundingClientRect();
+    const scrollTop = container.scrollTop;
+    const scrollLeft = container.scrollLeft;
+    const cellRect = cell.getBoundingClientRect();
+
+    this.rowTop.set(cellRect.top - containerRect.top + scrollTop + cellRect.height / 2);
+    this.rowLeft.set(cellRect.left - containerRect.left + scrollLeft - 10);
+    this.colTop.set(cellRect.top - containerRect.top + scrollTop - 10);
+    this.colLeft.set(cellRect.left - containerRect.left + scrollLeft + cellRect.width / 2);
   }
 
+  private getCellElementByPos(nodePos: number): HTMLTableCellElement | null {
+    const dom = this.editorView?.nodeDOM(nodePos);
+
+    if (dom instanceof HTMLTableCellElement) {
+      return dom;
+    }
+
+    if (dom instanceof HTMLElement) {
+      const cell = dom.closest('td, th');
+      return cell instanceof HTMLTableCellElement ? cell : null;
+    }
+
+    return null;
+  }
   protected onAddRow(event: MouseEvent): void {
     event.preventDefault();
     if (!this.ensureCurrentCellSelection()) {
       return;
     }
-    this.tiptapEditor?.chain().focus().addRowAfter().run();
+    this.editor?.addRowAfter()
   }
 
   protected onRemoveRow(event: MouseEvent): void {
@@ -136,7 +316,7 @@ export class InsTableHandle implements OnInit {
     if (!this.ensureCurrentCellSelection()) {
       return;
     }
-    this.tiptapEditor?.chain().focus().deleteRow().run();
+    this.editor?.deleteRow()
   }
 
   protected onAddColumn(event: MouseEvent): void {
@@ -144,7 +324,7 @@ export class InsTableHandle implements OnInit {
     if (!this.ensureCurrentCellSelection()) {
       return;
     }
-    this.tiptapEditor?.chain().focus().addColumnAfter().run();
+    this.editor?.addColumnAfter()
   }
 
   protected onRemoveColumn(event: MouseEvent): void {
@@ -152,12 +332,11 @@ export class InsTableHandle implements OnInit {
     if (!this.ensureCurrentCellSelection()) {
       return;
     }
-    this.tiptapEditor?.chain().focus().deleteColumn().run();
+    this.editor?.deleteColumn()
   }
 
-
   protected onRowDragStart(event: DragEvent): void {
-    if (this.activeRowIndex === null) {
+    if (this.activeRowIndex === null || !this.activeTable) {
       event.preventDefault();
       return;
     }
@@ -167,7 +346,7 @@ export class InsTableHandle implements OnInit {
       fromIndex: this.activeRowIndex,
       toIndex: this.activeRowIndex,
     };
-    this.isDragging.set(true);
+    // this.isDragging.set(true);
 
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = 'move';
@@ -176,7 +355,7 @@ export class InsTableHandle implements OnInit {
   }
 
   protected onColumnDragStart(event: DragEvent): void {
-    if (this.activeColIndex === null) {
+    if (this.activeColIndex === null || !this.activeTable) {
       event.preventDefault();
       return;
     }
@@ -186,11 +365,11 @@ export class InsTableHandle implements OnInit {
       fromIndex: this.activeColIndex,
       toIndex: this.activeColIndex,
     };
-    this.isDragging.set(true);
+    // this.isDragging.set(true);
 
     if (event.dataTransfer) {
       event.dataTransfer.effectAllowed = 'move';
-      // event.dataTransfer.setData('text/plain', 'ins-table-column-handle');
+      // event.dataTransfer.setData('text/plain', 'ins-table-row-handle');
     }
   }
 
@@ -201,101 +380,6 @@ export class InsTableHandle implements OnInit {
   protected onPanelMouseEnter(): void {
     this.visible.set(true);
   }
-
-  private bindDomEvents(): void {
-    if (this.domBound) {
-      return;
-    }
-    const view = this.editorView;
-    if (!view) {
-      return;
-    }
-
-    view.dom.addEventListener('click', this.handleEditorClick);
-    view.root.addEventListener('pointerdown', this.handleRootPointerDown as EventListener, true);
-    view.root.addEventListener('dragover', this.handleDragOver as EventListener);
-    view.root.addEventListener('drop', this.handleDrop as EventListener);
-    view.root.addEventListener('dragend', this.handleDragEnd as EventListener);
-    this.domBound = true;
-  }
-
-  private unbindDomEvents(): void {
-    if (!this.domBound) {
-      return;
-    }
-
-    const view = this.editorView;
-    if (!view) {
-      this.domBound = false;
-      return;
-    }
-
-    view.dom.removeEventListener('click', this.handleEditorClick);
-    view.root.removeEventListener('pointerdown', this.handleRootPointerDown as EventListener, true);
-    view.root.removeEventListener('dragover', this.handleDragOver as EventListener);
-    view.root.removeEventListener('drop', this.handleDrop as EventListener);
-    view.root.removeEventListener('dragend', this.handleDragEnd as EventListener);
-    this.domBound = false;
-  }
-
-  private readonly handleEditorClick = (event: MouseEvent): void => {
-    if (this.dragState !== null || !this.tiptapEditor?.isEditable) {
-      return;
-    }
-
-    const target = event.target;
-    if (!(target instanceof Node)) {
-      return;
-    }
-
-    if (this.isInsideHandle(target)) {
-      return;
-    }
-
-    if (!(target instanceof HTMLElement)) {
-      this.hide();
-      return;
-    }
-
-    const cell = target.closest('td, th');
-    if (!(cell instanceof HTMLTableCellElement)) {
-      this.hide();
-      return;
-    }
-
-    const table = cell.closest('table');
-    if (!(table instanceof HTMLTableElement)) {
-      this.hide();
-      return;
-    }
-
-    this.updateActiveContext(table, cell);
-    this.visible.set(true);
-  };
-
-  private readonly handleRootPointerDown = (event: PointerEvent): void => {
-    if (this.dragState !== null) {
-      return;
-    }
-
-    const target = event.target;
-    if (!(target instanceof Node)) {
-      return;
-    }
-
-    if (this.isInsideHandle(target)) {
-      return;
-    }
-
-    if (!(target instanceof HTMLElement)) {
-      this.hide();
-      return;
-    }
-
-    if (!target.closest('td, th')) {
-      this.hide();
-    }
-  };
 
   private readonly handleDragOver = (event: DragEvent): void => {
     if (!this.dragState || !this.activeTable) {
@@ -308,9 +392,9 @@ export class InsTableHandle implements OnInit {
     }
 
     event.preventDefault();
-    if (event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'move';
-    }
+    // if (event.dataTransfer) {
+    //   event.dataTransfer.dropEffect = 'move';
+    // }
 
     const row = targetCell.parentElement;
     if (!(row instanceof HTMLTableRowElement)) {
@@ -325,16 +409,14 @@ export class InsTableHandle implements OnInit {
     }
 
     this.dragState.toIndex = this.dragState.orientation === 'row' ? rowIndex : colIndex;
-    this.updateActiveContext(this.activeTable, targetCell);
     this.updateDropIndicator(targetCell);
   };
 
-  private readonly handleDrop = (event: DragEvent): void => {
+  private readonly handleDrop = (): void => {
     if (!this.dragState) {
       return;
     }
 
-    event.preventDefault();
     const dragState = this.dragState;
     this.resetDraggingState();
 
@@ -342,83 +424,6 @@ export class InsTableHandle implements OnInit {
       this.reorderTable(dragState);
     }
   };
-
-  private readonly handleDragEnd = (): void => {
-    this.resetDraggingState();
-  };
-
-  private refreshAfterTransaction(): void {
-    this.bindDomEvents();
-    if (!this.activeTable || !this.activeTable.isConnected || !this.tiptapEditor?.isEditable) {
-      this.hide();
-      return;
-    }
-
-    this.repositionActiveHandles();
-  }
-
-  private repositionActiveHandles(): void {
-    if (
-      !this.activeTable ||
-      this.activeRowIndex === null ||
-      this.activeColIndex === null ||
-      !this.activeTable.isConnected
-    ) {
-      return;
-    }
-
-    const row = this.activeTable.rows.item(this.activeRowIndex);
-    if (!row) {
-      this.hide();
-      return;
-    }
-
-    const cell = row.cells.item(this.activeColIndex);
-    if (!(cell instanceof HTMLTableCellElement)) {
-      this.hide();
-      return;
-    }
-
-    this.updateActiveContext(this.activeTable, cell);
-  }
-
-  private isInsideHandle(target: Node): boolean {
-    return this.hostRef.nativeElement.contains(target);
-  }
-
-  private updateActiveContext(table: HTMLTableElement, cell: HTMLTableCellElement): void {
-    const view = this.editorView;
-    if (!view) {
-      return;
-    }
-
-    this.activeTable = table;
-    const row = cell.parentElement;
-    if (!(row instanceof HTMLTableRowElement)) {
-      return;
-    }
-
-    this.activeRowIndex = Array.prototype.indexOf.call(
-      row.parentElement?.children ?? [],
-      row,
-    ) as number;
-    this.activeColIndex = Array.prototype.indexOf.call(row.children, cell) as number;
-
-    const container = view.dom.parentElement;
-    if (!container) {
-      return;
-    }
-
-    const containerRect = container.getBoundingClientRect();
-    const scrollTop = container.scrollTop;
-    const scrollLeft = container.scrollLeft;
-    const cellRect = cell.getBoundingClientRect();
-
-    this.rowTop.set(cellRect.top - containerRect.top + scrollTop + cellRect.height / 2);
-    this.rowLeft.set(cellRect.left - containerRect.left + scrollLeft - 10);
-    this.colTop.set(cellRect.top - containerRect.top + scrollTop - 10);
-    this.colLeft.set(cellRect.left - containerRect.left + scrollLeft + cellRect.width / 2);
-  }
 
   private hide(): void {
     if (this.dragState) {
@@ -563,11 +568,12 @@ export class InsTableHandle implements OnInit {
     }
 
     this.dropIndicatorVisible.set(true);
+    console.log('upload line');
   }
 
   private resetDraggingState(): void {
     this.dragState = null;
-    this.isDragging.set(false);
+    // this.isDragging.set(false);
     this.dropIndicatorVisible.set(false);
   }
 
