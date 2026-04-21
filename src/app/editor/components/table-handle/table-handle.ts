@@ -9,7 +9,6 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { type Editor } from '@tiptap/core';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
 import { CellSelection } from '@tiptap/pm/tables';
 import type { EditorView } from '@tiptap/pm/view';
@@ -142,7 +141,7 @@ export class InsTableHandle implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(({ node, nodePos }) => {
-        if (!node || nodePos < 0 || node.type.name !== 'tableCell') {
+        if (!node || nodePos < 0 || (node.type.name !== 'tableCell' && node.type.name !== 'tableHeader')) {
           this.hide();
           return;
         }
@@ -181,7 +180,6 @@ export class InsTableHandle implements OnInit {
       .subscribe((v) => {
         if (!v) return;
         this.handleDrop();
-        this.onDragEnd();
       });
     this.editor$
       .pipe(
@@ -211,7 +209,6 @@ export class InsTableHandle implements OnInit {
       .subscribe((v) => {
         if (!v) return;
         this.handleDrop();
-        this.onDragEnd();
       });
 
     this.editor$
@@ -372,10 +369,6 @@ export class InsTableHandle implements OnInit {
       event.dataTransfer.effectAllowed = 'move';
       // event.dataTransfer.setData('text/plain', 'ins-table-row-handle');
     }
-  }
-
-  protected onDragEnd(): void {
-    this.resetDraggingState();
   }
 
   // protected onPanelMouseEnter(): void {
