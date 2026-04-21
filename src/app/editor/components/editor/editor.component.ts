@@ -34,7 +34,7 @@ import {
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorAttachedFile } from '../../common/attached';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
-import { delay, filter, fromEvent, map, merge, of } from 'rxjs';
+import { delay, fromEvent, map, merge } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_VALUE_TRANSFORMER } from '../../common/editor-value-transformer';

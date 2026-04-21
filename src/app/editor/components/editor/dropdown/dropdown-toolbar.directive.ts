@@ -51,9 +51,11 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
 
   private readonly stream$ = combineLatest([
     this.handler$,
-    this.selection$.pipe(map(() => this.getRange())),
+    this.selection$.pipe(
+      debounceTime(100),
+      map(() => this.getRange())
+    ),
   ]).pipe(
-    debounceTime(100),
     map(([handler, range]) => {
       const contained =
         this.el.nativeElement.contains(range.commonAncestorContainer) ||

@@ -24,7 +24,7 @@ export class HttpMockUploader {
   styleUrl: './tiptap.less',
   providers: [
     provideInsEditor({
-      placeholder: { placeholder: '请输入。。。' },
+      placeholder: { placeholder: '请输入' },
       heading: { levels: [1, 2, 3, 4, 5, 6] },
       link: { autolink: true, openOnClick: false, linkOnPaste: true },
     }),
