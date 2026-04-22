@@ -43,6 +43,7 @@ import { BackgroundColorOptions } from '@tiptap/extension-text-style';
 import { FontFamilyOptions } from '@tiptap/extension-text-style';
 import { InsEditorGroupOptions } from '../extensions/group';
 import { EmojiOptions } from '@tiptap/extension-emoji';
+import { LineHeightOptions } from '@tiptap/extension-text-style';
 
 interface Options {
   starterKit: Partial<StarterKitOptions> | boolean;
@@ -105,6 +106,7 @@ interface Options {
   column: Partial<ColumnOptions> | boolean;
   columnResize: boolean;
   group: Partial<InsEditorGroupOptions> | boolean;
+  lineHeight: Partial<LineHeightOptions> | boolean;
 }
 
 const EXTENSIONS = [
@@ -352,6 +354,15 @@ const EXTENSIONS = [
       const { FontFamily } = await import('@tiptap/extension-text-style');
 
       return FontFamily.configure(options);
+    },
+  },
+  {
+    key: 'lineHeight',
+    default: true,
+    async loader(options: Partial<LineHeightOptions>) {
+      const { LineHeight } = await import('@tiptap/extension-text-style');
+
+      return LineHeight.configure(options);
     },
   },
   {
