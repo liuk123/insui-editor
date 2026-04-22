@@ -42,6 +42,7 @@ import { HighlightOptions } from '@tiptap/extension-highlight';
 import { BackgroundColorOptions } from '@tiptap/extension-text-style';
 import { FontFamilyOptions } from '@tiptap/extension-text-style';
 import { InsEditorGroupOptions } from '../extensions/group';
+import { EmojiOptions } from '@tiptap/extension-emoji';
 
 interface Options {
   starterKit: Partial<StarterKitOptions> | boolean;
@@ -78,6 +79,7 @@ interface Options {
   link: Partial<LinkOptions> | boolean;
   image: Partial<ImageOptions> | boolean;
   fileLink: Partial<Record<string, unknown>> | boolean;
+  emoji: Partial<EmojiOptions> | boolean;
 
   // enter: Partial<Record<string, unknown>> | boolean;
   backgroundColor: Partial<BackgroundColorOptions> | boolean;
@@ -614,6 +616,14 @@ const EXTENSIONS = [
     async loader(options: Partial<InsEditorGroupOptions>) {
       const { insCreateGroupExtension } = await import('../extensions/group');
       return insCreateGroupExtension(options);
+    },
+  },
+  {
+    key: 'emoji',
+    default: true,
+    async loader(options: Partial<EmojiOptions>) {
+      const { Emoji } = await import('@tiptap/extension-emoji');
+      return Emoji.configure(options);
     },
   },
 ] as const;
