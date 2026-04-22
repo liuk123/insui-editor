@@ -82,16 +82,10 @@ export class InsHeadNButtonLabel extends InsToolbarBase {
   }
 
   protected setHeaderOption(headingLevel: number|null): void {
-    this.clearPreviousTextStyles();
     if (headingLevel === null) {
       this.editor?.setParagraph();
       return;
     }
-    this.editor?.setHeading(headingLevel);
-  }
-
-  private clearPreviousTextStyles(): void {
-    this.editor?.removeEmptyTextStyle();
-    this.editor?.toggleMark('textStyle');
+    this.editor?.setToggleHeading({ level: headingLevel });
   }
 }

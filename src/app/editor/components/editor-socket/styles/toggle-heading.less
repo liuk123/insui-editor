@@ -1,0 +1,49 @@
+@import '@liuk123/insui/styles/ins-ui-global.less';
+
+.ins-toggle-heading-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.ins-toggle-heading-button {
+  block-size: 1.5rem;
+  inline-size: 1.5rem;
+  margin-block-start: 0.2em;
+  border: 0;
+  border-radius: 0.25rem;
+  padding: 0;
+  background: transparent;
+  color: var(--ins-text-tertiary);
+  cursor: pointer;
+  flex: 0 0 auto;
+
+  &:focus-visible {
+    outline: 0.125rem solid var(--ins-text-action);
+  }
+
+  svg {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    fill: currentColor;
+    transition: transform var(--ins-duration, 0.2s) ease;
+  }
+}
+
+.ins-toggle-heading-wrapper[data-collapsed='false'] .ins-toggle-heading-button svg {
+  transform: rotate(90deg);
+}
+
+.ins-toggle-heading-wrapper[data-collapsed='true'] .ins-toggle-heading-button svg {
+  transform: rotate(0deg);
+}
+
+.ins-toggle-heading-content {
+  flex: 1 1 auto;
+  margin: 0;
+}
+
+.ins-heading-collapsed-content {
+  display: none;
+}

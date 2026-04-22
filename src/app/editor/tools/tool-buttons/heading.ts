@@ -98,17 +98,11 @@ export class InsHeadingButtonTool extends InsToolbarTool {
   }
 
   protected setHeaderOption({ value }: Partial<InsEditorLabelOption<number>>): void {
-    this.clearPreviousTextStyles();
     if (value !== undefined && value !== null) {
-      this.editor?.setHeading(value);
+      this.editor?.setToggleHeading({ level: value });
     } else {
       this.editor?.setParagraph(undefined);
     }
-  }
-
-  private clearPreviousTextStyles(): void {
-    this.editor?.removeEmptyTextStyle();
-    this.editor?.toggleMark('textStyle');
   }
 
   private getActiveHeadingLevel(): typeof this.levels[number] | null {

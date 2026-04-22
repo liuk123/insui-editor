@@ -16,11 +16,21 @@ import { InsLanguageEditor } from '../../i18n/language';
     },
 })
 export class InsIndentButtonTool extends InsToolbarTool {
-    protected getIcon(icons: InsEditorOptions['icons']): string {
-        return icons.indent;
+  override getDisableState(): boolean {
+    const editor = this.editor?.getOriginTiptapEditor();
+    if (!editor?.isEditable) {
+      return true;
     }
 
-    protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return texts?.indent ?? '';
-    }
+    const type = editor.isActive('taskList') ? 'taskItem' : 'listItem';
+    return !editor.can().sinkListItem(type);
+  }
+
+  protected getIcon(icons: InsEditorOptions['icons']): string {
+    return icons.indent;
+  }
+
+  protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
+    return texts?.indent ?? '';
+  }
 }

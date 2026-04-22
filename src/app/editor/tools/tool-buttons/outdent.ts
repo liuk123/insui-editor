@@ -16,11 +16,21 @@ import { InsLanguageEditor } from '../../i18n/language';
     },
 })
 export class InsOutdentButtonTool extends InsToolbarTool {
-    protected getIcon(icons: InsEditorOptions['icons']): string {
-        return icons.outdent;
+  override getDisableState(): boolean {
+    const editor = this.editor?.getOriginTiptapEditor();
+    if (!editor?.isEditable) {
+      return true;
     }
 
-    protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-        return texts?.outdent ?? '';
-    }
+    const type = editor.isActive('taskList') ? 'taskItem' : 'listItem';
+    return !editor.can().liftListItem(type);
+  }
+
+  protected getIcon(icons: InsEditorOptions['icons']): string {
+    return icons.outdent;
+  }
+
+  protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
+    return texts?.outdent ?? '';
+  }
 }
