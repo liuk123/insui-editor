@@ -57,7 +57,7 @@ export abstract class AbstractInsEditor {
 
     public abstract getCellColor(): string;
 
-    // public abstract getGroupColor(): string;
+    public abstract getGroupColor(): string;
 
     public abstract onAlign(align: string): void;
 
@@ -141,6 +141,7 @@ export abstract class AbstractInsEditor {
     public abstract splitCell(): void;
 
     public abstract setHeading(level: number): void;
+    public abstract setToggleHeading({ level }: { level: number }): void;
 
     public abstract removeEmptyTextStyle(): void;
 
@@ -189,11 +190,11 @@ export abstract class AbstractInsEditor {
 
     public abstract unsetDetails(): void;
 
-    // public abstract setGroup(): void;
+    public abstract setGroup(): void;
 
-    // public abstract setGroupHilite(color: string): void;
+    public abstract setGroupHilite(color: string): void;
 
-    // public abstract removeGroup(): void;
+    public abstract removeGroup(): void;
 
     public abstract setAnchor(id: string): void;
 

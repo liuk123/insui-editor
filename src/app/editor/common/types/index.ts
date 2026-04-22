@@ -99,13 +99,13 @@ declare module '@tiptap/core' {
     };
   }
 
-  // interface Commands<ReturnType> {
-  //   group: {
-  //     removeGroup(): ReturnType;
-  //     setGroup(): ReturnType;
-  //     setGroupHilite(color: string): ReturnType;
-  //   };
-  // }
+  interface Commands<ReturnType> {
+    group: {
+      removeGroup(): ReturnType;
+      setGroup(): ReturnType;
+      setGroupHilite(color: string): ReturnType;
+    };
+  }
 
   interface Commands<ReturnType> {
     anchor: {

@@ -1,6 +1,6 @@
 import { inject, INJECTOR, type Injector, type Provider } from '@angular/core';
 
-import { type Extension, type KeyboardShortcutCommand, type Mark, type Node } from '@tiptap/core';
+import { type Extension, type Mark, type Node } from '@tiptap/core';
 import { type BlockquoteOptions } from '@tiptap/extension-blockquote';
 import { type BoldOptions } from '@tiptap/extension-bold';
 import { type BulletListOptions } from '@tiptap/extension-bullet-list';
@@ -41,6 +41,7 @@ import { IframeOptions } from '../extensions/iframe';
 import { HighlightOptions } from '@tiptap/extension-highlight';
 import { BackgroundColorOptions } from '@tiptap/extension-text-style';
 import { FontFamilyOptions } from '@tiptap/extension-text-style';
+import { InsEditorGroupOptions } from '../extensions/group';
 
 interface Options {
   starterKit: Partial<StarterKitOptions> | boolean;
@@ -101,6 +102,7 @@ interface Options {
   columnList: Partial<ColumnListOptions> | boolean;
   column: Partial<ColumnOptions> | boolean;
   columnResize: boolean;
+  group: Partial<InsEditorGroupOptions> | boolean;
 }
 
 const EXTENSIONS = [
@@ -214,19 +216,8 @@ const EXTENSIONS = [
     key: 'heading',
     default: true,
     async loader(options: Partial<HeadingOptions>) {
-      const { Heading } = await import('@tiptap/extension-heading');
-
-      return Heading.configure({ levels: [1, 2, 3, 4, 5, 6], ...options }).extend({
-        addKeyboardShortcuts(): Record<string, KeyboardShortcutCommand> {
-          return this.options.levels.reduce(
-            (items: any, level: any) => ({
-              ...(items || {}),
-              [`Mod-Alt-${level}`]: () => this.editor.commands.toggleHeading({ level }),
-            }),
-            {},
-          );
-        },
-      });
+      const { InsToggleHeading } = await import('../extensions/toggle-heading');
+      return InsToggleHeading.configure({ levels: [1, 2, 3, 4, 5, 6], ...options });
     },
   },
   {
@@ -615,6 +606,14 @@ const EXTENSIONS = [
     async loader(options: Partial<Record<string, unknown>>) {
       const { ColumnResize } = await import('../extensions/columns');
       return ColumnResize.configure(options);
+    },
+  },
+  {
+    key: 'group',
+    default: true,
+    async loader(options: Partial<InsEditorGroupOptions>) {
+      const { insCreateGroupExtension } = await import('../extensions/group');
+      return insCreateGroupExtension(options);
     },
   },
 ] as const;

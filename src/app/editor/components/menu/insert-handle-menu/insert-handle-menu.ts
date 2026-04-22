@@ -13,6 +13,7 @@ import { InsAttachLabel } from '../../../tools/label-buttons/attach';
 import { InsEditorAttachedFile } from '../../../common/attached';
 import { InsOrderedListButtonLabel } from '../../../tools/label-buttons/ordered-list';
 import { InsTaskListButtonLabel } from '../../../tools/label-buttons/task-list';
+import { InsGroupButtonLabel } from '../../../tools/label-buttons/group';
 
 @Component({
   selector: 'ins-insert-handle-menu',
@@ -27,7 +28,8 @@ import { InsTaskListButtonLabel } from '../../../tools/label-buttons/task-list';
     InsHrButtonLabel,
     InsInsertTableButtonLabel,
     InsImageButtonLabel,
-    InsAttachLabel
+    InsAttachLabel,
+    InsGroupButtonLabel
   ],
   templateUrl: './insert-handle-menu.html',
   styleUrl: './insert-handle-menu.less',

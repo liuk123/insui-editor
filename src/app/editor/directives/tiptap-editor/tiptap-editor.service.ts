@@ -15,6 +15,7 @@ import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { insGetMarkRange } from './utils/get-mark-range';
 import { InsEditorAttachedFile } from '../../common/attached';
 import { EditorView } from '@tiptap/pm/view';
+import { insParseStyle } from './utils/parse-style';
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
 type Attrs = Record<string, unknown>;
@@ -124,16 +125,16 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     );
   }
 
-  // public getGroupColor(): string {
-  //   if (this.editor?.isActive('group')) {
-  //     const style = this.editor.getAttributes('group')['style'] ?? '';
-  //     const styles = insParseStyle(style);
+  public getGroupColor(): string {
+    if (this.editor?.isActive('group')) {
+      const style = this.editor.getAttributes('group')['style'] ?? '';
+      const styles = insParseStyle(style);
 
-  //     return styles['background-color'] ?? styles['background'] ?? '';
-  //   }
+      return styles['background-color'] ?? styles['background'] ?? '';
+    }
 
-  //   return '';
-  // }
+    return '';
+  }
 
   public onAlign(align: string): void {
     this.editor?.chain().focus().setTextAlign(align).run();
@@ -376,7 +377,18 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   }
 
   public setHeading(level: Level): void {
-    this.editor?.chain().focus().setHeading({ level }).run();
+    this.editor?.chain().focus().setNode('heading', { level }).run();
+  }
+  public setToggleHeading({ level }: { level: Level }): void {
+    const editor = this.editor;
+    if (!editor) {
+      return;
+    }
+    editor
+      .chain()
+      .focus()
+      .setNode('heading', { level, collapsed: false, toggleable: true })
+      .run();
   }
 
   public setParagraph(options?: { fontSize: string }): void {
@@ -471,17 +483,17 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.commands.unsetDetails();
   }
 
-  // public setGroup(): void {
-  //   this.editor?.commands.setGroup();
-  // }
+  public setGroup(): void {
+    this.editor?.commands.setGroup();
+  }
 
-  // public removeGroup(): void {
-  //   this.editor?.commands.removeGroup();
-  // }
+  public removeGroup(): void {
+    this.editor?.commands.removeGroup();
+  }
 
-  // public setGroupHilite(color: string): void {
-  //   this.editor?.commands.setGroupHilite(color);
-  // }
+  public setGroupHilite(color: string): void {
+    this.editor?.commands.setGroupHilite(color);
+  }
 
   public setAnchor(anchor: string): void {
     this.editor?.commands.setAnchor(anchor.replace('#', ''));
