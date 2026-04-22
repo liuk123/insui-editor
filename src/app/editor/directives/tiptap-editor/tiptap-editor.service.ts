@@ -377,18 +377,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   }
 
   public setHeading(level: Level): void {
-    this.editor?.chain().focus().setNode('heading', { level }).run();
-  }
-  public setToggleHeading({ level }: { level: Level }): void {
-    const editor = this.editor;
-    if (!editor) {
-      return;
-    }
-    editor
-      .chain()
-      .focus()
-      .setNode('heading', { level, collapsed: false, toggleable: true })
-      .run();
+    this.editor?.chain().focus().setNode('heading', { level, collapsed: false, toggleable: true }).run();
   }
 
   public setParagraph(options?: { fontSize: string }): void {

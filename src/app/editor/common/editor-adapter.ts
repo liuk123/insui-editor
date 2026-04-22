@@ -141,7 +141,6 @@ export abstract class AbstractInsEditor {
     public abstract splitCell(): void;
 
     public abstract setHeading(level: number): void;
-    public abstract setToggleHeading({ level }: { level: number }): void;
 
     public abstract removeEmptyTextStyle(): void;
 

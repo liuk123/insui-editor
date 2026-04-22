@@ -52,7 +52,7 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
   private readonly stream$ = combineLatest([
     this.handler$,
     this.selection$.pipe(
-      debounceTime(100),
+      // debounceTime(100),
       map(() => this.getRange())
     ),
   ]).pipe(

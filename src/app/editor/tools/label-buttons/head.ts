@@ -86,6 +86,6 @@ export class InsHeadNButtonLabel extends InsToolbarBase {
       this.editor?.setParagraph();
       return;
     }
-    this.editor?.setToggleHeading({ level: headingLevel });
+    this.editor?.setHeading(headingLevel);
   }
 }

@@ -99,7 +99,7 @@ export class InsHeadingButtonTool extends InsToolbarTool {
 
   protected setHeaderOption({ value }: Partial<InsEditorLabelOption<number>>): void {
     if (value !== undefined && value !== null) {
-      this.editor?.setToggleHeading({ level: value });
+      this.editor?.setHeading(value);
     } else {
       this.editor?.setParagraph(undefined);
     }
