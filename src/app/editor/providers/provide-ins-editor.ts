@@ -27,23 +27,24 @@ import { type TableRowOptions } from '@tiptap/extension-table-row';
 import { type TaskItemOptions } from '@tiptap/extension-task-item';
 import { type TaskListOptions } from '@tiptap/extension-task-list';
 import { type TextAlignOptions } from '@tiptap/extension-text-align';
-import { ColorOptions, FontSizeOptions, type TextStyleOptions } from '@tiptap/extension-text-style';
+import { type ColorOptions, type FontSizeOptions, type TextStyleOptions } from '@tiptap/extension-text-style';
 import { type UnderlineOptions } from '@tiptap/extension-underline';
 import { type StarterKitOptions } from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import { type TypographyOptions } from '@tiptap/extension-typography';
 import { type TrailingNodeOptions } from '@tiptap/extensions';
-import { InsDetailsExtensionOptions } from '../extensions/details';
-import { DetailsContentOptions, DetailsSummaryOptions } from '@tiptap/extension-details';
-import { ColumnListOptions, ColumnOptions } from '../extensions/columns';
-import { ImageOptions } from '@tiptap/extension-image';
-import { IframeOptions } from '../extensions/iframe';
-import { HighlightOptions } from '@tiptap/extension-highlight';
-import { BackgroundColorOptions } from '@tiptap/extension-text-style';
-import { FontFamilyOptions } from '@tiptap/extension-text-style';
-import { InsEditorGroupOptions } from '../extensions/group';
-import { EmojiOptions } from '@tiptap/extension-emoji';
-import { LineHeightOptions } from '@tiptap/extension-text-style';
+import { type InsDetailsExtensionOptions } from '../extensions/details';
+import { type DetailsContentOptions, type DetailsSummaryOptions } from '@tiptap/extension-details';
+import { type ColumnListOptions, type ColumnOptions } from '../extensions/columns';
+import { type ImageOptions } from '@tiptap/extension-image';
+import { type IframeOptions } from '../extensions/iframe';
+import { type HighlightOptions } from '@tiptap/extension-highlight';
+import { type BackgroundColorOptions } from '@tiptap/extension-text-style';
+import { type FontFamilyOptions } from '@tiptap/extension-text-style';
+import { type InsEditorGroupOptions } from '../extensions/group';
+import { type EmojiOptions } from '@tiptap/extension-emoji';
+import { type LineHeightOptions } from '@tiptap/extension-text-style';
+import { type InsMentionOptions } from '../extensions/mention';
 
 interface Options {
   starterKit: Partial<StarterKitOptions> | boolean;
@@ -107,6 +108,7 @@ interface Options {
   columnResize: boolean;
   group: Partial<InsEditorGroupOptions> | boolean;
   lineHeight: Partial<LineHeightOptions> | boolean;
+  mention: Partial<InsMentionOptions> | boolean;
 }
 
 const EXTENSIONS = [
@@ -635,6 +637,14 @@ const EXTENSIONS = [
     async loader(options: Partial<EmojiOptions>) {
       const { Emoji } = await import('@tiptap/extension-emoji');
       return Emoji.configure(options);
+    },
+  },
+  {
+    key: 'mention',
+    default: true,
+    async loader(options: Partial<InsMentionOptions>) {
+      const { InsMention } = await import('../extensions/mention');
+      return InsMention.configure(options);
     },
   },
 ] as const;

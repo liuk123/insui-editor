@@ -1,45 +1,64 @@
-<button
-  aria-label="Justify align"
-  size="s"
-  title=""
-  insIconButton
-  type="button"
-  [appearance]="style === null || style === undefined || style === '' ? 'outline' : 'flat'"
-  [iconStart]="options.icons.imageExtension.alignJustify"
-  (click)="align(null)"
->
-  Justify align
-</button>
-<button
-  aria-label="Align left"
-  size="s"
-  insIconButton
-  type="button"
-  [appearance]="style | insMapper: getAppearance : 'left'"
-  [iconStart]="options.icons.imageExtension.alignLeft"
-  (click)="align('left')"
->
-  Left align
-</button>
-<button
-  aria-label="Align center"
-  size="s"
-  insIconButton
-  type="button"
-  [appearance]="style | insMapper: getAppearance : 'center'"
-  [iconStart]="options.icons.imageExtension.alignCenter"
-  (click)="align('center')"
->
-  Center align
-</button>
-<button
-  aria-label="Align right"
-  size="s"
-  insIconButton
-  type="button"
-  [appearance]="style | insMapper: getAppearance : 'right'"
-  [iconStart]="options.icons.imageExtension.alignRight"
-  (click)="align('right')"
->
-  Right align
-</button>
+<div insToolbarBlock>
+  <button
+    aria-label="Justify align"
+    size="xs"
+    insIconButton
+    type="button"
+    appearance="icon"
+    [insAppearanceState]="style === null"
+    [iconStart]="options.icons.imageExtension.alignJustify"
+    (click)="align(null)"
+  >
+    Justify align
+  </button>
+  <button
+    aria-label="Align left"
+    size="xs"
+    insIconButton
+    type="button"
+    appearance="icon"
+    [insAppearanceState]="style === 'left'"
+    [iconStart]="options.icons.imageExtension.alignLeft"
+    (click)="align('left')"
+  >
+    Left align
+  </button>
+  <button
+    aria-label="Align center"
+    size="xs"
+    insIconButton
+    type="button"
+    appearance="icon"
+    [insAppearanceState]="style === 'center'"
+    [iconStart]="options.icons.imageExtension.alignCenter"
+    (click)="align('center')"
+  >
+    Center align
+  </button>
+  <button
+    aria-label="Align right"
+    size="xs"
+    insIconButton
+    type="button"
+    appearance="icon"
+    [insAppearanceState]="style === 'right'"
+    [iconStart]="options.icons.imageExtension.alignRight"
+    (click)="align('right')"
+  >
+    Right align
+  </button>
+</div>
+
+<div insToolbarBlock>
+  <button
+    aria-label="image caption"
+    size="xs"
+    insIconButton
+    type="button"
+    appearance="icon"
+    [iconStart]="options.icons.imageExtension.alignRight"
+    (click)="setCaption()"
+  >
+    Right align
+  </button>
+</div>
