@@ -366,7 +366,7 @@ export const InsImage = Image.extend<ImageOptions>({
       figure.append(imageElement);
 
       const captionElement = document.createElement('figcaption');
-      captionElement.setAttribute('contenteditable', 'false');
+      captionElement.setAttribute('contenteditable', 'true');
       const caption = getTrimmedCaption(attrs);
       if (caption.length > 0) {
         captionElement.textContent = caption;

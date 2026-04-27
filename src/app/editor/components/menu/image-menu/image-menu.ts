@@ -23,6 +23,6 @@ export class InsImageMenu implements OnInit {
   }
 
   protected setCaption(): void {
-    // this.editor.getOriginTiptapEditor()?.chain().focus().updateAttributes('image', { caption: 'image caption' }).run();
+    this.editor.getOriginTiptapEditor()?.chain().focus().updateAttributes('image', { caption: 'image caption' }).run();
   }
 }

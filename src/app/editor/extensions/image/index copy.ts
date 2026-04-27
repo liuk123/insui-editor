@@ -24,7 +24,7 @@ export const InsImage = Image.extend({
     const { directions, minWidth, minHeight, alwaysPreserveAspectRatio } = this.options.resize;
 
     return ({ node, getPos, HTMLAttributes, editor }) => {
-      const el = document.createElement('img');
+      const image = document.createElement('img');
 
       Object.entries(HTMLAttributes).forEach(([key, value]) => {
         if (value != null) {
@@ -33,22 +33,22 @@ export const InsImage = Image.extend({
             case 'height':
               break;
             default:
-              el.setAttribute(key, value);
+              image.setAttribute(key, value);
               break;
           }
         }
       });
 
-      el.src = HTMLAttributes['src'];
+      image.src = HTMLAttributes['src'];
 
       const nodeView = new ResizableNodeView({
-        element: el,
+        element: image,
         editor,
         node,
         getPos,
         onResize: (width, height) => {
-          el.style.width = `${width}px`;
-          el.style.height = `${height}px`;
+          image.style.width = `${width}px`;
+          image.style.height = `${height}px`;
         },
         onCommit: (width, height) => {
           const pos = getPos();
@@ -70,8 +70,13 @@ export const InsImage = Image.extend({
             return false;
           }
           if (updatedNode.attrs['align'] !== node.attrs['align']) {
-            return false
+            if(updatedNode.attrs['align'] !== null) {
+              image.setAttribute('data-align', updatedNode.attrs['align']);
+            }else{
+              image.removeAttribute('data-align');
+            }
           }
+
 
           return true;
         },
@@ -92,7 +97,7 @@ export const InsImage = Image.extend({
       dom.style.visibility = 'hidden';
       dom.style.pointerEvents = 'none';
 
-      el.onload = () => {
+      image.onload = () => {
         dom.style.visibility = '';
         dom.style.pointerEvents = '';
       };
