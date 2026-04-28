@@ -4,13 +4,12 @@ import {
   InsSelectionSnapshot,
   InsSetValueOption,
 } from '../../common/editor-adapter';
-import { type Editor, type Range } from '@tiptap/core';
+import { type Editor, type JSONContent, type Range } from '@tiptap/core';
 import { type MarkType } from '@tiptap/pm/model';
 import { distinctUntilChanged, map, Observable, startWith } from 'rxjs';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
 import { EditorState } from '@tiptap/pm/state';
 import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
-import { InsEditableImage } from '../../common/image';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { insGetMarkRange } from './utils/get-mark-range';
 import { InsEditorAttachedFile } from '../../common/attached';
@@ -418,6 +417,24 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     }
 
     this.editor?.commands.setContent(value, this.options);
+
+    if (options.clearsHistory || !this.firstInitContent) {
+      this.clearHistory();
+    }
+
+    this.firstInitContent = true;
+  }
+
+  public setJsonValue(value: JSONContent, options: InsSetValueOption = {}): void {
+    if (!this.editor) {
+      return;
+    }
+
+    if (JSON.stringify(value) === JSON.stringify(this.editor.getJSON())) {
+      return;
+    }
+
+    this.editor.commands.setContent(value, this.options);
 
     if (options.clearsHistory || !this.firstInitContent) {
       this.clearHistory();

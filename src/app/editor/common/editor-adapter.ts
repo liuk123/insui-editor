@@ -1,5 +1,5 @@
 import {Directive} from '@angular/core';
-import {type Editor, type Range} from '@tiptap/core';
+import {type Editor, type JSONContent, type Range} from '@tiptap/core';
 import {type MarkType} from '@tiptap/pm/model';
 import {type EditorState} from '@tiptap/pm/state';
 import {BehaviorSubject, type Observable, Subject} from 'rxjs';
@@ -24,6 +24,7 @@ type Attrs = Record<string, unknown>;
 export abstract class AbstractInsEditor {
     public abstract readonly isFocused: boolean;
     public abstract readonly html: string;
+    public abstract readonly json: string;
     public abstract editable: boolean;
 
     // 事务状态
@@ -178,6 +179,8 @@ export abstract class AbstractInsEditor {
     public abstract getSelectionSnapshot(): InsSelectionSnapshot | null;
 
     public abstract setValue(value: string, options?: InsSetValueOption): void;
+
+    public abstract setJsonValue(value: JSONContent, options?: InsSetValueOption): void;
 
     public abstract setCellColor(color: string): void;
 

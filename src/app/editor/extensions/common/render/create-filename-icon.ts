@@ -13,7 +13,7 @@ export const createFileNameWithIcon: (attrs: Record<string, unknown>) => {dom: H
 
   const fileName = document.createElement('p');
   fileName.className = 'file-name';
-  fileName.textContent = attrs['name'] as string;
+  fileName.textContent = (attrs['name'] || attrs['src']) as string;
   file.appendChild(fileName);
   return { dom: file };
 };

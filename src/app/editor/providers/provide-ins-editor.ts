@@ -426,15 +426,7 @@ const EXTENSIONS = [
     async loader(options: Partial<ImageOptions>, injector: Injector) {
       const { InsImage } = await import('../extensions/image');
 
-      return InsImage.configure({
-        resize: {
-          enabled: true,
-          minWidth: 50,
-          minHeight: 50,
-          alwaysPreserveAspectRatio: true,
-        },
-        ...options,
-      });
+      return InsImage.configure();
     },
   },
   {

@@ -1,111 +1,87 @@
-import { Editor } from "@tiptap/core";
-import { createFileBlockWrapper } from "./create-file-wrapper";
-
+import { Editor } from '@tiptap/core';
 
 export const createResizableFileBlockWrapper = (
   editor: Editor,
-  element: {dom: HTMLElement, destroy?: () => void},
+  element: { dom: HTMLElement; destroy?: () => void },
   attrs: Record<string, unknown>,
   resizeHandlesContainerElement: HTMLElement,
   block: any,
 ) => {
-
-  // const {dom: wrapper, destroy} = createFileBlockWrapper(element, attrs);
   const wrapper = element.dom;
   wrapper.style.position = 'relative';
 
-  if(attrs['data-show-preview'] === 'true' && attrs['url']){
-    if(attrs['data-preview-width']){
-      wrapper.style.width = attrs['data-preview-width'] as string;
-    }else{
-      wrapper.style.width='fit-content';
-    }
+  if (attrs['previewWidth']) {
+    wrapper.style.width = attrs['previewWidth'] as string;
+  } else {
+    wrapper.style.width = 'fit-content';
   }
 
-  const leftResizeHandle = document.createElement("div");
-  leftResizeHandle.className = "bn-resize-handle";
-  leftResizeHandle.style.left = "4px";
-  const rightResizeHandle = document.createElement("div");
-  rightResizeHandle.className = "bn-resize-handle";
-  rightResizeHandle.style.right = "4px";
+  const leftResizeHandle = document.createElement('div');
+  leftResizeHandle.className = 'bn-resize-handle';
+  leftResizeHandle.style.left = '4px';
+  const rightResizeHandle = document.createElement('div');
+  rightResizeHandle.className = 'bn-resize-handle';
+  rightResizeHandle.style.right = '4px';
 
-
-   // This element ensures `mousemove` and `mouseup` events are captured while
+  // This element ensures `mousemove` and `mouseup` events are captured while
   // resizing when the cursor is over the wrapper content. This is because
   // embeds are treated as separate HTML documents, so if the content is an
   // embed, the events will only fire within that document.
-  const eventCaptureElement = document.createElement("div");
-  eventCaptureElement.style.position = "absolute";
-  eventCaptureElement.style.height = "100%";
-  eventCaptureElement.style.width = "100%";
+  const eventCaptureElement = document.createElement('div');
+  eventCaptureElement.style.position = 'absolute';
+  eventCaptureElement.style.height = '100%';
+  eventCaptureElement.style.width = '100%';
 
   // Temporary parameters set when the user begins resizing the element, used to
   // calculate the new width of the element.
   let resizeParams:
     | {
-        handleUsed: "left" | "right";
+        handleUsed: 'left' | 'right';
         initialWidth: number;
         initialClientX: number;
       }
     | undefined;
-  let width =attrs['data-preview-width'] as number;
+  let width = attrs['previewWidth'] as number;
 
   const windowMouseMoveHandler = (event: MouseEvent | TouchEvent) => {
-
-    if(!resizeParams){
-      if(
+    if (!resizeParams) {
+      if (
         !editor.view.editable &&
         resizeHandlesContainerElement.contains(leftResizeHandle) &&
         resizeHandlesContainerElement.contains(rightResizeHandle)
-      ){
+      ) {
         resizeHandlesContainerElement.removeChild(leftResizeHandle);
         resizeHandlesContainerElement.removeChild(rightResizeHandle);
       }
-      return
+      return;
     }
 
     let newWidth: number;
-    const clientX =
-        "touches" in event ? event.touches[0].clientX : event.clientX;
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
 
-
-
-    if (attrs['data-align'] === "center") {
-      if (resizeParams.handleUsed === "left") {
-        newWidth =
-          resizeParams.initialWidth +
-          (resizeParams.initialClientX - clientX) * 2;
+    if (attrs['align'] === 'center') {
+      if (resizeParams.handleUsed === 'left') {
+        newWidth = resizeParams.initialWidth + (resizeParams.initialClientX - clientX) * 2;
       } else {
-        newWidth =
-          resizeParams.initialWidth +
-          (clientX - resizeParams.initialClientX) * 2;
+        newWidth = resizeParams.initialWidth + (clientX - resizeParams.initialClientX) * 2;
       }
     } else {
-      if (resizeParams.handleUsed === "left") {
-        newWidth =
-          resizeParams.initialWidth + resizeParams.initialClientX - clientX;
+      if (resizeParams.handleUsed === 'left') {
+        newWidth = resizeParams.initialWidth + resizeParams.initialClientX - clientX;
       } else {
-        newWidth =
-          resizeParams.initialWidth + clientX - resizeParams.initialClientX;
+        newWidth = resizeParams.initialWidth + clientX - resizeParams.initialClientX;
       }
     }
     // Min element width in px.
     const minWidth = 64;
-    width = Math.min(
-      Math.max(newWidth, minWidth),
-      Number.MAX_VALUE,
-    );
+    width = Math.min(Math.max(newWidth, minWidth), Number.MAX_VALUE);
     wrapper.style.width = `${width}px`;
-
-
-  }
+  };
 
   const windowMouseUpHandler = (event: MouseEvent | TouchEvent) => {
     // Hides the drag handles if the cursor is no longer over the element.
     if (
-      (!event.target ||
-        !wrapper.contains(event.target as Node) ||
-        !editor.view.editable) &&
+      (!event.target || !wrapper.contains(event.target as Node) || !editor.view.editable) &&
       resizeHandlesContainerElement.contains(leftResizeHandle) &&
       resizeHandlesContainerElement.contains(rightResizeHandle)
     ) {
@@ -123,14 +99,17 @@ export const createResizableFileBlockWrapper = (
       wrapper.removeChild(eventCaptureElement);
     }
 
-    // editor.updateBlock(block, {
-    //   props: {
-    //     previewWidth: width,
-    //   },
-    // });
-    editor.commands.updateAttributes(block, {
-      previewWidth: width,
-    })
+    // editor.commands.updateAttributes(block, {
+    //   previewWidth: width,
+    // })
+    const normalizedWidth = Math.max(64, Math.round(width));
+    editor
+      .chain()
+      .focus()
+      .updateAttributes(block, {
+        previewWidth: normalizedWidth,
+      })
+      .run();
   };
 
   // Shows the resize handles when hovering over the wrapper with the cursor.
@@ -143,10 +122,7 @@ export const createResizableFileBlockWrapper = (
   // Hides the resize handles when the cursor leaves the wrapper, unless the
   // cursor moves to one of the resize handles.
   const wrapperMouseLeaveHandler = (event: MouseEvent) => {
-    if (
-      event.relatedTarget === leftResizeHandle ||
-      event.relatedTarget === rightResizeHandle
-    ) {
+    if (event.relatedTarget === leftResizeHandle || event.relatedTarget === rightResizeHandle) {
       return;
     }
 
@@ -173,83 +149,54 @@ export const createResizableFileBlockWrapper = (
       wrapper.appendChild(eventCaptureElement);
     }
 
-    const clientX =
-      "touches" in event ? event.touches[0].clientX : event.clientX;
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
 
     resizeParams = {
-      handleUsed: "left",
+      handleUsed: 'left',
       initialWidth: wrapper.clientWidth,
       initialClientX: clientX,
     };
   };
-  const rightResizeHandleMouseDownHandler = (
-    event: MouseEvent | TouchEvent,
-  ) => {
+  const rightResizeHandleMouseDownHandler = (event: MouseEvent | TouchEvent) => {
     event.preventDefault();
 
     if (!wrapper.contains(eventCaptureElement)) {
       wrapper.appendChild(eventCaptureElement);
     }
 
-    const clientX =
-      "touches" in event ? event.touches[0].clientX : event.clientX;
+    const clientX = 'touches' in event ? event.touches[0].clientX : event.clientX;
 
     resizeParams = {
-      handleUsed: "right",
+      handleUsed: 'right',
       initialWidth: wrapper.clientWidth,
       initialClientX: clientX,
     };
   };
 
-  window.addEventListener("mousemove", windowMouseMoveHandler);
-  window.addEventListener("touchmove", windowMouseMoveHandler);
-  window.addEventListener("mouseup", windowMouseUpHandler);
-  window.addEventListener("touchend", windowMouseUpHandler);
-  wrapper.addEventListener("mouseenter", wrapperMouseEnterHandler);
+  window.addEventListener('mousemove', windowMouseMoveHandler);
+  window.addEventListener('touchmove', windowMouseMoveHandler);
+  window.addEventListener('mouseup', windowMouseUpHandler);
+  window.addEventListener('touchend', windowMouseUpHandler);
+  wrapper.addEventListener('mouseenter', wrapperMouseEnterHandler);
   // wrapper.addEventListener("mouseleave", wrapperMouseLeaveHandler);
-  leftResizeHandle.addEventListener(
-    "mousedown",
-    leftResizeHandleMouseDownHandler,
-  );
-  leftResizeHandle.addEventListener(
-    "touchstart",
-    leftResizeHandleMouseDownHandler,
-  );
-  rightResizeHandle.addEventListener(
-    "mousedown",
-    rightResizeHandleMouseDownHandler,
-  );
-  rightResizeHandle.addEventListener(
-    "touchstart",
-    rightResizeHandleMouseDownHandler,
-  );
+  leftResizeHandle.addEventListener('mousedown', leftResizeHandleMouseDownHandler);
+  leftResizeHandle.addEventListener('touchstart', leftResizeHandleMouseDownHandler);
+  rightResizeHandle.addEventListener('mousedown', rightResizeHandleMouseDownHandler);
+  rightResizeHandle.addEventListener('touchstart', rightResizeHandleMouseDownHandler);
 
   return {
     dom: wrapper,
     destroy: () => {
-      window.removeEventListener("mousemove", windowMouseMoveHandler);
-      window.removeEventListener("touchmove", windowMouseMoveHandler);
-      window.removeEventListener("mouseup", windowMouseUpHandler);
-      window.removeEventListener("touchend", windowMouseUpHandler);
-      wrapper.removeEventListener("mouseenter", wrapperMouseEnterHandler);
-      wrapper.removeEventListener("mouseleave", wrapperMouseLeaveHandler);
-      leftResizeHandle.removeEventListener(
-        "mousedown",
-        leftResizeHandleMouseDownHandler,
-      );
-      leftResizeHandle.removeEventListener(
-        "touchstart",
-        leftResizeHandleMouseDownHandler,
-      );
-      rightResizeHandle.removeEventListener(
-        "mousedown",
-        rightResizeHandleMouseDownHandler,
-      );
-      rightResizeHandle.removeEventListener(
-        "touchstart",
-        rightResizeHandleMouseDownHandler,
-      );
+      window.removeEventListener('mousemove', windowMouseMoveHandler);
+      window.removeEventListener('touchmove', windowMouseMoveHandler);
+      window.removeEventListener('mouseup', windowMouseUpHandler);
+      window.removeEventListener('touchend', windowMouseUpHandler);
+      wrapper.removeEventListener('mouseenter', wrapperMouseEnterHandler);
+      wrapper.removeEventListener('mouseleave', wrapperMouseLeaveHandler);
+      leftResizeHandle.removeEventListener('mousedown', leftResizeHandleMouseDownHandler);
+      leftResizeHandle.removeEventListener('touchstart', leftResizeHandleMouseDownHandler);
+      rightResizeHandle.removeEventListener('mousedown', rightResizeHandleMouseDownHandler);
+      rightResizeHandle.removeEventListener('touchstart', rightResizeHandleMouseDownHandler);
     },
   };
-
 };

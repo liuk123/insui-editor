@@ -1,8 +1,8 @@
-import { Image } from '@tiptap/extension-image';
 import { createFigureWithCaption } from '../common/toExternalHTML/create-figure-caption';
 import { createLinkWithCaption } from '../common/toExternalHTML/create-link-caption';
 import { createResizableFileBlockWrapper } from '../common/render/create-resizable-wrapper';
-
+import { Node, nodeInputRule } from '@tiptap/core';
+import { createFileBlockWrapper } from '../common/render/create-file-wrapper';
 
 function parseDimensionValue(value: string | null): number | null {
   if (value == null) {
@@ -17,51 +17,72 @@ function parseDimensionValue(value: string | null): number | null {
 
 function parseImageNode(
   image: HTMLImageElement,
-  figure?: HTMLElement,
   caption?: HTMLElement | null,
 ): Record<string, string | number | boolean | null> {
   return {
     src: image.getAttribute('src'),
-    alt: image.getAttribute('alt'),
-    name: image.getAttribute('name'),
+    name: image.getAttribute('alt'),
+    previewWidth: parseDimensionValue(image.getAttribute('width')) || null,
 
-    width: parseDimensionValue(image.getAttribute('width')),
-    // height: parseDimensionValue(image.getAttribute('height')),
-    showPreview: image?.getAttribute('data-show-preview') !== 'false',
-    previewWidth: parseDimensionValue(image.getAttribute('data-preview-width')) || null,
-
-    align: figure?.getAttribute('data-align') || null,
     caption: caption?.textContent || null,
   };
 }
-export const InsImage = Image.extend({
+export interface InsImageOptions {
+  HTMLAttributes: Record<string, any>;
+}
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    InsImage: {
+      /**
+       * Add an image
+       * @param options The image attributes
+       * @example
+       * editor
+       *   .commands
+       *   .setImage({ src: 'https://tiptap.dev/logo.png', alt: 'tiptap', title: 'tiptap logo' })
+       */
+      setImage: (options: InsImageOptions) => ReturnType
+    }
+  }
+}
+/**
+ * Matches an image to a ![image](src "title") on input.
+ */
+export const inputRegex = /(?:^|\s)(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/
+
+export const InsImage = Node.create<InsImageOptions>({
+  name: 'image',
+  group: 'block',
+  inline: false,
+  draggable: true,
+
+  addOptions() {
+    return {
+      HTMLAttributes: {
+        // 'data-content-type': 'image',
+      },
+    };
+  },
   addAttributes() {
     return {
-      ...this.parent?.(),
+      src: {
+        default: null,
+      },
       name: {
-        default: '',
-        parseHTML: (element) => element.getAttribute('alt'),
-        renderHTML: (attributes) => ({ 'alt': attributes['name'] }),
+        default: null,
       },
       align: {
-        default: null,
-        parseHTML: (element) => element.getAttribute('data-align'),
-        renderHTML: (attributes) => ({ 'data-align': attributes['align'] }),
+        default: 'center',
       },
       caption: {
         default: '123',
-        parseHTML: (element) => element.getAttribute('data-caption'),
-        renderHTML: (attributes) => ({ 'data-caption': attributes['caption'] }),
       },
       showPreview: {
         default: true,
-        parseHTML: (element) => element.getAttribute('data-show-preview') !== 'false',
-        renderHTML: (attributes) => ({ 'data-show-preview': attributes['showPreview'] }),
       },
       previewWidth: {
-        default: 0,
-        parseHTML: (element) => parseDimensionValue(element.getAttribute('data-preview-width')),
-        renderHTML: (attributes) => ({ 'data-preview-width': attributes['previewWidth'] }),
+        default: null,
       },
     };
   },
@@ -78,7 +99,7 @@ export const InsImage = Image.extend({
             return false;
           }
           const caption = node.querySelector('figcaption');
-          return parseImageNode(image, node, caption);
+          return parseImageNode(image, caption);
         },
       },
       {
@@ -96,74 +117,121 @@ export const InsImage = Image.extend({
     ];
   },
   renderHTML({ HTMLAttributes }) {
-    const attrs = HTMLAttributes as Record<string, unknown>;
-    const imageAttrs = {
-      ...attrs,
+    const imageAttr = {
+      ...HTMLAttributes,
       draggable: false,
       contenteditable: false,
       loading: 'lazy',
       decoding: 'async',
-    };
-    return ['img', imageAttrs];
+    }
+    return ['img',imageAttr];
+  },
+   parseMarkdown: (token, helpers) => {
+    return helpers.createNode('image', {
+      src: token['href'],
+      caption: token['text'],
+      name: token['title'],
+    })
+  },
+
+  renderMarkdown: node => {
+    const src = node.attrs?.['src'] ?? ''
+    const alt = node.attrs?.['caption'] ?? ''
+    const title = node.attrs?.['name'] ?? ''
+
+    return title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`
   },
   addNodeView() {
-    // if ((this.options.resize && !this.options.resize.enabled) || typeof document === 'undefined') {
-    //   return null;
-    // }
-    // const { directions, minWidth, minHeight, alwaysPreserveAspectRatio } =
-    //   this.options.resize || {};
 
-    return ({ node, getPos, HTMLAttributes, editor }) => {
-      const attrs = HTMLAttributes as Record<string, string | null>;
+    return ({ node, getPos, editor }) => {
+      if (!node.attrs['src']) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'image-placeholder';
+        placeholder.textContent = 'Add Image';
+        placeholder.contentEditable = 'false';
 
-      if (!attrs['src']) {
-        const div = document.createElement('p');
-        div.textContent = 'Add Image';
         return {
-          dom: div,
+          dom: placeholder,
+          update: () => false,
         };
       }
-      let ret=null;
-      if (attrs['data-show-preview']) {
-        const imageWrapper = document.createElement("div");
-        imageWrapper.className = "bn-visual-media-wrapper";
+      let contentView = null;
+      const imageWrapper = document.createElement('div');
+      imageWrapper.className = 'bn-visual-media-wrapper';
+      imageWrapper.style.width = node.attrs['previewWidth'] + 'px';
+
+
+      imageWrapper.dataset['src'] = node.attrs['src'] || '';
+      imageWrapper.dataset['name'] = node.attrs['name'] || '';
+      imageWrapper.dataset['align'] = node.attrs['align'] || '';
+      imageWrapper.dataset['caption'] = node.attrs['caption'] || '';
+      imageWrapper.dataset['showPreview'] = node.attrs['showPreview'] || '';
+      imageWrapper.dataset['previewWidth'] = node.attrs['previewWidth'] || '';
+      if (node.attrs['showPreview']) {
 
         const imageElement = document.createElement('img');
-        if (typeof attrs['src'] === 'string') {
-          imageElement.src = attrs['src'];
-        }
-        imageElement.alt = attrs['name'] || attrs['caption'] || '';
-        if(attrs['data-preview-width']){
-          imageElement['width'] = Number(attrs['data-preview-width']!);
-        }
+        imageElement.src = node.attrs['src'];
+        imageElement.alt = node.attrs['name'] || node.attrs['caption'] || '';
+
+        imageElement.className = 'bn-visual-media';
+        imageElement.loading = 'lazy';
+        imageElement.decoding = 'async';
         imageWrapper.appendChild(imageElement);
 
-        ret = createResizableFileBlockWrapper(
+        contentView = createResizableFileBlockWrapper(
           editor,
-          {dom: imageWrapper},
-          attrs,
+          { dom: imageWrapper },
+          node.attrs,
           imageWrapper,
-          this.name
+          this.name,
         );
       } else {
-        const imageElement = document.createElement('a');
-        if (typeof attrs['src'] === 'string') {
-          imageElement.href = attrs['src'];
-        }
-        imageElement.textContent = attrs['name'] || attrs['src'] || '';
-        ret = {dom: imageElement};
+        // const link = document.createElement('a');
+        // link.href = node.attrs['src'];
+        // link.textContent = node.attrs['name'] || node.attrs['src'] || '';
+        // contentView = { dom: link };
+        const file = createFileBlockWrapper(node.attrs);
+        imageWrapper.appendChild(file.dom);
+
+        contentView = {
+          dom: imageWrapper,
+          destroy: ()=>{
+            file.destroy?.();
+          }
+        };
       }
 
-      if (attrs['data-caption']) {
-        if (attrs['data-show-preview']) {
-          return createFigureWithCaption(ret?.dom, attrs['data-caption'] || '');
-        }else{
-          // 设置 fileCaption
-          return createLinkWithCaption(ret?.dom, attrs['data-caption'] || '');
-        }
+      if (node.attrs['caption']) {
+        return createFigureWithCaption(contentView, node.attrs['caption'] || '');
       }
 
-      return ret;
+      return contentView;
     };
+  },
+  addCommands() {
+    return {
+      setImage:
+        options =>
+        ({ commands }) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: options,
+          })
+        },
+    }
+  },
+
+  addInputRules() {
+    return [
+      nodeInputRule({
+        find: inputRegex,
+        type: this.type,
+        getAttributes: match => {
+          const [, , alt, src, title] = match
+
+          return { src, caption: alt, name: title }
+        },
+      }),
+    ]
   },
 });
