@@ -4,6 +4,7 @@ export const createFigureWithCaption = (
 ) => {
   const figure = document.createElement("figure");
   const captionElement = document.createElement("figcaption");
+  captionElement.contentEditable = "true";
   captionElement.textContent = caption;
 
   figure.appendChild(target.dom);

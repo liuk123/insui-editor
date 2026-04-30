@@ -5,7 +5,7 @@
     insIconButton
     type="button"
     appearance="icon"
-    [insAppearanceState]="style === null"
+    [insAppearanceState]="style === null? 'active' : ''"
     [iconStart]="options.icons.imageExtension.alignJustify"
     (click)="align(null)"
   >
@@ -17,7 +17,7 @@
     insIconButton
     type="button"
     appearance="icon"
-    [insAppearanceState]="style === 'left'"
+    [insAppearanceState]="style === 'left'? 'active' : ''"
     [iconStart]="options.icons.imageExtension.alignLeft"
     (click)="align('left')"
   >
@@ -29,7 +29,7 @@
     insIconButton
     type="button"
     appearance="icon"
-    [insAppearanceState]="style === 'center'"
+    [insAppearanceState]="style === 'center'? 'active' : ''"
     [iconStart]="options.icons.imageExtension.alignCenter"
     (click)="align('center')"
   >
@@ -41,7 +41,7 @@
     insIconButton
     type="button"
     appearance="icon"
-    [insAppearanceState]="style === 'right'"
+    [insAppearanceState]="style === 'right'? 'active' : ''"
     [iconStart]="options.icons.imageExtension.alignRight"
     (click)="align('right')"
   >

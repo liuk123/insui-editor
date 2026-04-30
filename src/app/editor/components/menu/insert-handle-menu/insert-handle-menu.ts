@@ -41,5 +41,5 @@ export class InsInsertHandleMenu {
   });
 
   @Output()
-  public readonly fileAttached = new EventEmitter<Array<InsEditorAttachedFile<any>>>();
+  public readonly fileAttached = new EventEmitter<Array<InsEditorAttachedFile>>();
 }

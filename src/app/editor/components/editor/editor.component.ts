@@ -140,7 +140,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   // @Input()
   // public tools = this.options.tools;
   @Output()
-  public readonly fileAttached = new EventEmitter<Array<InsEditorAttachedFile<any>>>();
+  public readonly fileAttached = new EventEmitter<Array<InsEditorAttachedFile>>();
   @Input()
   public floatingToolbar = this.options.floatingToolbar;
   @Output()

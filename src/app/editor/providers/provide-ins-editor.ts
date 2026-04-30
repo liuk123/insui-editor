@@ -80,7 +80,7 @@ interface Options {
   jumpAnchor: Partial<Record<string, unknown>> | boolean;
   link: Partial<LinkOptions> | boolean;
   image: Partial<ImageOptions> | boolean;
-  fileLink: Partial<Record<string, unknown>> | boolean;
+  fileBlock: Partial<Record<string, unknown>> | boolean;
   emoji: Partial<EmojiOptions> | boolean;
 
   // enter: Partial<Record<string, unknown>> | boolean;
@@ -439,11 +439,11 @@ const EXTENSIONS = [
     },
   },
   {
-    key: 'fileLink',
+    key: 'fileBlock',
     default: true,
     async loader(options: Partial<Record<string, unknown>>) {
-      const { InsFileLink } = await import('../extensions/file-link');
-      return InsFileLink.configure(options);
+      const { InsFileBlock } = await import('../extensions/file');
+      return InsFileBlock.configure(options);
     },
   },
   {

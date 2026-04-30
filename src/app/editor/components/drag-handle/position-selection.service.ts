@@ -4,19 +4,19 @@ import { Fragment, Node as ProseMirrorNode, ResolvedPos } from '@tiptap/pm/model
 import { NodeSelection } from '@tiptap/pm/state';
 import { MultipleNodeSelection } from './MultipleNodeSelection';
 import { getHTMLFromFragment } from '@tiptap/core';
-import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActiveNodePath } from '../../common/editor-adapter';
 
 @Injectable({ providedIn: 'root' })
 export class PositionSelectionService {
-  private readonly destroyRef = inject(DestroyRef);
-  public activeNode$ = new BehaviorSubject<{ node: ProseMirrorNode | null; nodePos: number }>({
-    node: null,
-    nodePos: -1,
-  });
+  // private readonly destroyRef = inject(DestroyRef);
+  // public activeNode$ = new BehaviorSubject<{ node: ProseMirrorNode | null; nodePos: number }>({
+  //   node: null,
+  //   nodePos: -1,
+  // });
   public readonly visible = signal(false);
   public readonly top = signal(0);
   public readonly left = signal(0);
+  public activeNode: ActiveNodePath|null = null;
 
   view: EditorView | null = null;
 
@@ -37,38 +37,53 @@ export class PositionSelectionService {
     ];
     return allowedNodes.includes(nodeName);
   };
+  public refreshActiveNode(view: EditorView, path: ActiveNodePath[]) {
+    this.view = view;
 
-  public refreshActiveNode(view: EditorView | null) {
     // // Update if document or selection changed
     // if (!view.state.doc.eq(prevState.doc) || !view.state.selection.eq(prevState.selection)) {
     //   this.updatePositionForSelection(view, this.nodeFilter);
     // }
-    this.view = view;
-    if (!this.view) return;
-    const selection = this.view.state.selection;
-    if (!selection) return;
-    let { node, nodePos } = this.findActiveNode(selection.$from);
-    this.activeNode$.next({ node, nodePos });
+
+    // if (!this.view) return;
+    // const selection = this.view.state.selection;
+    // if (!selection) return;
+    // let { node, nodePos } = this.findActiveNode(selection.$from);
+    // this.activeNode$.next({ node, nodePos });
+    let item = path.find((v, index)=>{
+      if(v.node === 'listItem' || v.node === 'taskItem'){
+        return true;
+      }
+      if(index === path.length - 1 && this.nodeFilter(v.node)){
+        return true;
+      }
+      return false;
+    })|| null
+    if(item) {
+      this.activeNode = item;
+    };
+    this.updatePositionForSelection(item?.node, item?.nodePos);
+
   }
 
   constructor() {
-    this.activeNode$
-      .pipe(
-        distinctUntilChanged((a, b) => {
-          if (a.nodePos !== b.nodePos) return false;
-          if (a.node === b.node) return true;
-          if (!a.node || !b.node) return false;
-          return a.node.eq(b.node);
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(({ node, nodePos }) => {
-        this.updatePositionForSelection(node, nodePos);
-      });
+    // this.activeNode$
+    //   .pipe(
+    //     distinctUntilChanged((a, b) => {
+    //       if (a.nodePos !== b.nodePos) return false;
+    //       if (a.node === b.node) return true;
+    //       if (!a.node || !b.node) return false;
+    //       return a.node.eq(b.node);
+    //     }),
+    //     takeUntilDestroyed(this.destroyRef),
+    //   )
+    //   .subscribe(({ node, nodePos }) => {
+    //     this.updatePositionForSelection(node, nodePos);
+    //   });
   }
 
-  public updatePositionForSelection(node: ProseMirrorNode | null, nodePos: number) {
-    if (!node || !this.view) {
+  public updatePositionForSelection(node: string | undefined, nodePos: number|undefined) {
+    if (!node || !this.view || nodePos==undefined) {
       this.visible.set(false);
       return;
     }
@@ -99,8 +114,9 @@ export class PositionSelectionService {
     if (!this.view) {
       return;
     }
-    let { node, nodePos } = this.activeNode$.getValue();
-    if (nodePos < 0 || !node) return;
+
+    let { node, nodePos } = this.activeNode||{}
+    if (nodePos==undefined || !node) return;
 
     const selection = this.view.state.selection;
 

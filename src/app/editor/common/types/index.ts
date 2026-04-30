@@ -122,8 +122,8 @@ declare module '@tiptap/core' {
   }
 
   interface Commands<ReturnType> {
-    fileLink: {
-      setFileLink(preview: InsEditorAttachedFile): ReturnType;
+    fileBlock: {
+      setFileBlock(options: InsEditorAttachedFile): ReturnType;
     };
   }
 

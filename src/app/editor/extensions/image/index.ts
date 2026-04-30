@@ -1,5 +1,4 @@
 import { createFigureWithCaption } from '../common/toExternalHTML/create-figure-caption';
-import { createLinkWithCaption } from '../common/toExternalHTML/create-link-caption';
 import { createResizableFileBlockWrapper } from '../common/render/create-resizable-wrapper';
 import { Node, nodeInputRule } from '@tiptap/core';
 import { createFileBlockWrapper } from '../common/render/create-file-wrapper';
@@ -76,7 +75,7 @@ export const InsImage = Node.create<InsImageOptions>({
         default: 'center',
       },
       caption: {
-        default: '123',
+        default: null,
       },
       showPreview: {
         default: true,

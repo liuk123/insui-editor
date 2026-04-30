@@ -20,7 +20,6 @@ import {
   race,
   switchMap,
   take,
-  auditTime,
   startWith,
   BehaviorSubject,
   distinctUntilChanged,
@@ -30,8 +29,7 @@ import { NodeSelection } from '@tiptap/pm/state';
 import { MultipleNodeSelection } from './MultipleNodeSelection';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../../common/editor-options';
-import { Node as ProseMirrorNode } from '@tiptap/pm/model';
-import { AbstractInsEditor } from '../../common/editor-adapter';
+import { AbstractInsEditor, ActiveNodePath } from '../../common/editor-adapter';
 
 @Component({
   selector: 'ins-drag-handle',
@@ -82,19 +80,21 @@ export class InsDragHandle implements OnInit, OnDestroy {
         distinctUntilChanged(),
         switchMap((editor) => {
           return editor
-            ? editor.transactionChange$.pipe(
+            ? editor.transactionPathChange$.pipe(
                 startWith(null),
-                auditTime(100),
                 takeUntilDestroyed(this.destroyRef),
               )
             : of(null);
         }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(() => {
-        if (!this.editorView) return;
-        this.positionSelectionSrv.refreshActiveNode(this.editorView);
-
+      .subscribe((path) => {
+        if (!path || !this.editorView) return;
+        this.positionSelectionSrv.refreshActiveNode(this.editorView, path);
+        if(!this.positionSelectionSrv.activeNode){
+          return;
+        }
+        this.insertIcon.set(this.resolveInsertIcon(this.positionSelectionSrv.activeNode));
       });
 
     this.editor$
@@ -120,15 +120,10 @@ export class InsDragHandle implements OnInit, OnDestroy {
               )
             : of(null);
         }),
-      ).subscribe((v) => {
+      )
+      .subscribe((v) => {
         if (!v) return;
         this.restoreTextSelectionAfterDrag();
-      });
-
-    this.positionSelectionSrv.activeNode$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ node }) => {
-        this.insertIcon.set(this.resolveInsertIcon(node));
       });
   }
 
@@ -151,16 +146,12 @@ export class InsDragHandle implements OnInit, OnDestroy {
     });
   }
 
-  private resolveInsertIcon(node: ProseMirrorNode | null): string {
-    if (!node) {
-      return 'plus';
-    }
-
-    const nodeName = node.type.name;
+  private resolveInsertIcon(path: ActiveNodePath): string {
     const icons = this.options.icons as InsEditorOptions['icons'];
+    const nodeName = path.node;
 
     if (nodeName === 'heading') {
-      const level = Number(node.attrs['level']);
+      const level = Number(path.attrs?.['level']);
       if (level >= 1 && level <= 6) {
         return icons[`heading${level}` as keyof InsEditorOptions['icons']] as string;
       }

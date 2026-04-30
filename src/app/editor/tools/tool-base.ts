@@ -38,7 +38,7 @@ export abstract class InsToolbarBase {
     distinctUntilChanged(),
     switchMap((editor) => {
       return editor
-        ? editor.transactionChange$.pipe(
+        ? editor.transaction$.pipe(
             startWith(null),
             auditTime(100),
             shareReplay({ bufferSize: 1, refCount: true }),

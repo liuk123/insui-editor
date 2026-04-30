@@ -41,7 +41,7 @@ export class HttpMockUploader {
       deps: [HttpMockUploader],
       useFactory:
         (uploader: HttpMockUploader) =>
-        ([file]: File[]): Observable<Array<InsEditorAttachedFile<{ type: string }>>> => {
+        ([file]: File[]): Observable<Array<InsEditorAttachedFile>> => {
           if (!file) {
             return of([]);
           }
@@ -50,12 +50,12 @@ export class HttpMockUploader {
 
           return fromEvent<any>(fileReader, 'load').pipe(
             switchMap(() => uploader.save(String(fileReader.result))),
-            map((link) => [
+            map((src) => [
               {
                 // Do not return base64 instead of link to binary
                 // because it's bad idea for your performance
 
-                link,
+                src,
                 name: file.name,
                 attrs: { type: file.type },
               },
@@ -82,7 +82,7 @@ export class Tiptap implements OnInit {
   }
   onFileAttached(files: InsEditorAttachedFile[]) {
     console.log('files', files);
-    files.forEach((file) => this.wysiwyg?.editor?.setFileLink(file));
+    files.forEach((file) => this.wysiwyg?.editor?.setFileBlock(file));
   }
   getJson() {
     console.log('json', this.wysiwyg?.editor?.json);

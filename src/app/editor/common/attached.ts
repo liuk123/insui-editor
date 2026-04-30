@@ -1,10 +1,10 @@
 import { InsLinkAttributes } from "./link-attributes";
 
 
-export interface InsEditorAttachedFile<T = InsLinkAttributes> {
-    attrs?: T;
-    link: string;
-    name: string;
+export interface InsEditorAttachedFile {
+  src: string;
+  name?: string;
+  caption?: string;
 }
 
 export interface InsEditorAttachOptions {

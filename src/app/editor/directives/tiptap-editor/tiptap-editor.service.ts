@@ -38,7 +38,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
         // const json = editor.getJSON().content;
         // const value: string = insIsEmptyParagraph(json) ? '' : editor.getHTML();
         // console.log('transaction')
-        this.transactionChange$.next();
+        this.transaction$.next();
       });
       // editor.on('selectionUpdate', () => {
         // this.selectionChange$.next()
@@ -296,7 +296,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   public isActive$(attributes: Attrs): Observable<boolean>;
   public isActive$(name: string, attributes?: Record<string, unknown>): Observable<boolean>;
   public isActive$(name: Attrs | string, attributes?: Attrs): Observable<boolean> {
-    return this.transactionChange$.pipe(
+    return this.transaction$.pipe(
       startWith(null),
       map(() => (typeof name === 'string' ? this.isActive(name, attributes) : this.isActive(name))),
       distinctUntilChanged(),
@@ -509,8 +509,11 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.commands.removeAnchor();
   }
 
-  public setFileLink(preview: InsEditorAttachedFile): void {
-    this.editor?.commands.setFileLink(preview);
+  // public setFileLink(preview: InsEditorAttachedFile): void {
+  //   this.editor?.commands.setFileLink(preview);
+  // }
+  public setFileBlock(options: InsEditorAttachedFile): void {
+    this.editor?.commands.setFileBlock(options);
   }
 
   // public setYoutubeVideo(options: TuiYoutubeOptions): void {

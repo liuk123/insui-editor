@@ -26,8 +26,8 @@ import {
   take,
 } from 'rxjs';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
-import { AbstractInsEditor } from '../../common/editor-adapter';
-import { InsButton } from "@liuk123/insui";
+import { AbstractInsEditor, ActiveNodePath } from '../../common/editor-adapter';
+import { InsButton } from '@liuk123/insui';
 
 type DragOrientation = 'row' | 'column';
 
@@ -48,7 +48,7 @@ interface TableNodeInfo {
   styleUrl: './table-handle.less',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.visible]': 'visible()'
+    '[class.visible]': 'visible()',
   },
   imports: [InsButton],
 })
@@ -92,10 +92,6 @@ export class InsTableHandle implements OnInit {
   private readonly rowDragHandleBtn!: ElementRef<HTMLButtonElement>;
   @ViewChild('colDragHandleBtn', { static: true, read: ElementRef })
   private readonly colDragHandleBtn!: ElementRef<HTMLButtonElement>;
-  public activeNode$ = new BehaviorSubject<{ node: ProseMirrorNode | null; nodePos: number }>({
-    node: null,
-    nodePos: -1,
-  });
 
   @Input()
   public set editor(editor: AbstractInsEditor | null) {
@@ -117,42 +113,19 @@ export class InsTableHandle implements OnInit {
         distinctUntilChanged(),
         switchMap((editor) => {
           return editor
-            ? editor.transactionChange$.pipe(
+            ? editor.transactionPathChange$.pipe(
                 startWith(null),
-                auditTime(100),
                 takeUntilDestroyed(this.destroyRef),
               )
             : of(null);
         }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(() => {
-        this.refreshActiveNode(this.editorView);
+      .subscribe((path) => {
+        if (!path) return;
+        this.refreshActiveNode(path);
       });
 
-    this.activeNode$
-      .pipe(
-        distinctUntilChanged((a, b) => {
-          if (a.nodePos !== b.nodePos) return false;
-          if (a.node === b.node) return true;
-          if (!a.node || !b.node) return false;
-          return a.node.eq(b.node);
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe(({ node, nodePos }) => {
-        if (!node || nodePos < 0 || (node.type.name !== 'tableCell' && node.type.name !== 'tableHeader')) {
-          this.hide();
-          return;
-        }
-
-        const cell = this.getCellElementByPos(nodePos);
-        if (!cell) {
-          return;
-        }
-
-        this.updateActiveContext(cell);
-      });
     this.editor$
       .pipe(
         distinctUntilChanged(),
@@ -226,24 +199,21 @@ export class InsTableHandle implements OnInit {
         this.handleDragOver(event);
       });
   }
-  refreshActiveNode(view: EditorView | null) {
-    if (!view) return;
-    const selection = view.state.selection;
-    if (!selection) return;
-    let $pos = selection.$from;
-    let node = null;
-    let nodePos = -1;
+  refreshActiveNode(path: ActiveNodePath[]) {
+    let { node, nodePos } =
+      path.find((item) => item.node === 'tableCell' || item.node === 'tableHeader') || {};
 
-    for (let d = $pos.depth; d > 0; d--) {
-      const parent = $pos.node(d);
-      const nodeName = parent.type.name;
-      if (nodeName === 'tableCell' || nodeName === 'tableHeader') {
-        node = parent;
-        nodePos = $pos.before(d);
-        break;
-      }
+    if (!node || nodePos==undefined || nodePos < 0) {
+      this.hide();
+      return;
     }
-    this.activeNode$.next({ node, nodePos });
+
+    const cell = this.getCellElementByPos(nodePos);
+    if (!cell) {
+      return;
+    }
+
+    this.updateActiveContext(cell);
   }
   updateActiveContext(cell: HTMLTableCellElement | null) {
     if (!cell) return;
@@ -283,7 +253,7 @@ export class InsTableHandle implements OnInit {
 
     this.rowTop.set(cellRect.top - containerRect.top + scrollTop + cellRect.height / 2 - 8);
     this.rowLeft.set(cellRect.left - containerRect.left + scrollLeft - 16);
-    this.colTop.set(cellRect.top - containerRect.top + scrollTop  - 16);
+    this.colTop.set(cellRect.top - containerRect.top + scrollTop - 16);
     this.colLeft.set(cellRect.left - containerRect.left + scrollLeft + cellRect.width / 2 - 8);
   }
 
@@ -306,7 +276,7 @@ export class InsTableHandle implements OnInit {
     if (!this.ensureCurrentCellSelection()) {
       return;
     }
-    this.editor?.addRowAfter()
+    this.editor?.addRowAfter();
   }
 
   protected onRemoveRow(event: MouseEvent): void {
@@ -314,7 +284,7 @@ export class InsTableHandle implements OnInit {
     if (!this.ensureCurrentCellSelection()) {
       return;
     }
-    this.editor?.deleteRow()
+    this.editor?.deleteRow();
   }
 
   protected onAddColumn(event: MouseEvent): void {
@@ -322,7 +292,7 @@ export class InsTableHandle implements OnInit {
     if (!this.ensureCurrentCellSelection()) {
       return;
     }
-    this.editor?.addColumnAfter()
+    this.editor?.addColumnAfter();
   }
 
   protected onRemoveColumn(event: MouseEvent): void {
@@ -330,7 +300,7 @@ export class InsTableHandle implements OnInit {
     if (!this.ensureCurrentCellSelection()) {
       return;
     }
-    this.editor?.deleteColumn()
+    this.editor?.deleteColumn();
   }
 
   protected onRowDragStart(event: DragEvent): void {

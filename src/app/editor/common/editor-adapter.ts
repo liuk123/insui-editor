@@ -2,12 +2,17 @@ import {Directive} from '@angular/core';
 import {type Editor, type JSONContent, type Range} from '@tiptap/core';
 import {type MarkType} from '@tiptap/pm/model';
 import {type EditorState} from '@tiptap/pm/state';
-import {BehaviorSubject, type Observable, Subject} from 'rxjs';
+import {debounceTime, filter, map, type Observable, shareReplay, Subject} from 'rxjs';
+import { EditorView } from '@tiptap/pm/view';
 import { InsEditorAttachedFile } from './attached';
 
-// import {type InsEditorAttachedFile} from './attached';
-import { EditorView } from '@tiptap/pm/view';
-// import {type InsYoutubeOptions} from './youtube';
+export class ActiveNodePath {
+    constructor(
+      public node: string,
+      public nodePos: number,
+      public attrs?: Attrs,
+    ) { }
+}
 
 export interface InsSelectionSnapshot {
     anchor: number;
@@ -31,7 +36,32 @@ export abstract class AbstractInsEditor {
     public transactionStable = false
 
 
-    public readonly transactionChange$ = new Subject<void>();
+    public readonly transaction$ = new Subject<void>();
+    public readonly transactionPathChange$:Observable<ActiveNodePath[]> = this.transaction$.pipe(
+      filter(() => !this.transactionStable),
+      debounceTime(100),
+      map(()=>{
+        if(!this.state){
+          return []
+        }
+        let $pos = this.state!.selection.$from
+        let path = []
+        for (let d = $pos.depth; d > 0; d--) {
+          let parent = $pos.node(d)
+          if(parent.isBlock){
+            path.push(
+              new ActiveNodePath(
+                parent.type.name,
+                $pos.before(d),
+                parent.attrs
+              )
+            )
+          }
+        }
+        return path
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    )
     // public readonly selectionChange$ = new Subject<void>();
     public readonly drop$ = new Subject<DragEvent>();
 
@@ -202,9 +232,8 @@ export abstract class AbstractInsEditor {
 
     public abstract removeAnchor(): void;
 
-    public abstract setFileLink(preview: InsEditorAttachedFile): void;
+    public abstract setFileBlock(options: InsEditorAttachedFile): void;
 
-    // public abstract setYoutubeVideo(options: InsYoutubeOptions): void;
 
     public abstract setIframe(options: {src: string}): void;
 
