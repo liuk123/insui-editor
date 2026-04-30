@@ -510,15 +510,6 @@ const EXTENSIONS = [
     },
   },
   {
-    key: 'tableHandles',
-    default: false,
-    async loader(options: Partial<Record<string, unknown>>) {
-      const { TableHandles } = await import('../extensions/table/table-handles');
-
-      return TableHandles.configure(options);
-    },
-  },
-  {
     key: 'tab',
     default: true,
     async loader(options: Partial<Record<string, unknown>>) {

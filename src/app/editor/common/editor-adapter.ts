@@ -39,7 +39,7 @@ export abstract class AbstractInsEditor {
     public readonly transaction$ = new Subject<void>();
     public readonly transactionPathChange$:Observable<ActiveNodePath[]> = this.transaction$.pipe(
       filter(() => !this.transactionStable),
-      debounceTime(100),
+      debounceTime(60),
       map(()=>{
         if(!this.state){
           return []

@@ -66,3 +66,17 @@
 .ins-table-drop-indicator.show {
   opacity: 1;
 }
+
+.ins-table-selection-outline {
+  position: absolute;
+  pointer-events: none;
+  box-sizing: border-box;
+  border: 2px solid var(--ins-primary-color, #3b82f6);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 80ms ease;
+}
+
+.ins-table-selection-outline.show {
+  opacity: 1;
+}

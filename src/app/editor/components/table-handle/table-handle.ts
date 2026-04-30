@@ -14,7 +14,6 @@ import { CellSelection } from '@tiptap/pm/tables';
 import type { EditorView } from '@tiptap/pm/view';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  auditTime,
   BehaviorSubject,
   distinctUntilChanged,
   fromEvent,
@@ -87,6 +86,11 @@ export class InsTableHandle implements OnInit {
   protected readonly dropIndicatorHeight = signal(0);
 
   protected readonly dropIndicatorVisible = signal(false);
+  protected readonly selectionOutlineTop = signal(0);
+  protected readonly selectionOutlineLeft = signal(0);
+  protected readonly selectionOutlineWidth = signal(0);
+  protected readonly selectionOutlineHeight = signal(0);
+  protected readonly selectionOutlineVisible = signal(false);
 
   @ViewChild('rowDragHandleBtn', { static: true, read: ElementRef })
   private readonly rowDragHandleBtn!: ElementRef<HTMLButtonElement>;
@@ -232,6 +236,7 @@ export class InsTableHandle implements OnInit {
     this.activeColIndex = Array.prototype.indexOf.call(row.children, cell) as number;
 
     this.updatePosition(cell);
+    this.updateSelectionOutline();
   }
   updatePosition(cell: HTMLTableCellElement) {
     const view = this.editorView;
@@ -247,10 +252,14 @@ export class InsTableHandle implements OnInit {
     const scrollTop = container.scrollTop;
     const scrollLeft = container.scrollLeft;
     const cellRect = cell.getBoundingClientRect();
+    const tableRect = this.activeTable?.getBoundingClientRect() ?? cellRect;
 
+    // Row handle: keep vertically aligned with active row, stick to table left edge.
     this.rowTop.set(cellRect.top - containerRect.top + scrollTop + cellRect.height / 2 - 8);
-    this.rowLeft.set(cellRect.left - containerRect.left + scrollLeft - 16);
-    this.colTop.set(cellRect.top - containerRect.top + scrollTop - 16);
+    this.rowLeft.set(tableRect.left - containerRect.left + scrollLeft - 16);
+
+    // Column handle: keep horizontally aligned with active column, stick to table top edge.
+    this.colTop.set(tableRect.top - containerRect.top + scrollTop - 16);
     this.colLeft.set(cellRect.left - containerRect.left + scrollLeft + cellRect.width / 2 - 8);
   }
 
@@ -298,6 +307,75 @@ export class InsTableHandle implements OnInit {
       return;
     }
     this.editor?.deleteColumn();
+  }
+
+  protected onSelectRow(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.activeRowIndex === null || !this.editorView) {
+      return;
+    }
+
+    const tableInfo = this.getCurrentTableInfo();
+    if (!tableInfo) {
+      return;
+    }
+
+    const row = tableInfo.tableNode.child(this.activeRowIndex);
+    if (!row || row.childCount === 0) {
+      return;
+    }
+
+    const anchor = this.getCellPos(tableInfo.tableNode, tableInfo.tablePos, this.activeRowIndex, 0);
+    const head = this.getCellPos(
+      tableInfo.tableNode,
+      tableInfo.tablePos,
+      this.activeRowIndex,
+      row.childCount - 1,
+    );
+    if (anchor === null || head === null) {
+      return;
+    }
+
+    this.editorView.dispatch(
+      this.editorView.state.tr.setSelection(CellSelection.create(this.editorView.state.doc, anchor, head)),
+    );
+    this.updateSelectionOutline();
+  }
+
+  protected onSelectColumn(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.activeColIndex === null || !this.editorView) {
+      return;
+    }
+
+    const tableInfo = this.getCurrentTableInfo();
+    if (!tableInfo || tableInfo.tableNode.childCount === 0) {
+      return;
+    }
+
+    const colIndex = this.activeColIndex;
+    const firstRowIndex = 0;
+    const lastRowIndex = tableInfo.tableNode.childCount - 1;
+    const firstRow = tableInfo.tableNode.child(firstRowIndex);
+    const lastRow = tableInfo.tableNode.child(lastRowIndex);
+    if (colIndex >= firstRow.childCount || colIndex >= lastRow.childCount) {
+      return;
+    }
+
+    const anchor = this.getCellPos(tableInfo.tableNode, tableInfo.tablePos, firstRowIndex, colIndex);
+    const head = this.getCellPos(tableInfo.tableNode, tableInfo.tablePos, lastRowIndex, colIndex);
+    if (anchor === null || head === null) {
+      return;
+    }
+
+    this.editorView.dispatch(
+      this.editorView.state.tr.setSelection(CellSelection.create(this.editorView.state.doc, anchor, head)),
+    );
+    this.updateSelectionOutline();
   }
 
   protected onRowDragStart(event: DragEvent): void {
@@ -395,6 +473,72 @@ export class InsTableHandle implements OnInit {
     this.activeRowIndex = null;
     this.activeColIndex = null;
     this.dropIndicatorVisible.set(false);
+    this.selectionOutlineVisible.set(false);
+  }
+
+  private updateSelectionOutline(): void {
+    const view = this.editorView;
+    const table = this.activeTable;
+    if (!view || !table) {
+      this.selectionOutlineVisible.set(false);
+      return;
+    }
+
+    const container = view.dom.parentElement;
+    if (!container) {
+      this.selectionOutlineVisible.set(false);
+      return;
+    }
+
+    const selectedCells = Array.from(
+      table.querySelectorAll<HTMLTableCellElement>('td.selectedCell, th.selectedCell'),
+    );
+    let cellsToOutline = selectedCells;
+
+    if (cellsToOutline.length === 0 && this.activeRowIndex !== null && this.activeColIndex !== null) {
+      const activeRow = table.rows.item(this.activeRowIndex);
+      const activeCell = activeRow?.cells.item(this.activeColIndex);
+      if (activeCell instanceof HTMLTableCellElement) {
+        cellsToOutline = [activeCell];
+      }
+    }
+
+    if (cellsToOutline.length === 0) {
+      this.selectionOutlineVisible.set(false);
+      return;
+    }
+
+    const firstRect = cellsToOutline[0]?.getBoundingClientRect();
+    if (!firstRect) {
+      this.selectionOutlineVisible.set(false);
+      return;
+    }
+
+    let minLeft = firstRect.left;
+    let minTop = firstRect.top;
+    let maxRight = firstRect.right;
+    let maxBottom = firstRect.bottom;
+
+    for (let index = 1; index < cellsToOutline.length; index += 1) {
+      const rect = cellsToOutline[index]?.getBoundingClientRect();
+      if (!rect) {
+        continue;
+      }
+      minLeft = Math.min(minLeft, rect.left);
+      minTop = Math.min(minTop, rect.top);
+      maxRight = Math.max(maxRight, rect.right);
+      maxBottom = Math.max(maxBottom, rect.bottom);
+    }
+
+    const containerRect = container.getBoundingClientRect();
+    const scrollTop = container.scrollTop;
+    const scrollLeft = container.scrollLeft;
+
+    this.selectionOutlineLeft.set(minLeft - containerRect.left + scrollLeft);
+    this.selectionOutlineTop.set(minTop - containerRect.top + scrollTop);
+    this.selectionOutlineWidth.set(maxRight - minLeft);
+    this.selectionOutlineHeight.set(maxBottom - minTop);
+    this.selectionOutlineVisible.set(true);
   }
 
   private ensureCurrentCellSelection(): boolean {
@@ -515,21 +659,25 @@ export class InsTableHandle implements OnInit {
     const scrollLeft = container.scrollLeft;
     const tableRect = table.getBoundingClientRect();
     const cellRect = targetCell.getBoundingClientRect();
+    const isMovingForward = this.dragState.toIndex > this.dragState.fromIndex;
 
     if (this.dragState.orientation === 'row') {
       this.dropIndicatorLeft.set(tableRect.left - containerRect.left + scrollLeft);
-      this.dropIndicatorTop.set(cellRect.top - containerRect.top + scrollTop);
+      this.dropIndicatorTop.set(
+        (isMovingForward ? cellRect.bottom : cellRect.top) - containerRect.top + scrollTop,
+      );
       this.dropIndicatorWidth.set(tableRect.width);
       this.dropIndicatorHeight.set(2);
     } else {
-      this.dropIndicatorLeft.set(cellRect.left - containerRect.left + scrollLeft);
+      this.dropIndicatorLeft.set(
+        (isMovingForward ? cellRect.right : cellRect.left) - containerRect.left + scrollLeft,
+      );
       this.dropIndicatorTop.set(tableRect.top - containerRect.top + scrollTop);
       this.dropIndicatorWidth.set(2);
       this.dropIndicatorHeight.set(tableRect.height);
     }
 
     this.dropIndicatorVisible.set(true);
-    console.log('upload line');
   }
 
   private resetDraggingState(): void {

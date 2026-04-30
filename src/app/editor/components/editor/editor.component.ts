@@ -272,6 +272,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   public get isImageMenu(): boolean {
     return this.editor?.isActive('image') || false;
   }
+  public get isTableMenu(): boolean {
+    return this.editor?.isActive('table') || false;
+  }
 
   public get selectionState(): InsSelectionState {
     return insGetSelectionState(this.editor);

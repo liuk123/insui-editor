@@ -34,7 +34,7 @@
       <ins-toolbar-host [disabled]="!interactive()">
         <ins-image-menu></ins-image-menu>
       </ins-toolbar-host>
-    }@else{
+    }@else if(!isTableMenu){
       <!-- 气泡菜单 -->
       <ins-toolbar-host [disabled]="!interactive()">
         <ins-bubble-menu></ins-bubble-menu>

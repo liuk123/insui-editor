@@ -10,6 +10,7 @@
     draggable="true"
     title="选中并拖拽行"
     aria-label="选中并拖拽行"
+    (click)="onSelectRow($event)"
   ></button>
   <!-- <button
       type="button"
@@ -43,6 +44,7 @@
     draggable="true"
     title="选中并拖拽列"
     aria-label="选中并拖拽列"
+    (click)="onSelectColumn($event)"
   ></button>
   <!-- <button
       type="button"
@@ -71,4 +73,13 @@
   [style.left.px]="dropIndicatorLeft()"
   [style.width.px]="dropIndicatorWidth()"
   [style.height.px]="dropIndicatorHeight()"
+></div>
+
+<div
+  class="ins-table-selection-outline"
+  [class.show]="selectionOutlineVisible()"
+  [style.top.px]="selectionOutlineTop()"
+  [style.left.px]="selectionOutlineLeft()"
+  [style.width.px]="selectionOutlineWidth()"
+  [style.height.px]="selectionOutlineHeight()"
 ></div>
