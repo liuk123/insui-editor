@@ -1,4 +1,4 @@
-import { DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { EditorView } from '@tiptap/pm/view';
 import { Fragment, Node as ProseMirrorNode, ResolvedPos } from '@tiptap/pm/model';
 import { NodeSelection } from '@tiptap/pm/state';
@@ -8,11 +8,6 @@ import { ActiveNodePath } from '../../common/editor-adapter';
 
 @Injectable({ providedIn: 'root' })
 export class PositionSelectionService {
-  // private readonly destroyRef = inject(DestroyRef);
-  // public activeNode$ = new BehaviorSubject<{ node: ProseMirrorNode | null; nodePos: number }>({
-  //   node: null,
-  //   nodePos: -1,
-  // });
   public readonly visible = signal(false);
   public readonly top = signal(0);
   public readonly left = signal(0);
@@ -39,17 +34,6 @@ export class PositionSelectionService {
   };
   public refreshActiveNode(view: EditorView, path: ActiveNodePath[]) {
     this.view = view;
-
-    // // Update if document or selection changed
-    // if (!view.state.doc.eq(prevState.doc) || !view.state.selection.eq(prevState.selection)) {
-    //   this.updatePositionForSelection(view, this.nodeFilter);
-    // }
-
-    // if (!this.view) return;
-    // const selection = this.view.state.selection;
-    // if (!selection) return;
-    // let { node, nodePos } = this.findActiveNode(selection.$from);
-    // this.activeNode$.next({ node, nodePos });
     let item = path.find((v, index)=>{
       if(v.node === 'listItem' || v.node === 'taskItem'){
         return true;
@@ -64,22 +48,6 @@ export class PositionSelectionService {
     };
     this.updatePositionForSelection(item?.node, item?.nodePos);
 
-  }
-
-  constructor() {
-    // this.activeNode$
-    //   .pipe(
-    //     distinctUntilChanged((a, b) => {
-    //       if (a.nodePos !== b.nodePos) return false;
-    //       if (a.node === b.node) return true;
-    //       if (!a.node || !b.node) return false;
-    //       return a.node.eq(b.node);
-    //     }),
-    //     takeUntilDestroyed(this.destroyRef),
-    //   )
-    //   .subscribe(({ node, nodePos }) => {
-    //     this.updatePositionForSelection(node, nodePos);
-    //   });
   }
 
   public updatePositionForSelection(node: string | undefined, nodePos: number|undefined) {

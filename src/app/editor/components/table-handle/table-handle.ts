@@ -113,10 +113,7 @@ export class InsTableHandle implements OnInit {
         distinctUntilChanged(),
         switchMap((editor) => {
           return editor
-            ? editor.transactionPathChange$.pipe(
-                startWith(null),
-                takeUntilDestroyed(this.destroyRef),
-              )
+            ? editor.transactionPathChange$
             : of(null);
         }),
         takeUntilDestroyed(this.destroyRef),

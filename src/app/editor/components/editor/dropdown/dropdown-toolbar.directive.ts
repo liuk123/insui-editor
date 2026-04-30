@@ -20,7 +20,7 @@ import {
   isElement,
   WINDOW,
 } from '@liuk123/insui';
-import { BehaviorSubject, combineLatest, debounceTime, map } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, filter, fromEvent, map, merge, startWith, tap, withLatestFrom } from 'rxjs';
 import { INS_EDITOR_PM_SELECTED_NODE } from '../../../common/pm-css-classes';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 
@@ -48,11 +48,16 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
   private readonly vcr = inject(ViewContainerRef);
 
   private readonly handler$ = new BehaviorSubject<InsBooleanHandler<Range>>(() => false);
+  private readonly isComposing$ = merge(
+    fromEvent<CompositionEvent>(this.el.nativeElement, 'compositionstart').pipe(map(() => true)),
+    fromEvent<CompositionEvent>(this.el.nativeElement, 'compositionend').pipe(map(() => false)),
+  ).pipe(startWith(false))
 
   private readonly stream$ = combineLatest([
     this.handler$,
     this.selection$.pipe(
-      // debounceTime(100),
+      withLatestFrom(this.isComposing$),
+      filter(([, isComposing]) => !isComposing),
       map(() => this.getRange())
     ),
   ]).pipe(
@@ -60,7 +65,7 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
       const contained =
         this.el.nativeElement.contains(range.commonAncestorContainer) ||
         range.commonAncestorContainer.parentElement?.closest('ins-dropdown');
-
+        // 不能添加防抖，range必须实时刷新，不然弹框会闪烁
         this.range = contained?range:this.range;
       return contained && handler(this.range);
     }),

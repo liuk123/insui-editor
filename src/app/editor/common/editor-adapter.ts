@@ -2,7 +2,7 @@ import {Directive} from '@angular/core';
 import {type Editor, type JSONContent, type Range} from '@tiptap/core';
 import {type MarkType} from '@tiptap/pm/model';
 import {type EditorState} from '@tiptap/pm/state';
-import {debounceTime, filter, map, type Observable, shareReplay, Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, map, type Observable, share, Subject} from 'rxjs';
 import { EditorView } from '@tiptap/pm/view';
 import { InsEditorAttachedFile } from './attached';
 
@@ -44,7 +44,7 @@ export abstract class AbstractInsEditor {
         if(!this.state){
           return []
         }
-        let $pos = this.state!.selection.$from
+        let $pos = this.state.selection.$from
         let path = []
         for (let d = $pos.depth; d > 0; d--) {
           let parent = $pos.node(d)
@@ -60,7 +60,11 @@ export abstract class AbstractInsEditor {
         }
         return path
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      distinctUntilChanged((a: ActiveNodePath[], b: ActiveNodePath[]) => {
+        return a.every((item, index) => item.node === b[index]?.node && item.attrs?.['level'] === b[index]?.attrs?.['level']&&item.nodePos === b[index]?.nodePos)
+      }),
+      // shareReplay({ bufferSize: 1, refCount: true })
+      share()
     )
     // public readonly selectionChange$ = new Subject<void>();
     public readonly drop$ = new Subject<DragEvent>();
