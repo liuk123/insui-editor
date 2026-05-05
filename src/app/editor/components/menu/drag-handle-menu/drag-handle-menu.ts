@@ -9,7 +9,6 @@ import { InsClearLabel } from '../../../tools/label-buttons/clear';
   selector: 'ins-drag-handle-menu',
   imports: [InsDataList, InsDeleteLabel, InsClearLabel],
   templateUrl: './drag-handle-menu.html',
-  styleUrl: './drag-handle-menu.less',
 })
 export class InsDragHandleMenu {
   @Input('editor')

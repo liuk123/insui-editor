@@ -5,7 +5,6 @@ import { InsButton } from '@liuk123/insui';
   selector: 'ins-palette',
   imports: [InsButton],
   templateUrl: './palette.html',
-  styleUrl: './palette.less',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })

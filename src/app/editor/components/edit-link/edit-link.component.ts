@@ -23,7 +23,6 @@ interface ServerSideGlobal extends Global {
 @Component({
   selector: 'ins-edit-link',
   templateUrl: './edit-link.component.html',
-  styleUrls: ['./edit-link.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [InsButton, InsTextfield, FormsModule, InsFilterAnchorsPipe],
   host: {
