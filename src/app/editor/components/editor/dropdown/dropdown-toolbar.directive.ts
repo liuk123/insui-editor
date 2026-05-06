@@ -58,6 +58,7 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
     this.selection$.pipe(
       withLatestFrom(this.isComposing$),
       filter(([, isComposing]) => !isComposing),
+      debounceTime(0), // 点击已选中的文本时，浏览器 DOM 选区可能先视觉变化，但 ProseMirror 还没在同一时刻提交到新 selection，需要修改成异步
       map(() => this.getRange())
     ),
   ]).pipe(

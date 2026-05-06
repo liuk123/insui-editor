@@ -207,9 +207,10 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     if (!this.focused() || this.readOnly()) {
       return () => false;
     }
-
     return this.floatingToolbar
       ? (range) => {
+
+          console.log('handler');
           if ((this.editor?.view as any)?.dragging !== null) {
             return false;
           }
