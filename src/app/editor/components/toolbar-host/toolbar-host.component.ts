@@ -21,7 +21,6 @@ import { AbstractInsEditor } from '../../common/editor-adapter';
     selector: 'ins-toolbar-host',
     imports: [InsToolbarNavigationManager],
     templateUrl: './toolbar-host.component.html',
-    styleUrls: ['./toolbar-host.style.less'],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [

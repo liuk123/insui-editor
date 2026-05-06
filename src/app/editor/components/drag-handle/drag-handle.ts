@@ -35,7 +35,6 @@ import { AbstractInsEditor, ActiveNodePath } from '../../common/editor-adapter';
   selector: 'ins-drag-handle',
   imports: [InsButton, InsDropdown],
   templateUrl: './drag-handle.html',
-  styleUrl: './drag-handle.less',
   host: {
     '[style.top.px]': 'positionSelectionSrv.top()',
     '[style.left.px]': 'positionSelectionSrv.left()',
