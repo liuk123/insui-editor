@@ -20,7 +20,7 @@ import {
   isElement,
   WINDOW,
 } from '@liuk123/insui';
-import { BehaviorSubject, combineLatest, debounceTime, filter, fromEvent, map, merge, startWith, tap, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, distinctUntilKeyChanged, filter, fromEvent, map, merge, startWith, tap, withLatestFrom } from 'rxjs';
 import { INS_EDITOR_PM_SELECTED_NODE } from '../../../common/pm-css-classes';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 
@@ -70,6 +70,7 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
         this.range = contained?range:this.range;
       return contained && handler(this.range);
     }),
+    distinctUntilChanged()
   );
 
   private readonly ghost?: HTMLElement;
@@ -142,6 +143,6 @@ export class InsEditorDropdownToolbar extends InsDriver implements InsRectAccess
   private getRange(): Range {
     const selection = this.doc?.getSelection();
     const range = selection?.rangeCount ? selection.getRangeAt(0) : this.range;
-    return range.cloneRange();
+    return range;
   }
 }
