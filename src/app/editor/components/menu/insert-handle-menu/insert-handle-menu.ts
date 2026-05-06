@@ -1,5 +1,5 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
-import { InsDataList } from '@liuk123/insui';
+import { Component, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { InsButton, InsDataList, InsDropdown, insDropdownOptionsProvider, InsGroup } from '@liuk123/insui';
 import { AbstractInsEditor } from '../../../common/editor-adapter';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 import { InsHeadNButtonLabel } from '../../../tools/label-buttons/head';
@@ -13,7 +13,6 @@ import { InsAttachLabel } from '../../../tools/label-buttons/attach';
 import { InsEditorAttachedFile } from '../../../common/attached';
 import { InsOrderedListButtonLabel } from '../../../tools/label-buttons/ordered-list';
 import { InsTaskListButtonLabel } from '../../../tools/label-buttons/task-list';
-import { InsGroupButtonLabel } from '../../../tools/label-buttons/group';
 
 @Component({
   selector: 'ins-insert-handle-menu',
@@ -29,10 +28,15 @@ import { InsGroupButtonLabel } from '../../../tools/label-buttons/group';
     InsInsertTableButtonLabel,
     InsImageButtonLabel,
     InsAttachLabel,
-    InsGroupButtonLabel
-  ],
+    InsGroup,
+    InsButton,
+    InsDropdown
+],
   templateUrl: './insert-handle-menu.html',
   styleUrl: './insert-handle-menu.less',
+  providers:[
+    insDropdownOptionsProvider({align: 'right'})
+  ]
 })
 export class InsInsertHandleMenu {
   @Input('editor')
@@ -42,4 +46,6 @@ export class InsInsertHandleMenu {
 
   @Output()
   public readonly fileAttached = new EventEmitter<Array<InsEditorAttachedFile>>();
+
+  protected headerHandleOpen = signal(false);
 }

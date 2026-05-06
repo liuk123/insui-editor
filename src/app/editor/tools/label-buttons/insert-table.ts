@@ -81,7 +81,11 @@ const MIN_DISTANCE_PX = 70;
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  hostDirectives: [InsDropdownDirective, InsWithDropdownOpen, InsDropdownPositionSided],
+  hostDirectives: [
+    InsDropdownDirective,
+    InsWithDropdownOpen,
+    InsDropdownPositionSided
+  ],
   providers:[
     insDropdownOptionsProvider({align: 'right'})
   ]
