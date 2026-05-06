@@ -4,11 +4,11 @@
   color: var(--ins-text-primary);
   font: var(--ins-font-text-m);
 
-  &::after {
-    content: '';
-    display: table;
-    clear: both;
-  }
+  // &::after {
+  //   content: '';
+  //   display: table;
+  //   clear: both;
+  // }
 
   &[insTiptapEditor] {
     overflow: hidden;
@@ -21,10 +21,10 @@
     white-space: pre-wrap;
   }
 
-  .resize-cursor {
-    cursor: ew-resize;
-    cursor: col-resize;
-  }
+  // .resize-cursor {
+  //   cursor: ew-resize;
+  //   cursor: col-resize;
+  // }
 
   .ProseMirror-gapcursor {
     margin-block-start: 0.83rem;
@@ -38,6 +38,14 @@
   img.ProseMirror-separator {
     display: none !important;
   }
+
+  .ProseMirror-hideselection * {
+    caret-color: transparent;
+  }
+  .ProseMirror-hideselection *::selection {
+    background: transparent;
+  }
+
 
   @import './styles/text.less';
   @import './styles/link.less';
@@ -54,9 +62,3 @@
   @import './styles/file-block.less';
 }
 
-.ProseMirror-hideselection * {
-  caret-color: transparent;
-}
-.ProseMirror-hideselection *::selection {
-  background: transparent;
-}
