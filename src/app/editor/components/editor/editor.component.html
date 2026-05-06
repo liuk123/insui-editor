@@ -59,8 +59,17 @@
 
 <!-- 拖拽菜单 -->
 @if (editorLoaded()) {
-  <ins-drag-handle [dragHandleContent]="dragHandle" [insertHandleContent]="insertHandle" [style.display]="focused() ? 'block' : 'none'"></ins-drag-handle>
-  <ins-table-handle [style.display]="focused() ? 'block' : 'none'"></ins-table-handle>
+  <ins-drag-handle
+    [dragHandleContent]="dragHandle"
+    [insertHandleContent]="insertHandle"
+    [style.display]="focused() ? 'block' : 'none'"
+  ></ins-drag-handle>
+  <ins-table-handle
+    [style.display]="focused() ? 'block' : 'none'"
+    [rowMenuContent]="tableRowHandle"
+    [colMenuContent]="tableColHandle"
+    [cellMenuContent]="tableCellHandle"
+  ></ins-table-handle>
 }
 
 <!-- 拖拽菜单的下拉框 -->
@@ -69,4 +78,14 @@
 </ng-template>
 <ng-template #insertHandle>
   <ins-insert-handle-menu (fileAttached)="fileAttached.emit($event)"></ins-insert-handle-menu>
+</ng-template>
+<!-- 表格拖拽菜单 -->
+<ng-template #tableRowHandle>
+  <ins-drag-handle-menu></ins-drag-handle-menu>
+</ng-template>
+<ng-template #tableColHandle>
+  <ins-drag-handle-menu></ins-drag-handle-menu>
+</ng-template>
+<ng-template #tableCellHandle>
+  <ins-drag-handle-menu></ins-drag-handle-menu>
 </ng-template>

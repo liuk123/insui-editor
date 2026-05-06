@@ -5,8 +5,10 @@ import {
   ElementRef,
   Input,
   OnInit,
+  TemplateRef,
   ViewChild,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
@@ -20,13 +22,12 @@ import {
   map,
   of,
   race,
-  startWith,
   switchMap,
   take,
 } from 'rxjs';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { AbstractInsEditor, ActiveNodePath } from '../../common/editor-adapter';
-import { InsButton } from '@liuk123/insui';
+import { InsButton, InsDropdown, insDropdownOptionsProvider } from '@liuk123/insui';
 
 type DragOrientation = 'row' | 'column';
 
@@ -49,7 +50,10 @@ interface TableNodeInfo {
   host: {
     '[class.visible]': 'visible()',
   },
-  imports: [InsButton],
+  imports: [InsButton, InsDropdown],
+  providers:[
+    insDropdownOptionsProvider({align: 'right'})
+  ]
 })
 export class InsTableHandle implements OnInit {
   private editorInstance: AbstractInsEditor | null = inject(InsTiptapEditorService, {
@@ -110,6 +114,13 @@ export class InsTableHandle implements OnInit {
   private get editorView(): EditorView | null {
     return this.editor?.view ?? null;
   }
+
+  public rowMenuContent = input<TemplateRef<any>|null>(null);
+  public colMenuContent = input<TemplateRef<any>|null>(null);
+  public cellMenuContent = input<TemplateRef<any>|null>(null);
+  public rowMenuOpen = signal(false);
+  public colMenuOpen = signal(false);
+  public cellMenuOpen = signal(false);
 
   ngOnInit(): void {
     this.editor$
@@ -415,10 +426,6 @@ export class InsTableHandle implements OnInit {
       // event.dataTransfer.setData('text/plain', 'ins-table-row-handle');
     }
   }
-
-  // protected onPanelMouseEnter(): void {
-  //   this.visible.set(true);
-  // }
 
   private readonly handleDragOver = (event: DragEvent): void => {
     if (!this.dragState || !this.activeTable) {

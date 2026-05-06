@@ -20,7 +20,6 @@ import {
   race,
   switchMap,
   take,
-  startWith,
   BehaviorSubject,
   distinctUntilChanged,
   of,
@@ -28,8 +27,7 @@ import {
 import { NodeSelection } from '@tiptap/pm/state';
 import { MultipleNodeSelection } from './MultipleNodeSelection';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../../common/editor-options';
-import { AbstractInsEditor, ActiveNodePath } from '../../common/editor-adapter';
+import { AbstractInsEditor } from '../../common/editor-adapter';
 
 @Component({
   selector: 'ins-drag-handle',
@@ -47,7 +45,6 @@ export class InsDragHandle implements OnInit, OnDestroy {
   });
   private readonly editor$ = new BehaviorSubject(this.editorInstance);
   protected readonly insertIcon = signal<string>('plus');
-  private readonly options = inject(INS_EDITOR_OPTIONS);
 
   protected readonly positionSelectionSrv = inject(PositionSelectionService);
   private readonly destroyRef = inject(DestroyRef);
@@ -87,10 +84,6 @@ export class InsDragHandle implements OnInit, OnDestroy {
       .subscribe((path) => {
         if (!path || !this.editorView) return;
         this.positionSelectionSrv.refreshActiveNode(this.editorView, path);
-        if(!this.positionSelectionSrv.activeNode){
-          return;
-        }
-        this.insertIcon.set(this.resolveInsertIcon(this.positionSelectionSrv.activeNode));
       });
 
     this.editor$
@@ -140,30 +133,5 @@ export class InsDragHandle implements OnInit, OnDestroy {
 
       this.editor?.setTextSelection(pos);
     });
-  }
-
-  private resolveInsertIcon(path: ActiveNodePath): string {
-    const icons = this.options.icons as InsEditorOptions['icons'];
-    const nodeName = path.node;
-
-    if (nodeName === 'heading') {
-      const level = Number(path.attrs?.['level']);
-      if (level >= 1 && level <= 6) {
-        return icons[`heading${level}` as keyof InsEditorOptions['icons']] as string;
-      }
-      return icons.header;
-    }
-
-    if (nodeName === 'paragraph') return icons.paragraph;
-    if (nodeName === 'bulletList') return icons.listUnOrdered;
-    if (nodeName === 'orderedList') return icons.listOrdered;
-    if (nodeName === 'taskList' || nodeName === 'taskItem') return icons.taskList;
-    if (nodeName === 'listItem') return icons.listPreview;
-    if (nodeName === 'blockquote') return icons.quote;
-    if (nodeName === 'codeBlock') return icons.codeBlock;
-    if (nodeName === 'image' || nodeName === 'video' || nodeName === 'audio') return icons.image;
-    if (nodeName === 'table') return icons.insertTable;
-
-    return icons.groupAdd || 'plus';
   }
 }

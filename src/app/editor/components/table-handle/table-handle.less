@@ -19,6 +19,7 @@
   block-size: 20px;
   inline-size: 20px;
   background-color: var(--ins-background-base);
+  pointer-events: auto;
 }
 
 .ins-table-drop-indicator {
@@ -53,7 +54,7 @@
   width: 1rem;
   height: 1rem;
   transition: transform 0.2s ease;
-  &:hover{
+  &:hover, &.hover{
     transform: translate(-50%, -50%) scale(1.6);
     background-color: var(--ins-background-accent-1);
   }

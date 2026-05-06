@@ -11,6 +11,10 @@
     title="选中并拖拽行"
     aria-label="选中并拖拽行"
     (click)="onSelectRow($event)"
+    [insDropdown]="rowMenuContent()"
+    insDropdownSided
+    insDropdownLimitWidth="auto"
+    [(insDropdownOpen)]="rowMenuOpen"
   ></button>
   <!-- <button
       type="button"
@@ -45,6 +49,10 @@
     title="选中并拖拽列"
     aria-label="选中并拖拽列"
     (click)="onSelectColumn($event)"
+    [insDropdown]="colMenuContent()"
+    insDropdownSided
+    insDropdownLimitWidth="auto"
+    [(insDropdownOpen)]="colMenuOpen"
   ></button>
   <!-- <button
       type="button"
@@ -92,5 +100,10 @@
     size="xs"
     title="单元格菜单"
     aria-label="单元格菜单"
+    insDropdownSided
+    [class.hover]="cellMenuOpen()"
+    [insDropdown]="cellMenuContent()"
+    insDropdownLimitWidth="auto"
+    [(insDropdownOpen)]="cellMenuOpen"
   ></button>
 </div>
