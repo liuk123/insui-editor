@@ -7,8 +7,6 @@
 } -->
 
 <div
-  insDropdownDirection="bottom"
-  insDropdownLimitWidth="auto"
   insTiptapEditor
   class="ins-editor-socket"
   [attr.data-contenteditable]="interactive()"
@@ -17,6 +15,7 @@
   [insToolbarDropdown]="dropdownSelectionHandler"
   [insDropdownOffset]="8"
   insDropdownDirection="top"
+  insDropdownLimitWidth="auto"
   [insToolbarDropdownPosition]="floatingToolbar ? 'selection' : 'tag'"
   (valueChange)="onModelChange($event)"
 ></div>

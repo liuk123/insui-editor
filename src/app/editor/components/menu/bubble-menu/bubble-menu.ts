@@ -17,9 +17,6 @@ import {
   InsItalicButtonTool,
   InsUnderlineButtonTool,
   InsStrikeButtonTool,
-  InsAlignLeftButtonTool,
-  InsAlignCenterButtonTool,
-  InsAlignRightButtonTool,
   InsHighlightColorButtonTool,
   InsTextColorButtonTool,
   InsAlignButtonTool
@@ -27,6 +24,7 @@ import {
 import { INS_EDITOR_OPTIONS } from '../../../common/editor-options';
 import { AbstractInsEditor } from '../../../common/editor-adapter';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
+import { insDropdownOptionsProvider } from '@liuk123/insui';
 
 @Component({
   selector: 'ins-bubble-menu',
@@ -36,24 +34,22 @@ import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap
     InsFontSizeButtonTool,
     InsHighlightColorButtonTool,
     InsLinkButtonTool,
-    // InsRedoButtonTool,
     InsTextColorButtonTool,
-    // InsUndoButtonTool,
     InsHeadingButtonTool,
     InsBoldButtonTool,
     InsItalicButtonTool,
     InsUnderlineButtonTool,
     InsStrikeButtonTool,
-    InsAlignLeftButtonTool,
-    InsAlignCenterButtonTool,
-    InsAlignRightButtonTool,
     InsAlignButtonTool
 ],
   templateUrl: './bubble-menu.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-  },
+  providers:[
+    insDropdownOptionsProvider({
+      direction: 'bottom'
+    })
+  ]
 })
 export class InsBubbleMenu {
   protected readonly options = inject(INS_EDITOR_OPTIONS);
