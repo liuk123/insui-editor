@@ -61,9 +61,11 @@ export abstract class AbstractInsEditor {
         return path
       }),
       distinctUntilChanged((a: ActiveNodePath[], b: ActiveNodePath[]) => {
-        return a.every((item, index) => item.node === b[index]?.node && item.attrs?.['level'] === b[index]?.attrs?.['level']&&item.nodePos === b[index]?.nodePos)
+        if(a.length !== b.length){
+          return false
+        }
+        return !a.some((item, index) => item.node !== b[index]?.node || item.attrs?.['level'] !== b[index]?.attrs?.['level'] || item.nodePos !== b[index]?.nodePos)
       }),
-      // shareReplay({ bufferSize: 1, refCount: true })
       share()
     )
     // public readonly selectionChange$ = new Subject<void>();

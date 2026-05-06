@@ -10,73 +10,54 @@
   opacity: 1;
 }
 
-.ins-table-handle-layer {
-  position: absolute;
-}
-
 .ins-table-handle-controls {
   position: absolute;
   pointer-events: auto;
 }
 
-// .ins-table-handle-controls.row {
-//   transform: translate(-100%, -50%);
-// }
-
-// .ins-table-handle-controls.col {
-//   transform: translate(-50%, -100%);
-// }
-
-// .ins-table-handle-btn {
-//   border: 1px solid var(--ins-divider-color, #d9d9d9);
-//   background: var(--ins-basic-primary, #fff);
-//   color: var(--ins-text-primary, #222);
-//   border-radius: 4px;
-//   min-width: 20px;
-//   height: 20px;
-//   line-height: 18px;
-//   text-align: center;
-//   cursor: pointer;
-//   user-select: none;
-//   padding: 0;
-//   font-size: 12px;
-// }
-
-// .ins-table-handle-btn:hover {
-//   background: var(--ins-bg-control-hover, #f5f5f5);
-// }
-
-// .ins-table-handle-btn:active {
-//   cursor: grabbing;
-// }
 .ins-table-handle-btn{
   block-size: 20px;
   inline-size: 20px;
-  background-color: #fff;
+  background-color: var(--ins-background-base);
 }
 
 .ins-table-drop-indicator {
   position: absolute;
   pointer-events: none;
-  background: var(--ins-primary-color, #3b82f6);
+  background: var(--ins-background-accent-1);
   opacity: 0;
   transition: opacity 80ms ease;
-}
-
-.ins-table-drop-indicator.show {
-  opacity: 1;
+  &.show {
+    opacity: 1;
+  }
 }
 
 .ins-table-selection-outline {
   position: absolute;
   pointer-events: none;
   box-sizing: border-box;
-  border: 2px solid var(--ins-primary-color, #3b82f6);
+  border: 1px solid var(--ins-background-accent-1);
   border-radius: 2px;
   opacity: 0;
   transition: opacity 80ms ease;
+  &.show {
+    opacity: 1;
+  }
 }
-
-.ins-table-selection-outline.show {
-  opacity: 1;
+.ins-table-cell-handle-btn{
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.2s ease;
+  &:hover{
+    transform: translate(-50%, -50%) scale(1.6);
+    background-color: var(--ins-background-accent-1);
+  }
+  &::before{
+    font-size: 0.8rem;
+  }
 }
