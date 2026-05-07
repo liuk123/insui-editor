@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { InsToolbarButtonTool } from '../tool-button';
 import { InsToolbarTool } from '../tool';
-import { InsEditorOptions } from '../../common/editor-options';
 import {
   InsChevron,
   InsDataList,
@@ -23,15 +22,16 @@ import {
 } from '@liuk123/insui';
 import { InsEditorLabelOption } from '../../common/editor-font-option';
 import { InsLanguageEditor } from '../../i18n/language';
+import { InsEditorOptions } from '../../common/editor-options';
 
 @Component({
   standalone: true,
   selector: 'button[insFontSizeTool]',
   imports: [InsDataList, InsItem, InsOption, InsTextfield],
   template: `
-    {{ label() }}
+    <span style="font-size: 1rem;">{{ label() }}</span>
     <ng-container *insTextfieldDropdown>
-      <ins-data-list style="min-width: 4rem;">
+      <ins-data-list style="min-width: 6rem;">
         @for (item of fontsOptions; track item.name) {
           <button insItem insOption type="button" (click)="setFontOption(item)">
             {{ item.name }}
@@ -66,6 +66,9 @@ export class InsFontSizeButtonTool extends InsToolbarTool {
   }
 
   protected getIcon(icons: InsEditorOptions['icons']): string {
+    if(this.label()){
+      return '';
+    }
     return icons.fontSize;
   }
 

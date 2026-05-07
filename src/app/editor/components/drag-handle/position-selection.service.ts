@@ -57,7 +57,11 @@ export class PositionSelectionService {
       let item = this.activeNode();
       this.updatePositionForSelection(item?.node, item?.nodePos);
       if(item){
-        this.activeIcon.set(this.resolveInsertIcon(item));
+        if(item.isEmpty){
+          this.activeIcon.set('plus');
+        }else{
+          this.activeIcon.set(this.resolveInsertIcon(item));
+        }
       }
     });
   }

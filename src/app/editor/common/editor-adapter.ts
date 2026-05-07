@@ -2,7 +2,7 @@ import {Directive} from '@angular/core';
 import {type Editor, type JSONContent, type Range} from '@tiptap/core';
 import {type MarkType} from '@tiptap/pm/model';
 import {type EditorState} from '@tiptap/pm/state';
-import {debounceTime, distinctUntilChanged, filter, map, type Observable, share, Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged, filter, isEmpty, map, type Observable, share, Subject} from 'rxjs';
 import { EditorView } from '@tiptap/pm/view';
 import { InsEditorAttachedFile } from './attached';
 
@@ -11,6 +11,7 @@ export class ActiveNodePath {
       public node: string,
       public nodePos: number,
       public attrs?: Attrs,
+      public isEmpty?: boolean,
     ) { }
 }
 
@@ -39,7 +40,7 @@ export abstract class AbstractInsEditor {
     public readonly transaction$ = new Subject<void>();
     public readonly transactionPathChange$:Observable<ActiveNodePath[]> = this.transaction$.pipe(
       filter(() => !this.transactionStable),
-      debounceTime(60),
+      debounceTime(100),
       map(()=>{
         if(!this.state){
           return []
@@ -53,7 +54,8 @@ export abstract class AbstractInsEditor {
               new ActiveNodePath(
                 parent.type.name,
                 $pos.before(d),
-                parent.attrs
+                parent.attrs,
+                d === $pos.depth &&parent.content.size === 0
               )
             )
           }
