@@ -1,4 +1,3 @@
-import { inject, Injectable } from '@angular/core';
 import type { JSONContent } from '@tiptap/core';
 import {
   AlignmentType,
@@ -6,16 +5,20 @@ import {
   Document,
   ExternalHyperlink,
   HeadingLevel,
+  ImageRun,
   type IParagraphOptions,
   LevelFormat,
   Packer,
   Paragraph,
   type ParagraphChild,
   ShadingType,
+  Table,
+  TableCell,
+  TableRow,
   TextRun,
   UnderlineType,
+  WidthType,
 } from 'docx';
-import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 
 interface MarkValue {
   type?: string;
@@ -36,20 +39,26 @@ interface ListContext {
   level: number;
 }
 
+interface InsDocxExporterOptions {
+  resolveFile?: (url: string) => Promise<Blob>;
+}
+
+type DocxBlock = Paragraph | Table;
+
 const ORDERED_LIST_REFERENCE = 'ins-editor-numbered-list';
 const BULLET_LIST_REFERENCE = 'ins-editor-bullet-list';
 
-
 export class InsDocxExporter {
+  constructor(private readonly options: InsDocxExporterOptions = {}) {}
 
   public async export(json: JSONContent): Promise<Blob> {
     const blocks = this.readChildNodes(json);
-    const paragraphs = this.convertBlocks(blocks);
+    const children = await this.convertBlocks(blocks);
 
     const document = new Document({
       sections: [
         {
-          children: paragraphs,
+          children,
         },
       ],
       numbering: {
@@ -81,46 +90,45 @@ export class InsDocxExporter {
     return Packer.toBlob(document);
   }
 
-  private convertBlocks(
+  private async convertBlocks(
     nodes: readonly JSONContent[],
     listContext?: ListContext,
     quoted = false,
-  ): Paragraph[] {
-    const paragraphs: Paragraph[] = [];
+  ): Promise<DocxBlock[]> {
+    const blocks: DocxBlock[] = [];
 
     for (const node of nodes) {
       const type = node.type ?? '';
 
       if (type === 'paragraph') {
-        paragraphs.push(this.createParagraph(node, listContext, quoted));
+        blocks.push(this.createParagraph(node, listContext, quoted));
         continue;
       }
 
       if (type === 'heading') {
-        paragraphs.push(this.createHeading(node, quoted));
+        blocks.push(this.createHeading(node, quoted));
         continue;
       }
 
       if (type === 'bulletList' || type === 'orderedList') {
-        paragraphs.push(
-          ...this.convertList(node, type === 'orderedList', listContext?.level ?? 0, quoted),
+        blocks.push(
+          ...(await this.convertList(node, type === 'orderedList', listContext?.level ?? 0, quoted)),
         );
         continue;
       }
 
       if (type === 'blockquote') {
-        const quoteChildren = this.convertBlocks(this.readChildNodes(node), undefined, true);
-        paragraphs.push(...quoteChildren);
+        blocks.push(...(await this.convertBlocks(this.readChildNodes(node), undefined, true)));
         continue;
       }
 
       if (type === 'codeBlock') {
-        paragraphs.push(this.createCodeBlock(node, quoted));
+        blocks.push(this.createCodeBlock(node, quoted));
         continue;
       }
 
       if (type === 'horizontalRule') {
-        paragraphs.push(
+        blocks.push(
           new Paragraph({
             border: {
               top: { color: 'D9D9D9', size: 6, style: BorderStyle.SINGLE, space: 1 },
@@ -131,34 +139,54 @@ export class InsDocxExporter {
       }
 
       if (type === 'image') {
-        paragraphs.push(this.createMediaPlaceholder(node, '图片', quoted));
+        blocks.push(...(await this.createImageBlocks(node, quoted)));
         continue;
       }
 
       if (type === 'video') {
-        paragraphs.push(this.createMediaPlaceholder(node, '视频', quoted));
+        blocks.push(this.createMediaPlaceholder(node, '视频', quoted));
         continue;
       }
 
       if (type === 'audio' || type === 'file') {
-        paragraphs.push(this.createMediaPlaceholder(node, '附件', quoted));
+        blocks.push(this.createMediaPlaceholder(node, '附件', quoted));
+        continue;
+      }
+
+      if (type === 'table') {
+        blocks.push(await this.createTable(node));
+        continue;
+      }
+
+      if (type === 'figcaption') {
+        blocks.push(this.createCaptionParagraph(node, quoted));
+        continue;
+      }
+
+      if (type === 'capturedTable' || type === 'capturedImage') {
+        blocks.push(...(await this.convertBlocks(this.readChildNodes(node), listContext, quoted)));
         continue;
       }
 
       const fallbackChildren = this.readChildNodes(node);
       if (fallbackChildren.length > 0) {
-        paragraphs.push(...this.convertBlocks(fallbackChildren, listContext, quoted));
+        blocks.push(...(await this.convertBlocks(fallbackChildren, listContext, quoted)));
       }
     }
 
-    if (paragraphs.length === 0) {
-      paragraphs.push(new Paragraph({}));
+    if (blocks.length === 0) {
+      blocks.push(new Paragraph({}));
     }
 
-    return paragraphs;
+    return blocks;
   }
 
-  private convertList(node: JSONContent, ordered: boolean, level: number, quoted: boolean): Paragraph[] {
+  private async convertList(
+    node: JSONContent,
+    ordered: boolean,
+    level: number,
+    quoted: boolean,
+  ): Promise<Paragraph[]> {
     const paragraphs: Paragraph[] = [];
     const listItems = this.readChildNodes(node);
 
@@ -178,11 +206,14 @@ export class InsDocxExporter {
         }
 
         if (child.type === 'bulletList' || child.type === 'orderedList') {
-          paragraphs.push(...this.convertList(child, child.type === 'orderedList', level + 1, quoted));
+          paragraphs.push(
+            ...(await this.convertList(child, child.type === 'orderedList', level + 1, quoted)),
+          );
           continue;
         }
 
-        paragraphs.push(...this.convertBlocks([child], { ordered, level }, quoted));
+        const nestedBlocks = await this.convertBlocks([child], { ordered, level }, quoted);
+        paragraphs.push(...this.normalizeParagraphs(nestedBlocks));
       }
 
       if (!hasParagraph && childNodes.length === 0) {
@@ -250,6 +281,122 @@ export class InsDocxExporter {
     });
   }
 
+  private createCaptionParagraph(node: JSONContent, quoted = false): Paragraph {
+    const text = this.extractPlainText(node).trim();
+    return this.createCaptionFromText(text, quoted);
+  }
+
+  private async createImageBlocks(node: JSONContent, quoted = false): Promise<Paragraph[]> {
+    const attrs = this.readAttrs(node);
+    const source = this.readStringAttr(attrs, 'src') ?? this.readStringAttr(attrs, 'url');
+    const caption = this.readStringAttr(attrs, 'caption');
+
+    if (!source) {
+      return [this.createMediaPlaceholder(node, '图片', quoted)];
+    }
+
+    try {
+      const blob = await this.resolveFile(source);
+      const detectedType = this.detectImageType(blob.type, source);
+      if (!detectedType) {
+        return [this.createMediaPlaceholder(node, '图片', quoted)];
+      }
+
+      const configuredWidth = this.readNumberAttr(attrs, 'previewWidth') ?? this.readNumberAttr(attrs, 'width');
+      const configuredHeight = this.readNumberAttr(attrs, 'height');
+      const size = await this.resolveImageSize(blob, configuredWidth, configuredHeight);
+
+      const imageParagraph = new Paragraph({
+        ...this.getQuoteParagraphOptions(quoted),
+        children: [
+          new ImageRun({
+            data: await blob.arrayBuffer(),
+            type: detectedType,
+            transformation: {
+              width: size.width,
+              height: size.height,
+            },
+          }),
+        ],
+      });
+
+      if (!caption) {
+        return [imageParagraph];
+      }
+
+      return [
+        imageParagraph,
+        this.createCaptionFromText(caption, quoted),
+      ];
+    } catch {
+      return [this.createMediaPlaceholder(node, '图片', quoted)];
+    }
+  }
+
+  private async createTable(node: JSONContent): Promise<Table> {
+    const rows = this.readChildNodes(node).filter((item) => item.type === 'tableRow');
+    const tableRows: TableRow[] = [];
+
+    for (const rowNode of rows) {
+      const cells = this.readChildNodes(rowNode).filter(
+        (item) => item.type === 'tableCell' || item.type === 'tableHeader',
+      );
+      const tableCells: TableCell[] = [];
+
+      for (const cellNode of cells) {
+        const cellAttrs = this.readAttrs(cellNode);
+        const rawCellBlocks = await this.convertBlocks(this.readChildNodes(cellNode));
+        const cellParagraphs = this.normalizeParagraphs(rawCellBlocks);
+        const columnSpan = this.readNumberAttr(cellAttrs, 'colspan') ?? 1;
+        const rowSpan = this.readNumberAttr(cellAttrs, 'rowspan') ?? 1;
+        const isHeader = cellNode.type === 'tableHeader';
+        const shading =
+          isHeader
+            ? {
+                type: ShadingType.CLEAR,
+                fill: 'F5F5F5',
+              }
+            : undefined;
+
+        tableCells.push(
+          new TableCell({
+            children: cellParagraphs.length > 0 ? cellParagraphs : [new Paragraph({})],
+            columnSpan,
+            rowSpan,
+            shading,
+          }),
+        );
+      }
+
+      tableRows.push(
+        new TableRow({
+          children: tableCells,
+        }),
+      );
+    }
+
+    if (tableRows.length === 0) {
+      tableRows.push(
+        new TableRow({
+          children: [new TableCell({ children: [new Paragraph({})] })],
+        }),
+      );
+    }
+
+    return new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: tableRows,
+      borders: {
+        top: { style: BorderStyle.SINGLE, size: 2, color: 'D9D9D9' },
+        bottom: { style: BorderStyle.SINGLE, size: 2, color: 'D9D9D9' },
+        left: { style: BorderStyle.SINGLE, size: 2, color: 'D9D9D9' },
+        right: { style: BorderStyle.SINGLE, size: 2, color: 'D9D9D9' },
+        insideHorizontal: { style: BorderStyle.SINGLE, size: 2, color: 'D9D9D9' },
+        insideVertical: { style: BorderStyle.SINGLE, size: 2, color: 'D9D9D9' },
+      },
+    });
+  }
+
   private createMediaPlaceholder(node: JSONContent, label: string, quoted = false): Paragraph {
     const attrs = this.readAttrs(node);
     const url = this.readStringAttr(attrs, 'src') ?? this.readStringAttr(attrs, 'url');
@@ -279,6 +426,15 @@ export class InsDocxExporter {
     });
   }
 
+  private createCaptionFromText(text: string, quoted = false): Paragraph {
+    return new Paragraph({
+      ...this.getQuoteParagraphOptions(quoted),
+      style: 'Caption',
+      children: [new TextRun({ text: text.trim() })],
+      spacing: { before: 80, after: 80 },
+    });
+  }
+
   private getQuoteParagraphOptions(quoted: boolean): IParagraphOptions {
     if (!quoted) {
       return {};
@@ -290,6 +446,94 @@ export class InsDocxExporter {
         left: { color: 'BFBFBF', size: 8, style: BorderStyle.SINGLE, space: 6 },
       },
     };
+  }
+
+  private normalizeParagraphs(blocks: readonly DocxBlock[]): Paragraph[] {
+    return blocks.map((block) => {
+      if (block instanceof Paragraph) {
+        return block;
+      }
+      return new Paragraph({
+        children: [new TextRun('[嵌套表格]')],
+      });
+    });
+  }
+
+  private async resolveFile(url: string): Promise<Blob> {
+    if (this.options.resolveFile) {
+      return this.options.resolveFile(url);
+    }
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Image request failed');
+    }
+
+    return response.blob();
+  }
+
+  private detectImageType(
+    mimeType: string,
+    source: string,
+  ): 'png' | 'jpg' | 'gif' | 'bmp' | undefined {
+    const normalizedMimeType = mimeType.toLowerCase();
+    if (normalizedMimeType.includes('png')) return 'png';
+    if (normalizedMimeType.includes('jpeg') || normalizedMimeType.includes('jpg')) return 'jpg';
+    if (normalizedMimeType.includes('gif')) return 'gif';
+    if (normalizedMimeType.includes('bmp')) return 'bmp';
+
+    const lowerSource = source.toLowerCase();
+    if (lowerSource.endsWith('.png')) return 'png';
+    if (lowerSource.endsWith('.jpg') || lowerSource.endsWith('.jpeg')) return 'jpg';
+    if (lowerSource.endsWith('.gif')) return 'gif';
+    if (lowerSource.endsWith('.bmp')) return 'bmp';
+
+    return undefined;
+  }
+
+  private async resolveImageSize(
+    blob: Blob,
+    configuredWidth?: number | null,
+    configuredHeight?: number | null,
+  ): Promise<{ width: number; height: number }> {
+    const minWidth = 64;
+    const maxWidth = 960;
+
+    if (configuredWidth && configuredHeight) {
+      return {
+        width: Math.max(minWidth, Math.min(maxWidth, Math.round(configuredWidth))),
+        height: Math.max(minWidth, Math.round(configuredHeight)),
+      };
+    }
+
+    const intrinsic = await this.getImageDimensions(blob).catch(() => null);
+    const fallbackWidth = configuredWidth ?? intrinsic?.width ?? 320;
+    const fallbackHeight =
+      configuredHeight ??
+      (intrinsic ? Math.round((fallbackWidth / intrinsic.width) * intrinsic.height) : 180);
+
+    return {
+      width: Math.max(minWidth, Math.min(maxWidth, Math.round(fallbackWidth))),
+      height: Math.max(minWidth, Math.round(fallbackHeight)),
+    };
+  }
+
+  private async getImageDimensions(blob: Blob): Promise<{ width: number; height: number }> {
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+      const image = new Image();
+      image.decoding = 'async';
+
+      await new Promise<void>((resolve, reject) => {
+        image.onload = () => resolve();
+        image.onerror = () => reject(new Error('Invalid image'));
+        image.src = objectUrl;
+      });
+
+      return { width: image.naturalWidth, height: image.naturalHeight };
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
   }
 
   private convertInlineNodes(nodes: readonly JSONContent[]): ParagraphChild[] {
@@ -427,7 +671,7 @@ export class InsDocxExporter {
       .join('');
   }
 
-  private readHeadingLevel(node: JSONContent):  typeof HeadingLevel[keyof typeof HeadingLevel] {
+  private readHeadingLevel(node: JSONContent): typeof HeadingLevel[keyof typeof HeadingLevel] {
     const attrs = this.readAttrs(node);
     const level = this.readNumberAttr(attrs, 'level');
     if (level === 1) return HeadingLevel.HEADING_1;
