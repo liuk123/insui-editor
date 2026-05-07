@@ -109,6 +109,9 @@ interface Options {
   group: Partial<InsEditorGroupOptions> | boolean;
   lineHeight: Partial<LineHeightOptions> | boolean;
   mention: Partial<InsMentionOptions> | boolean;
+  imageFigure: Partial<Record<string, unknown>> | boolean;
+  tableFigure: Partial<Record<string, unknown>> | boolean;
+  figcaption: Partial<Record<string, unknown>> | boolean;
 }
 
 const EXTENSIONS = [
@@ -628,6 +631,30 @@ const EXTENSIONS = [
     async loader(options: Partial<InsMentionOptions>) {
       const { InsMention } = await import('../extensions/mention');
       return InsMention.configure(options);
+    },
+  },
+  {
+    key: 'imageFigure',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { ImageFigure } = await import('../extensions/figure/figure');
+      return ImageFigure.configure(options);
+    },
+  },
+  {
+    key: 'tableFigure',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { TableFigure } = await import('../extensions/figure/figure');
+      return TableFigure.configure(options);
+    },
+  },
+  {
+    key: 'figcaption',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { Figcaption } = await import('../extensions/figure/figcaption');
+      return Figcaption.configure(options);
     },
   },
 ] as const;

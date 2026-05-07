@@ -41,11 +41,11 @@ export class InsTiptapEditorService extends AbstractInsEditor {
         this.transaction$.next();
       });
       // editor.on('selectionUpdate', () => {
-        // this.selectionChange$.next()
-        // console.log('selectionUpdate');
+      // this.selectionChange$.next()
+      // console.log('selectionUpdate');
       // });
-      editor.on('drop', ({event}) => {
-        this.drop$.next(event)
+      editor.on('drop', ({ event }) => {
+        this.drop$.next(event);
         // console.log('drop');
       });
       editor.on('update', () => {
@@ -181,10 +181,8 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   }
 
   public removeBlocks(): void {
-
-
-
-    this.editor?.chain()
+    this.editor
+      ?.chain()
       .focus()
       .command(({ state, commands }) => {
         const { selection } = state;
@@ -225,7 +223,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   // }
 
   public setHighlightColor(color: string): void {
-    this.editor?.chain().focus().setHighlight({color}).run();
+    this.editor?.chain().focus().setHighlight({ color }).run();
   }
   public unsetHighlight(): void {
     this.editor?.chain().focus().unsetHighlight().run();
@@ -376,7 +374,11 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   }
 
   public setHeading(level: Level): void {
-    this.editor?.chain().focus().setNode('heading', { level, collapsed: false, toggleable: true }).run();
+    this.editor
+      ?.chain()
+      .focus()
+      .setNode('heading', { level, collapsed: false, toggleable: true })
+      .run();
   }
 
   public setParagraph(options?: { fontSize: string }): void {
@@ -550,11 +552,104 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   public setColumns(n: number): void {
     this.editor?.commands.setColumns(n);
   }
-  public unsetColumns(){
+  public unsetColumns() {
     this.editor?.commands.unsetColumns();
   }
 
-  public setFigure(options: {src: string, alt?: string, title?: string, caption?: string}): void {
+  public setFigure(options: { src: string; alt?: string; title?: string; caption?: string }): void {
     this.editor?.commands.setFigure(options);
+  }
+
+  public addCapturedImage() {
+    this.editor
+      ?.chain()
+      .focus()
+      .insertContent({
+        type: 'capturedImage',
+        content: [
+          {
+            type: 'figcaption',
+            content: [
+              {
+                type: 'text',
+                text: 'Image caption',
+              },
+            ],
+          },
+          {
+            type: 'image',
+            attrs: {
+              src: 'https://placehold.co/800x400/orange/white',
+            },
+          },
+        ],
+      })
+      .run();
+  }
+
+  public addCapturedTable() {
+    this.editor
+      ?.chain()
+      .focus()
+      .insertContent({
+        type: 'capturedTable',
+        content: [
+          {
+            type: 'figcaption',
+            content: [
+              {
+                type: 'text',
+                text: 'Table caption',
+              },
+            ],
+          },
+          {
+            type: 'table',
+            content: [
+              {
+                type: 'tableRow',
+                content: [
+                  {
+                    type: 'tableCell',
+                    content: [
+                      {
+                        type: 'paragraph',
+                        content: [
+                          {
+                            type: 'text',
+                            text: 'Cell 1',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    type: 'tableCell',
+                    content: [
+                      {
+                        type: 'paragraph',
+                        content: [
+                          {
+                            type: 'text',
+                            text: 'Cell 2',
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      })
+      .run();
+  }
+  public removeCapturedTable() {
+    this.editor?.chain().focus().deleteNode('capturedTable').run();
+  }
+
+  public removeCapturedImage() {
+    this.editor?.chain().focus().deleteNode('capturedImage').run();
   }
 }

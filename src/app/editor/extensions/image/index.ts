@@ -1,4 +1,3 @@
-import { createFigureWithCaption } from '../common/toExternalHTML/create-figure-caption';
 import { createResizableFileBlockWrapper } from '../common/render/create-resizable-wrapper';
 import { Node, nodeInputRule } from '@tiptap/core';
 import { createFileBlockWrapper } from '../common/render/create-file-wrapper';
@@ -15,15 +14,12 @@ function parseDimensionValue(value: string | null): number | null {
 }
 
 function parseImageNode(
-  image: HTMLImageElement,
-  caption?: HTMLElement | null,
+  image: HTMLImageElement
 ): Record<string, string | number | boolean | null> {
   return {
     src: image.getAttribute('src'),
     name: image.getAttribute('alt'),
-    previewWidth: parseDimensionValue(image.getAttribute('width')) || null,
-
-    caption: caption?.textContent || null,
+    previewWidth: parseDimensionValue(image.getAttribute('width')) || null
   };
 }
 export interface InsImageOptions {
@@ -55,6 +51,9 @@ export const InsImage = Node.create<InsImageOptions>({
   group: 'block',
   inline: false,
   draggable: true,
+  selectable: true,
+  atom: true,
+  isolating: true,
 
   addOptions() {
     return {
@@ -74,9 +73,6 @@ export const InsImage = Node.create<InsImageOptions>({
       align: {
         default: 'center',
       },
-      caption: {
-        default: null,
-      },
       showPreview: {
         default: true,
       },
@@ -88,30 +84,8 @@ export const InsImage = Node.create<InsImageOptions>({
   parseHTML() {
     return [
       {
-        tag: 'figure',
-        getAttrs: (node) => {
-          if (!(node instanceof HTMLElement)) {
-            return false;
-          }
-          const image = node.querySelector('img');
-          if (!(image instanceof HTMLImageElement)) {
-            return false;
-          }
-          const caption = node.querySelector('figcaption');
-          return parseImageNode(image, caption);
-        },
-      },
-      {
         tag: 'img[src]',
-        getAttrs: (node) => {
-          if (!(node instanceof HTMLImageElement)) {
-            return false;
-          }
-          if (node.closest('figure')) {
-            return false;
-          }
-          return parseImageNode(node);
-        },
+        getAttrs: (node) =>  parseImageNode(node as HTMLImageElement)
       },
     ];
   },
@@ -128,20 +102,18 @@ export const InsImage = Node.create<InsImageOptions>({
    parseMarkdown: (token, helpers) => {
     return helpers.createNode('image', {
       src: token['href'],
-      caption: token['text'],
       name: token['title'],
     })
   },
 
   renderMarkdown: node => {
     const src = node.attrs?.['src'] ?? ''
-    const alt = node.attrs?.['caption'] ?? ''
+    const alt = node.attrs?.['name'] ?? ''
     const title = node.attrs?.['name'] ?? ''
 
     return title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`
   },
   addNodeView() {
-
     return ({ node, getPos, editor }) => {
       if (!node.attrs['src']) {
         const placeholder = document.createElement('div');
@@ -163,14 +135,13 @@ export const InsImage = Node.create<InsImageOptions>({
       imageWrapper.dataset['src'] = node.attrs['src'] || '';
       imageWrapper.dataset['name'] = node.attrs['name'] || '';
       imageWrapper.dataset['align'] = node.attrs['align'] || '';
-      imageWrapper.dataset['caption'] = node.attrs['caption'] || '';
       imageWrapper.dataset['showPreview'] = node.attrs['showPreview'] || '';
       imageWrapper.dataset['previewWidth'] = node.attrs['previewWidth'] || '';
       if (node.attrs['showPreview']) {
 
         const imageElement = document.createElement('img');
         imageElement.src = node.attrs['src'];
-        imageElement.alt = node.attrs['name'] || node.attrs['caption'] || '';
+        imageElement.alt = node.attrs['name'] || '';
 
         imageElement.className = 'bn-visual-media';
         imageElement.loading = 'lazy';
@@ -185,10 +156,6 @@ export const InsImage = Node.create<InsImageOptions>({
           this.name,
         );
       } else {
-        // const link = document.createElement('a');
-        // link.href = node.attrs['src'];
-        // link.textContent = node.attrs['name'] || node.attrs['src'] || '';
-        // contentView = { dom: link };
         const file = createFileBlockWrapper(node.attrs);
         imageWrapper.appendChild(file.dom);
 
@@ -200,9 +167,6 @@ export const InsImage = Node.create<InsImageOptions>({
         };
       }
 
-      if (node.attrs['caption']) {
-        return createFigureWithCaption(contentView, node.attrs['caption'] || '');
-      }
 
       return contentView;
     };
@@ -226,9 +190,9 @@ export const InsImage = Node.create<InsImageOptions>({
         find: inputRegex,
         type: this.type,
         getAttributes: match => {
-          const [, , alt, src, title] = match
+          const [, , , src, title] = match
 
-          return { src, caption: alt, name: title }
+          return { src, name: title }
         },
       }),
     ]

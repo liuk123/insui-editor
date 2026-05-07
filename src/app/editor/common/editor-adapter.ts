@@ -1,7 +1,7 @@
 import {Directive} from '@angular/core';
 import {type Editor, type JSONContent, type Range} from '@tiptap/core';
 import {type MarkType} from '@tiptap/pm/model';
-import {type EditorState} from '@tiptap/pm/state';
+import { NodeSelection, type EditorState } from '@tiptap/pm/state';
 import {debounceTime, distinctUntilChanged, filter, isEmpty, map, type Observable, share, Subject} from 'rxjs';
 import { EditorView } from '@tiptap/pm/view';
 import { InsEditorAttachedFile } from './attached';
@@ -45,8 +45,21 @@ export abstract class AbstractInsEditor {
         if(!this.state){
           return []
         }
-        let $pos = this.state.selection.$from
-        let path = []
+        const selection = this.state.selection;
+        const $pos = selection.$from;
+        const path = [];
+
+        if (selection instanceof NodeSelection && selection.node.isBlock) {
+          path.push(
+            new ActiveNodePath(
+              selection.node.type.name,
+              selection.from,
+              selection.node.attrs,
+              false,
+            ),
+          );
+        }
+
         for (let d = $pos.depth; d > 0; d--) {
           let parent = $pos.node(d)
           if(parent.isBlock){
@@ -250,4 +263,8 @@ export abstract class AbstractInsEditor {
     public abstract unsetColumns(): void;
 
     public abstract setFigure(options: {src: string, alt?: string, title?: string, caption?: string}): void;
+    public abstract addCapturedImage(): void;
+    public abstract addCapturedTable(): void;
+    public abstract removeCapturedTable(): void;
+    public abstract removeCapturedImage(): void;
 }

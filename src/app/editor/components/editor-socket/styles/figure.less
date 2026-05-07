@@ -1,0 +1,30 @@
+/* Figure */
+figure {
+  align-items: start;
+  border: 2px solid var(--ins-border-normal);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 0.5rem;
+  width: fit-content;
+
+  > *:not(figcaption) {
+    margin: 0;
+    max-width: 100%;
+  }
+
+  &:has(figcaption:active) {
+    border-color: var(--ins-status-actions);
+  }
+
+  figcaption {
+    box-sizing: border-box;
+    border-radius: 0.5rem;
+    border: 2px dashed #0d0d0d20;
+    padding: 0.5rem;
+    text-align: center;
+    width: 100%;
+  }
+}

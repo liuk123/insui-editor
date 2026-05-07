@@ -39,8 +39,10 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly groupRemove: string;
     readonly hr: string;
     readonly image: string;
+    readonly capturedImage: string;
     readonly indent: string;
     readonly insertTable: string;
+    readonly capturedTable: string;
     readonly tableCellMerge: string;
     readonly tableCellSplit: string;
     readonly link: string;
@@ -131,6 +133,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     sup: 'superscript',
     tex: 'whole-word',
     image: 'image',
+    capturedImage: 'image',
     hr: 'minus',
     clear: 'remove-formatting',
     removeBlocks: 'trash',
@@ -160,6 +163,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     outdent: 'indent-decrease',
     fontSize: 'a-large-small',
     insertTable: 'table',
+    capturedTable: 'table',
     tableCellMerge: 'table-cells-merge',
     tableCellSplit: 'table-rows-split',
     addRowTable: 'between-horizontal-start',
