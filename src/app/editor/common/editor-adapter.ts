@@ -267,4 +267,5 @@ export abstract class AbstractInsEditor {
     public abstract addCapturedTable(): void;
     public abstract removeCapturedTable(): void;
     public abstract removeCapturedImage(): void;
+    public abstract exportDocx(): Promise<Blob>;
 }

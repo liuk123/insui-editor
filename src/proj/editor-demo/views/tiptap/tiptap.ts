@@ -69,6 +69,7 @@ export class Tiptap implements OnInit {
   @ViewChild(InsEditor)
   private readonly wysiwyg?: InsEditor;
 
+
   protected control = new FormControl('');
 
   ngOnInit(): void {
@@ -110,5 +111,17 @@ export class Tiptap implements OnInit {
         },
       ],
     });
+  }
+  async exportDocx(){
+    let blob = await this.wysiwyg?.editor?.exportDocx()
+    if(!blob){ return }
+    const url = window.URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = 'demo.docx'
+    anchor.click()
+    anchor.remove()
+    window.URL.revokeObjectURL(url)
+
   }
 }

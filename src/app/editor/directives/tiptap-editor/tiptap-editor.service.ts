@@ -15,6 +15,7 @@ import { insGetMarkRange } from './utils/get-mark-range';
 import { InsEditorAttachedFile } from '../../common/attached';
 import { EditorView } from '@tiptap/pm/view';
 import { insParseStyle } from './utils/parse-style';
+import { InsDocxExporter } from '../../exporter/docx';
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
 type Attrs = Record<string, unknown>;
@@ -26,6 +27,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
   private firstInitContent = false;
   protected editor?: Editor;
   private readonly options = inject(INS_EDITOR_OPTIONS);
+  private readonly docxExporter = new InsDocxExporter();
 
   constructor() {
     super();
@@ -651,5 +653,14 @@ export class InsTiptapEditorService extends AbstractInsEditor {
 
   public removeCapturedImage() {
     this.editor?.chain().focus().deleteNode('capturedImage').run();
+  }
+
+  public async exportDocx(): Promise<Blob> {
+    const json = this.editor?.getJSON();
+    if (!json) {
+      return new Blob();
+    }
+
+    return this.docxExporter.export(json);
   }
 }
