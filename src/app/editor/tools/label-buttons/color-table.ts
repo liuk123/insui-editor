@@ -79,7 +79,7 @@ export class InsTableColorButtonLabel extends InsToolbarBase {
   }
 
   protected getHint(texts?: InsLanguageEditor['toolbarTools']): string {
-    return texts?.backColor ?? '';
+    return texts?.foreColor ?? '';
   }
 
   protected setBackgroundColor(color: string): void {
