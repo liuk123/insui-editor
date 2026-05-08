@@ -58,6 +58,9 @@ import { InsInsertHandleMenu } from '../menu/insert-handle-menu/insert-handle-me
 import { InsDragHandleMenu } from '../menu/drag-handle-menu/drag-handle-menu';
 import { InsImageMenu } from '../menu/image-menu/image-menu';
 import { InsTableHandle } from '../table-handle/table-handle';
+import { TableRowMenu } from '../menu/table-row-menu/table-row-menu';
+import { TableColMenu } from '../menu/table-col-menu/table-col-menu';
+import { TableCellMenu } from '../menu/table-cell-menu/table-cell-menu';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -82,6 +85,9 @@ interface ServerSideGlobal extends Global {
     InsDragHandleMenu,
     InsInsertHandleMenu,
     InsImageMenu,
+    TableRowMenu,
+    TableColMenu,
+    TableCellMenu,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,

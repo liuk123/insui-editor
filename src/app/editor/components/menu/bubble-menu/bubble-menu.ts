@@ -17,14 +17,13 @@ import {
   InsItalicButtonTool,
   InsUnderlineButtonTool,
   InsStrikeButtonTool,
-  InsHighlightColorButtonTool,
-  InsTextColorButtonTool,
   InsAlignButtonTool
 } from '../../../tools';
 import { INS_EDITOR_OPTIONS } from '../../../common/editor-options';
 import { AbstractInsEditor } from '../../../common/editor-adapter';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 import { insDropdownOptionsProvider } from '@liuk123/insui';
+import { InsColorButtonTool } from '../../../tools/tool-buttons/color';
 
 @Component({
   selector: 'ins-bubble-menu',
@@ -32,15 +31,14 @@ import { insDropdownOptionsProvider } from '@liuk123/insui';
     InsClearButtonTool,
     InsCodeButtonTool,
     InsFontSizeButtonTool,
-    InsHighlightColorButtonTool,
     InsLinkButtonTool,
-    InsTextColorButtonTool,
     InsHeadingButtonTool,
     InsBoldButtonTool,
     InsItalicButtonTool,
     InsUnderlineButtonTool,
     InsStrikeButtonTool,
-    InsAlignButtonTool
+    InsAlignButtonTool,
+    InsColorButtonTool
 ],
   templateUrl: './bubble-menu.html',
   encapsulation: ViewEncapsulation.None,

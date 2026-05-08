@@ -1,11 +1,15 @@
-.ins-color-item {
-  width: 1.2rem;
-  height: 1.2rem;
-  border-radius: 0.25rem;
-}
-.ins-block-grid {
+
+ins-palette {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   grid-gap: 0.25rem;
-  padding: 0.5rem;
+  .ins-color-item {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 0.25rem;
+    &:hover {
+      outline: 1px solid var(--ins-background-accent-2);
+      outline-offset: 2px;
+    }
+  }
 }
