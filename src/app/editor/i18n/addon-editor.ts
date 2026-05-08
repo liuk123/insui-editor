@@ -57,6 +57,7 @@ export const INS_CHINESE_LANGUAGE_ADDON_EDITOR: InsLanguageEditor = {
     tableColAddAfter: '在右侧添加',
     tableColDelete: '删除列',
     tableColClear: '清空列',
+    tableCellClear: '清空单元格',
     setDetails: '详细信息',
     removeDetails: '删除详细信息',
     removeBlocks: '删除内容',

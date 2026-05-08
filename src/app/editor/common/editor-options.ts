@@ -45,6 +45,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly capturedTable: string;
     readonly tableCellMerge: string;
     readonly tableCellSplit: string;
+    readonly tableCellClear: string;
     readonly link: string;
     readonly listOrdered: string;
     readonly taskList: string;
@@ -176,6 +177,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     capturedTable: 'table',
     tableCellMerge: 'table-cells-merge',
     tableCellSplit: 'table-rows-split',
+    tableCellClear: 'remove-formatting',
     addRowTable: 'between-horizontal-start',
     code: 'code',
     codeBlock: 'code',

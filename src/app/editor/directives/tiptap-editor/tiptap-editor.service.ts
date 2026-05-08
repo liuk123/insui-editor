@@ -9,6 +9,7 @@ import { type MarkType } from '@tiptap/pm/model';
 import { distinctUntilChanged, map, Observable, startWith } from 'rxjs';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
 import { EditorState } from '@tiptap/pm/state';
+import { CellSelection } from '@tiptap/pm/tables';
 import { EDITOR_BLANK_COLOR } from '../../common/default-editor-colors';
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { insGetMarkRange } from './utils/get-mark-range';
@@ -423,6 +424,57 @@ export class InsTiptapEditorService extends AbstractInsEditor {
           colIndex,
         );
         if (!cellEntries || cellEntries.length === 0) {
+          return false;
+        }
+
+        for (let index = cellEntries.length - 1; index >= 0; index -= 1) {
+          const entry = cellEntries[index];
+          if (!entry) {
+            continue;
+          }
+          tr = tr.replaceWith(entry.pos, entry.pos + entry.nodeSize, entry.replacement as never);
+        }
+
+        dispatch?.(tr.scrollIntoView());
+        return true;
+      })
+      .run();
+  }
+
+  public clearSelectedCells(): void {
+    this.editor
+      ?.chain()
+      .focus()
+      .command(({ state, tr, dispatch }) => {
+        const paragraph = state.schema.nodes['paragraph']?.createAndFill() ?? null;
+        const cellEntries: Array<{ pos: number; nodeSize: number; replacement: unknown }> = [];
+
+        if (state.selection instanceof CellSelection) {
+          state.selection.forEachCell((cell, pos) => {
+            const replacement =
+              paragraph ?
+                cell.type.createChecked(cell.attrs, [paragraph], cell.marks)
+              : cell.type.createChecked(cell.attrs, undefined, cell.marks);
+            cellEntries.push({ pos, nodeSize: cell.nodeSize, replacement });
+          });
+        } else {
+          state.doc.nodesBetween(state.selection.from, state.selection.to, (node, pos, parent) => {
+            if (
+              (node.type.name === 'tableCell' || node.type.name === 'tableHeader') &&
+              parent?.type.name === 'tableRow'
+            ) {
+              const replacement =
+                paragraph ?
+                  node.type.createChecked(node.attrs, [paragraph], node.marks)
+                : node.type.createChecked(node.attrs, undefined, node.marks);
+              cellEntries.push({ pos, nodeSize: node.nodeSize, replacement });
+              return false;
+            }
+            return true;
+          });
+        }
+
+        if (cellEntries.length === 0) {
           return false;
         }
 
