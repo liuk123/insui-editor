@@ -1,16 +1,9 @@
 import type { Node as ProseMirrorNode, ResolvedPos } from '@tiptap/pm/model';
-import type { EditorState } from '@tiptap/pm/state';
 
 export interface InsTableNodeInfo {
   tableNode: ProseMirrorNode;
   tablePos: number;
   tableDepth: number;
-}
-
-export interface InsRowCellReplacement {
-  pos: number;
-  nodeSize: number;
-  replacement: ProseMirrorNode;
 }
 
 export interface InsCellSelectionRange {
@@ -127,74 +120,4 @@ export function getColumnSelectionRange(
   }
 
   return { anchor, head };
-}
-
-export function createClearedRowCellEntries(
-  state: EditorState,
-  tableNode: ProseMirrorNode,
-  tablePos: number,
-  rowIndex: number,
-): InsRowCellReplacement[] | null {
-  if (rowIndex < 0 || rowIndex >= tableNode.childCount) {
-    return null;
-  }
-
-  const rowNode = tableNode.child(rowIndex);
-  const rowPos = getRowStartPos(tableNode, tablePos, rowIndex);
-  if (rowPos === null) {
-    return null;
-  }
-
-  const paragraph = state.schema.nodes['paragraph']?.createAndFill() ?? null;
-  const cellEntries: InsRowCellReplacement[] = [];
-  let cellPos = rowPos + 1;
-
-  for (let index = 0; index < rowNode.childCount; index += 1) {
-    const cellNode = rowNode.child(index);
-    const replacement =
-      paragraph ?
-        cellNode.type.createChecked(cellNode.attrs, [paragraph], cellNode.marks)
-      : cellNode.type.createChecked(cellNode.attrs, undefined, cellNode.marks);
-
-    cellEntries.push({ pos: cellPos, nodeSize: cellNode.nodeSize, replacement });
-    cellPos += cellNode.nodeSize;
-  }
-
-  return cellEntries;
-}
-
-export function createClearedColumnCellEntries(
-  state: EditorState,
-  tableNode: ProseMirrorNode,
-  tablePos: number,
-  colIndex: number,
-): InsRowCellReplacement[] | null {
-  if (colIndex < 0) {
-    return null;
-  }
-
-  const paragraph = state.schema.nodes['paragraph']?.createAndFill() ?? null;
-  const cellEntries: InsRowCellReplacement[] = [];
-
-  for (let rowIndex = 0; rowIndex < tableNode.childCount; rowIndex += 1) {
-    const row = tableNode.child(rowIndex);
-    if (colIndex >= row.childCount) {
-      continue;
-    }
-
-    const cellNode = row.child(colIndex);
-    const cellPos = getTableCellPos(tableNode, tablePos, rowIndex, colIndex);
-    if (cellPos === null) {
-      continue;
-    }
-
-    const replacement =
-      paragraph ?
-        cellNode.type.createChecked(cellNode.attrs, [paragraph], cellNode.marks)
-      : cellNode.type.createChecked(cellNode.attrs, undefined, cellNode.marks);
-
-    cellEntries.push({ pos: cellPos, nodeSize: cellNode.nodeSize, replacement });
-  }
-
-  return cellEntries;
 }

@@ -6,8 +6,8 @@ import { InsTableAlignButtonLabel } from '../../../tools/label-buttons/align-tab
 import { InsTableColorButtonLabel } from '../../../tools/label-buttons/color-table';
 import { InsTableRowAddAfterLabel } from '../../../tools/label-buttons/table-row-add-after';
 import { InsTableRowAddBeforeLabel } from '../../../tools/label-buttons/table-row-add-before';
-import { InsTableRowClearLabel } from '../../../tools/label-buttons/table-row-clear';
 import { InsTableRowDeleteLabel } from '../../../tools/label-buttons/table-row-delete';
+import { InsTableCellClearLabel } from '../../../tools/label-buttons/table-cell-clear';
 
 @Component({
   selector: 'ins-table-row-menu',
@@ -16,7 +16,7 @@ import { InsTableRowDeleteLabel } from '../../../tools/label-buttons/table-row-d
     InsTableRowAddBeforeLabel,
     InsTableRowAddAfterLabel,
     InsTableRowDeleteLabel,
-    InsTableRowClearLabel,
+    InsTableCellClearLabel,
     InsTableColorButtonLabel,
     InsTableAlignButtonLabel,
   ],
