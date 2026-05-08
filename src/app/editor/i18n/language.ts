@@ -63,6 +63,10 @@ export interface InsLanguageEditor extends InsLanguage {
         tableRowAddAfter: string;
         tableRowDelete: string;
         tableRowClear: string;
+        tableColAddBefore: string;
+        tableColAddAfter: string;
+        tableColDelete: string;
+        tableColClear: string;
         setDetails: string;
         splitCells: string;
         strikeThrough: string;

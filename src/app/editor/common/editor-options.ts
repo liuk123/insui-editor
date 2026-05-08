@@ -88,6 +88,10 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly tableRowAddAfter: string;
     readonly tableRowDelete: string;
     readonly tableRowClear: string;
+    readonly tableColAddBefore: string;
+    readonly tableColAddAfter: string;
+    readonly tableColDelete: string;
+    readonly tableColClear: string;
     readonly heading1: string;
     readonly heading2: string;
     readonly heading3: string;
@@ -198,6 +202,10 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     tableRowAddAfter: 'between-horizontal-end',
     tableRowDelete: 'trash',
     tableRowClear: 'remove-formatting',
+    tableColAddBefore: 'between-vertical-start',
+    tableColAddAfter: 'between-vertical-end',
+    tableColDelete: 'trash',
+    tableColClear: 'remove-formatting',
     heading1: 'heading-1',
     heading2: 'heading-2',
     heading3: 'heading-3',

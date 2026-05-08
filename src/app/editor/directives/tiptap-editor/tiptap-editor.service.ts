@@ -17,6 +17,7 @@ import { EditorView } from '@tiptap/pm/view';
 import { insParseStyle } from './utils/parse-style';
 import { InsDocxExporter } from '../../exporter/docx';
 import {
+  createClearedColumnCellEntries,
   createClearedRowCellEntries,
   findTableInResolvedPos,
 } from '../../common/table-selection';
@@ -382,6 +383,46 @@ export class InsTiptapEditorService extends AbstractInsEditor {
           rowIndex,
         );
         if (!cellEntries) {
+          return false;
+        }
+
+        for (let index = cellEntries.length - 1; index >= 0; index -= 1) {
+          const entry = cellEntries[index];
+          if (!entry) {
+            continue;
+          }
+          tr = tr.replaceWith(entry.pos, entry.pos + entry.nodeSize, entry.replacement as never);
+        }
+
+        dispatch?.(tr.scrollIntoView());
+        return true;
+      })
+      .run();
+  }
+
+  public clearColumn(): void {
+    this.editor
+      ?.chain()
+      .focus()
+      .command(({ state, tr, dispatch }) => {
+        const { selection } = state;
+        const tableInfo = findTableInResolvedPos(selection.$from);
+        if (!tableInfo) {
+          return false;
+        }
+
+        if (selection.$from.depth < tableInfo.tableDepth + 1) {
+          return false;
+        }
+
+        const colIndex = selection.$from.index(tableInfo.tableDepth + 1);
+        const cellEntries = createClearedColumnCellEntries(
+          state,
+          tableInfo.tableNode,
+          tableInfo.tablePos,
+          colIndex,
+        );
+        if (!cellEntries || cellEntries.length === 0) {
           return false;
         }
 

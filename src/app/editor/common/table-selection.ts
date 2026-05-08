@@ -162,3 +162,39 @@ export function createClearedRowCellEntries(
 
   return cellEntries;
 }
+
+export function createClearedColumnCellEntries(
+  state: EditorState,
+  tableNode: ProseMirrorNode,
+  tablePos: number,
+  colIndex: number,
+): InsRowCellReplacement[] | null {
+  if (colIndex < 0) {
+    return null;
+  }
+
+  const paragraph = state.schema.nodes['paragraph']?.createAndFill() ?? null;
+  const cellEntries: InsRowCellReplacement[] = [];
+
+  for (let rowIndex = 0; rowIndex < tableNode.childCount; rowIndex += 1) {
+    const row = tableNode.child(rowIndex);
+    if (colIndex >= row.childCount) {
+      continue;
+    }
+
+    const cellNode = row.child(colIndex);
+    const cellPos = getTableCellPos(tableNode, tablePos, rowIndex, colIndex);
+    if (cellPos === null) {
+      continue;
+    }
+
+    const replacement =
+      paragraph ?
+        cellNode.type.createChecked(cellNode.attrs, [paragraph], cellNode.marks)
+      : cellNode.type.createChecked(cellNode.attrs, undefined, cellNode.marks);
+
+    cellEntries.push({ pos: cellPos, nodeSize: cellNode.nodeSize, replacement });
+  }
+
+  return cellEntries;
+}
