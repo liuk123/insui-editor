@@ -183,6 +183,7 @@ export abstract class AbstractInsEditor {
     public abstract deleteColumn(): void;
 
     public abstract deleteRow(): void;
+    public abstract clearRow(): void;
 
     public abstract mergeCells(): void;
 

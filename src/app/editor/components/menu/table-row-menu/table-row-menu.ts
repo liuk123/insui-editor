@@ -20,4 +20,20 @@ export class TableRowMenu {
   public editor: AbstractInsEditor | null = inject(InsTiptapEditorService, {
     optional: true,
   });
+
+  protected onAddRowBefore(): void {
+    this.editor?.addRowBefore();
+  }
+
+  protected onAddRowAfter(): void {
+    this.editor?.addRowAfter();
+  }
+
+  protected onDeleteRow(): void {
+    this.editor?.deleteRow();
+  }
+
+  protected onClearRow(): void {
+    this.editor?.clearRow();
+  }
 }

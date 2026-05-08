@@ -359,6 +359,68 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.chain().focus().deleteRow().run();
   }
 
+  public clearRow(): void {
+    this.editor
+      ?.chain()
+      .focus()
+      .command(({ state, tr, dispatch }) => {
+        const { selection } = state;
+        let tableDepth = -1;
+
+        for (let depth = selection.$from.depth; depth > 0; depth -= 1) {
+          if (selection.$from.node(depth).type.name === 'table') {
+            tableDepth = depth;
+            break;
+          }
+        }
+
+        if (tableDepth < 0) {
+          return false;
+        }
+
+        const tableNode = selection.$from.node(tableDepth);
+        const tablePos = selection.$from.before(tableDepth);
+        const rowIndex = selection.$from.index(tableDepth);
+
+        if (rowIndex < 0 || rowIndex >= tableNode.childCount) {
+          return false;
+        }
+
+        const rowNode = tableNode.child(rowIndex);
+        let rowPos = tablePos + 1;
+        for (let index = 0; index < rowIndex; index += 1) {
+          rowPos += tableNode.child(index).nodeSize;
+        }
+
+        const cellEntries: Array<{ pos: number; nodeSize: number; replacement: unknown }> = [];
+        let cellPos = rowPos + 1;
+        const paragraph = state.schema.nodes['paragraph']?.createAndFill();
+
+        for (let index = 0; index < rowNode.childCount; index += 1) {
+          const cellNode = rowNode.child(index);
+          const replacement =
+            paragraph ?
+              cellNode.type.createChecked(cellNode.attrs, [paragraph], cellNode.marks)
+            : cellNode.type.createChecked(cellNode.attrs, undefined, cellNode.marks);
+
+          cellEntries.push({ pos: cellPos, nodeSize: cellNode.nodeSize, replacement });
+          cellPos += cellNode.nodeSize;
+        }
+
+        for (let index = cellEntries.length - 1; index >= 0; index -= 1) {
+          const entry = cellEntries[index];
+          if (!entry) {
+            continue;
+          }
+          tr = tr.replaceWith(entry.pos, entry.pos + entry.nodeSize, entry.replacement as never);
+        }
+
+        dispatch?.(tr.scrollIntoView());
+        return true;
+      })
+      .run();
+  }
+
   public mergeCells(): void {
     this.editor?.chain().focus().mergeCells().run();
   }
