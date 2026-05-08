@@ -91,6 +91,7 @@ interface Options {
   tableRow: Partial<TableRowOptions> | boolean;
   tableHeader: Partial<TableHeaderOptions> | boolean;
   tableCellBackground: Partial<Record<string, unknown>> | boolean;
+  tableCellAlign: Partial<Record<string, unknown>> | boolean;
   tableHandles: Partial<Record<string, unknown>> | boolean;
   tab: Partial<Record<string, unknown>> | boolean;
   details: Partial<InsDetailsExtensionOptions> | boolean;
@@ -510,6 +511,15 @@ const EXTENSIONS = [
       const { TableCellBackground } = await import('../extensions/table/table-cell-background');
 
       return TableCellBackground.configure(options);
+    },
+  },
+  {
+    key: 'tableCellAlign',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { TableCellAlign } = await import('../extensions/table/table-cell-align');
+
+      return TableCellAlign.configure(options);
     },
   },
   {

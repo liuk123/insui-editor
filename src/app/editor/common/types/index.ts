@@ -122,6 +122,15 @@ declare module '@tiptap/core' {
   }
 
   interface Commands<ReturnType> {
+    cellAlign: {
+      setCellAlign(align: 'left' | 'center' | 'right'): ReturnType;
+      unsetCellAlign(): ReturnType;
+      setCellVerticalAlign(align: 'top' | 'middle' | 'bottom'): ReturnType;
+      unsetCellVerticalAlign(): ReturnType;
+    };
+  }
+
+  interface Commands<ReturnType> {
     fileBlock: {
       setFileBlock(options: InsEditorAttachedFile): ReturnType;
     };

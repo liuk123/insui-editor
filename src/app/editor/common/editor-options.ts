@@ -68,6 +68,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly textAlignLeft: string;
     readonly textAlignPreview: string;
     readonly textAlignRight: string;
+    readonly justify: string;
     readonly textColor: string;
     readonly textHilite: string;
     readonly undo: string;
@@ -153,6 +154,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     textAlignCenter: 'align-center',
     textAlignRight: 'align-right',
     textAlignJustify: 'align-justify',
+    justify: 'align-justify',
     textColor: 'baseline',
     textHilite: 'paint-roller',
     listPreview: 'list',

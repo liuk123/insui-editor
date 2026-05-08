@@ -2,6 +2,7 @@ import { type Command, Extension, type GlobalAttributes } from '@tiptap/core';
 
 
 export const TableCellBackground = Extension.create({
+  name: 'tableCellBackground',
   addGlobalAttributes(): GlobalAttributes {
     return [
       {

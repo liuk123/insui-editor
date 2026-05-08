@@ -234,6 +234,8 @@ export abstract class AbstractInsEditor {
     public abstract setJsonValue(value: JSONContent, options?: InsSetValueOption): void;
 
     public abstract setCellColor(color: string): void;
+    public abstract setCellAlign(align: 'left' | 'center' | 'right'): void;
+    public abstract setCellVerticalAlign(align: 'top' | 'middle' | 'bottom'): void;
 
     public abstract getOriginTiptapEditor(): Editor | null;
 

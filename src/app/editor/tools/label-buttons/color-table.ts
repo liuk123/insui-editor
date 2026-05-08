@@ -84,7 +84,7 @@ export class InsTableColorButtonLabel extends InsToolbarBase {
 
   protected setBackgroundColor(color: string): void {
     this.localStorage.setItem('ins-local-hilite-color', color);
-    this.editor?.setBackgroundColor(color);
+    this.editor?.setCellColor(color);
   }
   protected setFontColor(color: string): void {
     this.localStorage.setItem('ins-local-font-color', color);

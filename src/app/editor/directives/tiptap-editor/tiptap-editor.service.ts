@@ -469,6 +469,14 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.chain().focus().setCellBackground(color).run();
   }
 
+  public setCellAlign(align: 'left' | 'center' | 'right'): void {
+    this.editor?.chain().focus().setCellAlign(align).run();
+  }
+
+  public setCellVerticalAlign(align: 'top' | 'middle' | 'bottom'): void {
+    this.editor?.chain().focus().setCellVerticalAlign(align).run();
+  }
+
   public selectClosest(): void {
     const pos = this.editor?.state.selection.anchor;
     const range = insGetMarkRange(
