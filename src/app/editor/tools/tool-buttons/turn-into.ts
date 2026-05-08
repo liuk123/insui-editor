@@ -28,6 +28,7 @@ type TurnIntoType =
   | 'heading3'
   | 'heading4'
   | 'heading5'
+  | 'heading6'
   | 'bulletList'
   | 'orderedList'
   | 'taskList'
@@ -112,6 +113,7 @@ export class InsTurnIntoButtonTool extends InsToolbarTool {
       heading3: icons.heading3,
       heading4: icons.heading4,
       heading5: icons.heading5,
+      heading6: icons.heading6,
       bulletList: icons.listUnOrdered,
       orderedList: icons.listOrdered,
       taskList: icons.taskList,
@@ -126,7 +128,17 @@ export class InsTurnIntoButtonTool extends InsToolbarTool {
     const options = this.buildOptions(texts);
     const activeType = this.getActiveType();
 
-    return options.find((group) => group.options.some((item) => item.type === activeType))?.label ?? '';
+    // return options.find((group) => group.options.some((item) => item.type === activeType))?.label ?? '';
+    let key = ''
+    labelLoop: for (const group of options) {
+      for (const item of group.options) {
+        if (item.type === activeType) {
+          key = item.label;
+          break labelLoop;
+        }
+      }
+    }
+    return key;
   }
 
   protected setOption(type: TurnIntoType): void {
@@ -148,6 +160,9 @@ export class InsTurnIntoButtonTool extends InsToolbarTool {
         return;
       case 'heading5':
         this.editor?.setHeading(5);
+        return;
+      case 'heading6':
+        this.editor?.setHeading(6);
         return;
       case 'bulletList':
         if (!this.editor?.isActive('bulletList')) {
@@ -199,6 +214,9 @@ export class InsTurnIntoButtonTool extends InsToolbarTool {
     if (this.editor?.isActive('heading', { level: 5 })) {
       return 'heading5';
     }
+    if (this.editor?.isActive('heading', { level: 6 })) {
+      return 'heading6';
+    }
     if (this.editor?.isActive('bulletList')) {
       return 'bulletList';
     }
@@ -229,6 +247,7 @@ export class InsTurnIntoButtonTool extends InsToolbarTool {
           { type: 'heading3', label: texts?.heading3 ?? 'Heading 3' },
           { type: 'heading4', label: texts?.heading4 ?? 'Heading 4' },
           { type: 'heading5', label: texts?.heading5 ?? 'Heading 5' },
+          { type: 'heading6', label: texts?.heading6 ?? 'Heading 6' },
         ],
       },
       {
