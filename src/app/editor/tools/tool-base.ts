@@ -40,7 +40,7 @@ export abstract class InsToolbarBase {
       return editor
         ? editor.transaction$.pipe(
             startWith(null),
-            auditTime(100),
+            auditTime(500),
             shareReplay({ bufferSize: 1, refCount: true }),
             takeUntilDestroyed(this.destroy$),
           )

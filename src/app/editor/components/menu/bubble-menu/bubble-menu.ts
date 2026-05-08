@@ -24,6 +24,7 @@ import { AbstractInsEditor } from '../../../common/editor-adapter';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 import { insDropdownOptionsProvider } from '@liuk123/insui';
 import { InsColorButtonTool } from '../../../tools/tool-buttons/color';
+import { InsTurnIntoButtonTool } from '../../../tools/tool-buttons/turn-into';
 
 @Component({
   selector: 'ins-bubble-menu',
@@ -32,7 +33,7 @@ import { InsColorButtonTool } from '../../../tools/tool-buttons/color';
     InsCodeButtonTool,
     InsFontSizeButtonTool,
     InsLinkButtonTool,
-    InsHeadingButtonTool,
+    InsTurnIntoButtonTool,
     InsBoldButtonTool,
     InsItalicButtonTool,
     InsUnderlineButtonTool,
