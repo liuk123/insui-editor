@@ -16,6 +16,10 @@ import { InsEditorAttachedFile } from '../../common/attached';
 import { EditorView } from '@tiptap/pm/view';
 import { insParseStyle } from './utils/parse-style';
 import { InsDocxExporter } from '../../exporter/docx';
+import {
+  createClearedRowCellEntries,
+  findTableInResolvedPos,
+} from '../../common/table-selection';
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6;
 type Attrs = Record<string, unknown>;
@@ -365,46 +369,20 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       .focus()
       .command(({ state, tr, dispatch }) => {
         const { selection } = state;
-        let tableDepth = -1;
-
-        for (let depth = selection.$from.depth; depth > 0; depth -= 1) {
-          if (selection.$from.node(depth).type.name === 'table') {
-            tableDepth = depth;
-            break;
-          }
-        }
-
-        if (tableDepth < 0) {
+        const tableInfo = findTableInResolvedPos(selection.$from);
+        if (!tableInfo) {
           return false;
         }
 
-        const tableNode = selection.$from.node(tableDepth);
-        const tablePos = selection.$from.before(tableDepth);
-        const rowIndex = selection.$from.index(tableDepth);
-
-        if (rowIndex < 0 || rowIndex >= tableNode.childCount) {
+        const rowIndex = selection.$from.index(tableInfo.tableDepth);
+        const cellEntries = createClearedRowCellEntries(
+          state,
+          tableInfo.tableNode,
+          tableInfo.tablePos,
+          rowIndex,
+        );
+        if (!cellEntries) {
           return false;
-        }
-
-        const rowNode = tableNode.child(rowIndex);
-        let rowPos = tablePos + 1;
-        for (let index = 0; index < rowIndex; index += 1) {
-          rowPos += tableNode.child(index).nodeSize;
-        }
-
-        const cellEntries: Array<{ pos: number; nodeSize: number; replacement: unknown }> = [];
-        let cellPos = rowPos + 1;
-        const paragraph = state.schema.nodes['paragraph']?.createAndFill();
-
-        for (let index = 0; index < rowNode.childCount; index += 1) {
-          const cellNode = rowNode.child(index);
-          const replacement =
-            paragraph ?
-              cellNode.type.createChecked(cellNode.attrs, [paragraph], cellNode.marks)
-            : cellNode.type.createChecked(cellNode.attrs, undefined, cellNode.marks);
-
-          cellEntries.push({ pos: cellPos, nodeSize: cellNode.nodeSize, replacement });
-          cellPos += cellNode.nodeSize;
         }
 
         for (let index = cellEntries.length - 1; index >= 0; index -= 1) {

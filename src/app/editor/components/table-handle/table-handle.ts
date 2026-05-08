@@ -28,6 +28,13 @@ import {
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { AbstractInsEditor, ActiveNodePath } from '../../common/editor-adapter';
 import { InsButton, InsDropdown, insDropdownOptionsProvider } from '@liuk123/insui';
+import {
+  findTableInResolvedPos,
+  getColumnSelectionRange,
+  getRowSelectionRange,
+  getTableCellPos,
+  type InsTableNodeInfo,
+} from '../../common/table-selection';
 
 type DragOrientation = 'row' | 'column';
 
@@ -35,11 +42,6 @@ interface DragState {
   orientation: DragOrientation;
   fromIndex: number;
   toIndex: number;
-}
-
-interface TableNodeInfo {
-  tableNode: ProseMirrorNode;
-  tablePos: number;
 }
 
 @Component({
@@ -333,26 +335,16 @@ export class InsTableHandle implements OnInit {
       return;
     }
 
-    const row = tableInfo.tableNode.child(this.activeRowIndex);
-    if (!row || row.childCount === 0) {
-      return;
-    }
-
-    const anchor = this.getCellPos(tableInfo.tableNode, tableInfo.tablePos, this.activeRowIndex, 0);
-    const head = this.getCellPos(
+    const rowSelection = getRowSelectionRange(
       tableInfo.tableNode,
       tableInfo.tablePos,
       this.activeRowIndex,
-      row.childCount - 1,
     );
-    if (anchor === null || head === null) {
+    if (!rowSelection) {
       return;
     }
 
-    this.editorView.dispatch(
-      this.editorView.state.tr.setSelection(CellSelection.create(this.editorView.state.doc, anchor, head)),
-    );
-    this.updateSelectionOutline();
+    this.setCellSelection(rowSelection.anchor, rowSelection.head, true);
   }
 
   protected onSelectColumn(event: MouseEvent): void {
@@ -368,25 +360,16 @@ export class InsTableHandle implements OnInit {
       return;
     }
 
-    const colIndex = this.activeColIndex;
-    const firstRowIndex = 0;
-    const lastRowIndex = tableInfo.tableNode.childCount - 1;
-    const firstRow = tableInfo.tableNode.child(firstRowIndex);
-    const lastRow = tableInfo.tableNode.child(lastRowIndex);
-    if (colIndex >= firstRow.childCount || colIndex >= lastRow.childCount) {
-      return;
-    }
-
-    const anchor = this.getCellPos(tableInfo.tableNode, tableInfo.tablePos, firstRowIndex, colIndex);
-    const head = this.getCellPos(tableInfo.tableNode, tableInfo.tablePos, lastRowIndex, colIndex);
-    if (anchor === null || head === null) {
-      return;
-    }
-
-    this.editorView.dispatch(
-      this.editorView.state.tr.setSelection(CellSelection.create(this.editorView.state.doc, anchor, head)),
+    const colSelection = getColumnSelectionRange(
+      tableInfo.tableNode,
+      tableInfo.tablePos,
+      this.activeColIndex,
     );
-    this.updateSelectionOutline();
+    if (!colSelection) {
+      return;
+    }
+
+    this.setCellSelection(colSelection.anchor, colSelection.head, true);
   }
 
   protected onRowDragStart(event: DragEvent): void {
@@ -558,7 +541,7 @@ export class InsTableHandle implements OnInit {
       return false;
     }
 
-    const anchor = this.getCellPos(
+    const anchor = getTableCellPos(
       tableInfo.tableNode,
       tableInfo.tablePos,
       this.activeRowIndex,
@@ -568,15 +551,10 @@ export class InsTableHandle implements OnInit {
       return false;
     }
 
-    this.editorView.dispatch(
-      this.editorView.state.tr.setSelection(
-        CellSelection.create(this.editorView.state.doc, anchor, anchor),
-      ),
-    );
-    return true;
+    return this.setCellSelection(anchor, anchor, false);
   }
 
-  private getCurrentTableInfo(): TableNodeInfo | null {
+  private getCurrentTableInfo(): InsTableNodeInfo | null {
     if (!this.activeTable || !this.editorView) {
       return null;
     }
@@ -588,43 +566,20 @@ export class InsTableHandle implements OnInit {
 
     const cellPos = this.editorView.posAtDOM(firstCell, 0) - 1;
     const resolvedPos = this.editorView.state.doc.resolve(Math.max(cellPos, 0));
-
-    for (let depth = resolvedPos.depth; depth > 0; depth -= 1) {
-      const node = resolvedPos.node(depth);
-      if (node.type.name === 'table') {
-        return { tableNode: node, tablePos: resolvedPos.before(depth) };
-      }
-    }
-
-    return null;
+    return findTableInResolvedPos(resolvedPos);
   }
 
-  private getCellPos(
-    tableNode: ProseMirrorNode,
-    tablePos: number,
-    rowIndex: number,
-    colIndex: number,
-  ): number | null {
-    if (rowIndex < 0 || rowIndex >= tableNode.childCount) {
-      return null;
+  private setCellSelection(anchor: number, head: number, updateOutline: boolean): boolean {
+    const view = this.editorView;
+    if (!view) {
+      return false;
     }
 
-    const row = tableNode.child(rowIndex);
-    if (colIndex < 0 || colIndex >= row.childCount) {
-      return null;
+    view.dispatch(view.state.tr.setSelection(CellSelection.create(view.state.doc, anchor, head)));
+    if (updateOutline) {
+      this.updateSelectionOutline();
     }
-
-    let rowPos = tablePos + 1;
-    for (let index = 0; index < rowIndex; index += 1) {
-      rowPos += tableNode.child(index).nodeSize;
-    }
-
-    let cellPos = rowPos + 1;
-    for (let index = 0; index < colIndex; index += 1) {
-      cellPos += row.child(index).nodeSize;
-    }
-
-    return cellPos;
+    return true;
   }
 
   private getCellFromPoint(x: number, y: number): HTMLTableCellElement | null {
