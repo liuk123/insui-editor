@@ -4,11 +4,19 @@ import { AbstractInsEditor } from '../../../common/editor-adapter';
 import { InsTiptapEditorService } from '../../../directives/tiptap-editor/tiptap-editor.service';
 import { InsTableAlignButtonLabel } from '../../../tools/label-buttons/align-table';
 import { InsTableColorButtonLabel } from '../../../tools/label-buttons/color-table';
+import { InsTableRowAddAfterLabel } from '../../../tools/label-buttons/table-row-add-after';
+import { InsTableRowAddBeforeLabel } from '../../../tools/label-buttons/table-row-add-before';
+import { InsTableRowClearLabel } from '../../../tools/label-buttons/table-row-clear';
+import { InsTableRowDeleteLabel } from '../../../tools/label-buttons/table-row-delete';
 
 @Component({
   selector: 'ins-table-row-menu',
   imports: [
     InsDataList,
+    InsTableRowAddBeforeLabel,
+    InsTableRowAddAfterLabel,
+    InsTableRowDeleteLabel,
+    InsTableRowClearLabel,
     InsTableColorButtonLabel,
     InsTableAlignButtonLabel,
   ],
@@ -20,20 +28,4 @@ export class TableRowMenu {
   public editor: AbstractInsEditor | null = inject(InsTiptapEditorService, {
     optional: true,
   });
-
-  protected onAddRowBefore(): void {
-    this.editor?.addRowBefore();
-  }
-
-  protected onAddRowAfter(): void {
-    this.editor?.addRowAfter();
-  }
-
-  protected onDeleteRow(): void {
-    this.editor?.deleteRow();
-  }
-
-  protected onClearRow(): void {
-    this.editor?.clearRow();
-  }
 }

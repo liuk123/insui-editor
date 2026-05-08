@@ -84,6 +84,10 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly dragVerticalHandle: string;
     readonly dragHorizontalHandle: string;
     readonly paragraph: string;
+    readonly tableRowAddBefore: string;
+    readonly tableRowAddAfter: string;
+    readonly tableRowDelete: string;
+    readonly tableRowClear: string;
     readonly heading1: string;
     readonly heading2: string;
     readonly heading3: string;
@@ -190,6 +194,10 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     dragVerticalHandle: 'grip-vertical',
     dragHorizontalHandle: 'grip-horizontal',
     paragraph: 'pilcrow',
+    tableRowAddBefore: 'between-horizontal-start',
+    tableRowAddAfter: 'between-horizontal-end',
+    tableRowDelete: 'trash',
+    tableRowClear: 'remove-formatting',
     heading1: 'heading-1',
     heading2: 'heading-2',
     heading3: 'heading-3',

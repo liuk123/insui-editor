@@ -1,14 +1,14 @@
 <ins-data-list size="m">
   <ins-opt-group>
-    <button insOption type="button" size="m" (click)="onAddRowBefore()">在上方添加</button>
-    <button insOption type="button" size="m" (click)="onAddRowAfter()">在下方添加</button>
+    <button insOption insTableRowAddBeforeLabel size="m" [editor]="editor"></button>
+    <button insOption insTableRowAddAfterLabel size="m" [editor]="editor"></button>
   </ins-opt-group>
   <ins-opt-group>
     <button insOption insTableColorLabel size="m" [editor]="editor"></button>
     <button insOption insTableAlignLabel size="m" [editor]="editor"></button>
   </ins-opt-group>
   <ins-opt-group>
-    <button insOption type="button" size="m" (click)="onDeleteRow()">删除</button>
-    <button insOption type="button" size="m" (click)="onClearRow()">清空</button>
+    <button insOption insTableRowDeleteLabel size="m" [editor]="editor"></button>
+    <button insOption insTableRowClearLabel size="m" [editor]="editor"></button>
   </ins-opt-group>
 </ins-data-list>
