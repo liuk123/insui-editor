@@ -1,4 +1,5 @@
-import { DestroyRef, inject, InjectionToken, type Provider } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { DestroyRef, inject, InjectionToken, PLATFORM_ID, type Provider } from '@angular/core';
 import { HocuspocusProvider } from '@hocuspocus/provider';
 import { Doc } from 'yjs';
 
@@ -62,16 +63,18 @@ export function provideInsEditorCollaboration(setup: InsEditorCollaborationSetup
     provide: INS_EDITOR_COLLABORATION,
     useFactory: (): InsEditorCollaborationConfig => {
       const destroyRef = inject(DestroyRef);
+      const platformId = inject(PLATFORM_ID);
       const injectedUser = inject(INS_EDITOR_COLLABORATION_USER, { optional: true });
       const enabled = setup.enabled ?? true;
+      const isBrowser = isPlatformBrowser(platformId);
       const resolvedUser: InsEditorCollaborationUser = {
         name: setup.user?.name ?? injectedUser?.name ?? DEFAULT_COLLABORATION_USER.name,
         color: setup.user?.color ?? injectedUser?.color ?? DEFAULT_COLLABORATION_USER.color,
       };
 
-      if (!enabled) {
+      if (!enabled || !isBrowser) {
         return {
-          enabled: false,
+          enabled: enabled && isBrowser,
           documentName: setup.documentName,
           field: setup.field ?? 'default',
           user: resolvedUser,

@@ -21,7 +21,11 @@ export const LAZY_TIPTAP_EDITOR = new InjectionToken(
 
             import('@tiptap/core')
                 .then(({Editor}) => editor$.next(Editor))
-                .catch(() => editor$.complete());
+                .catch((err) => {
+                  console.log('Failed to load Tiptap Editor', err);
+                  console.error(err);
+                  editor$.complete()
+                });
 
             return editor$;
         },
