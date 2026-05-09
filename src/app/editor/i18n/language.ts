@@ -25,6 +25,7 @@ export interface InsLanguageEditor extends InsLanguage {
         cellColor: string;
         clear: string;
         code: string;
+        comment: string;
         codeBlock: string;
         font: string;
         heading: string;

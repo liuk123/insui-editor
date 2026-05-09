@@ -1,0 +1,52 @@
+@if (openThreads().length > 0) {
+  <section class="ins-comments-panel__content">
+    <h3 class="ins-comments-panel__title">评论</h3>
+    @for (thread of openThreads(); track thread.id) {
+      <article
+        class="ins-comments-panel__thread"
+        [class.ins-comments-panel__thread_active]="thread.id === activeThreadId()"
+        (click)="setActiveThread(thread.id, thread.quote, thread.anchor)"
+      >
+        <header class="ins-comments-panel__thread-header">
+          <p class="ins-comments-panel__quote">{{ thread.quote || '未命名引用' }}</p>
+          <button
+            type="button"
+            class="ins-comments-panel__action"
+            [disabled]="!canEdit()"
+            (click)="resolveThread(thread.id, !thread.resolved); $event.stopPropagation()"
+          >
+            {{ thread.resolved ? '重新打开' : '标记已解决' }}
+          </button>
+        </header>
+        <ul class="ins-comments-panel__comments">
+          @for (comment of thread.comments; track comment.id) {
+            <li class="ins-comments-panel__comment">
+              <span class="ins-comments-panel__author">{{ comment.author }}</span>
+              <span class="ins-comments-panel__text">{{ comment.content }}</span>
+            </li>
+          }
+        </ul>
+        <div class="ins-comments-panel__reply">
+          <input
+            type="text"
+            class="ins-comments-panel__input"
+            [value]="getDraft(thread.id)"
+            placeholder="回复评论"
+            aria-label="回复评论"
+            [disabled]="!canEdit()"
+            (input)="onDraftInput(thread.id, $event)"
+            (click)="$event.stopPropagation()"
+          />
+          <button
+            type="button"
+            class="ins-comments-panel__action"
+            [disabled]="!canEdit()"
+            (click)="addReply(thread.id); $event.stopPropagation()"
+          >
+            发送
+          </button>
+        </div>
+      </article>
+    }
+  </section>
+}

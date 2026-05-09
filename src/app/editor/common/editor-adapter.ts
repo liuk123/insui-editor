@@ -186,6 +186,19 @@ export abstract class AbstractInsEditor {
     // public abstract clearRow(): void;
     // public abstract clearColumn(): void;
     public abstract clearSelectedCells(): void;
+    // 评论
+    public abstract addCommentThread(threadId: string): void;
+    public abstract removeCommentThread(): void;
+    public abstract getActiveCommentThreadId(): string | null;
+    public abstract getSelectedText(): string;
+    public abstract getSelectionRange(): { from: number; to: number } | null;
+    public abstract getSelectionContext(maxChars?: number): { beforeText: string; afterText: string } | null;
+    public abstract focusCommentThread(
+      threadId: string,
+      fallbackQuote?: string,
+      anchor?: { from: number; to: number; beforeText?: string; afterText?: string } | null,
+    ): void;
+    // ======================= 评论 =======================
 
     public abstract mergeCells(): void;
 

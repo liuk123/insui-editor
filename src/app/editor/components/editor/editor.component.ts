@@ -61,6 +61,9 @@ import { InsTableHandle } from '../table-handle/table-handle';
 import { TableRowMenu } from '../menu/table-row-menu/table-row-menu';
 import { TableColMenu } from '../menu/table-col-menu/table-col-menu';
 import { TableCellMenu } from '../menu/table-cell-menu/table-cell-menu';
+import { InsCommentsPanel } from '../comments-panel/comments-panel';
+import { INS_EDITOR_COLLABORATION } from '../../common/editor-collaboration';
+import { InsEditorCommentsStore } from '../../common/comments-store';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -88,6 +91,7 @@ interface ServerSideGlobal extends Global {
     TableRowMenu,
     TableColMenu,
     TableCellMenu,
+    InsCommentsPanel,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -99,6 +103,7 @@ interface ServerSideGlobal extends Global {
     },
     INS_EDITOR_PROVIDERS,
     INS_EDITOR_LANGUAGE_PROVIDERS,
+    InsEditorCommentsStore,
   ],
   hostDirectives: [
     InsAppearance,
@@ -128,6 +133,8 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   protected readonly insDropdownOpen = inject(InsDropdownOpen, { optional: true });
   private readonly doc: Document | null =
     inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
+  private readonly collaboration = inject(INS_EDITOR_COLLABORATION);
+  private readonly commentsStore = inject(InsEditorCommentsStore);
   private el = injectElement();
 
   @ViewChild(InsTiptapEditor, { read: ElementRef })
@@ -177,8 +184,11 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     if (this.insDropdownOpen) {
       this.insDropdownOpen.isClickToggle = false;
     }
+    this.commentsStore.setCurrentAuthor(this.collaboration.user.name);
+    this.commentsStore.connectCollaboration(this.collaboration.document);
   }
   ngOnDestroy(): void {
+    this.commentsStore.disconnectCollaboration();
     this.editor?.destroy();
   }
 

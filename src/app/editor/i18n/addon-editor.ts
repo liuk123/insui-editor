@@ -36,6 +36,7 @@ export const INS_CHINESE_LANGUAGE_ADDON_EDITOR: InsLanguageEditor = {
     attach: '附加文件',
     tex: '插入 TeX',
     code: '代码',
+    comment: '评论',
     image: '插入图片',
     insertHorizontalRule: '插入分割线',
     superscript: '上标',

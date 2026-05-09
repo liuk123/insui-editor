@@ -24,6 +24,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly attach: string;
     readonly clear: string;
     readonly code: string;
+    readonly comment: string;
     readonly codeBlock: string;
     readonly colorSelectorDropdownCheck: string;
     readonly colorSelectorDropdownChevron: string;
@@ -180,6 +181,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     tableCellClear: 'remove-formatting',
     addRowTable: 'between-horizontal-start',
     code: 'code',
+    comment: 'message-square',
     codeBlock: 'code',
     fontStylePreview: 'type-outline',
     fontStyleBold: 'bold',

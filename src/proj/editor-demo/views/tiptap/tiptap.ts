@@ -9,7 +9,11 @@ import {
 } from '@angular/core';
 import { InsEditor } from '../../../../app/editor/components/editor/editor.component';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { provideInsEditor } from '../../../../app/editor/providers';
+import {
+  provideInsEditor,
+  provideInsEditorCollaboration,
+  provideInsEditorCollaborationUser,
+} from '../../../../app/editor/providers';
 import { InsDropdown, InsTextfield } from '@liuk123/insui';
 import { INS_ATTACH_FILES_LOADER } from '../../../../app/editor/common/files-loader';
 import { fromEvent, map, Observable, of, switchMap } from 'rxjs';
@@ -35,6 +39,17 @@ export class HttpMockUploader {
       placeholder: { placeholder: '请输入' },
       heading: { levels: [1, 2, 3, 4, 5, 6] },
       link: { autolink: true, openOnClick: false, linkOnPaste: true },
+      collaboration: true,
+      collaborationCaret: true,
+    }),
+    provideInsEditorCollaboration({
+      url: 'ws://localhost:1234',
+      documentName: 'demo-room',
+      field: 'content',
+    }),
+    provideInsEditorCollaborationUser({
+      name: 'Demo User',
+      color: '#5B8FF9',
     }),
     {
       provide: INS_ATTACH_FILES_LOADER,

@@ -10,10 +10,12 @@ import { type DropcursorOptions } from '@tiptap/extension-dropcursor';
 import { type HardBreakOptions } from '@tiptap/extension-hard-break';
 import { type HeadingOptions } from '@tiptap/extension-heading';
 import { type HistoryOptions } from '@tiptap/extension-history';
+import { type CollaborationOptions } from '@tiptap/extension-collaboration';
+import { type CollaborationCaretOptions } from '@tiptap/extension-collaboration-caret';
 import { type HorizontalRuleOptions } from '@tiptap/extension-horizontal-rule';
 import { type ItalicOptions } from '@tiptap/extension-italic';
 import { type LinkOptions } from '@tiptap/extension-link';
-import { type ListItemOptions } from '@tiptap/extension-list-item';
+import { type ListItemOptions } from '@tiptap/extension-list';
 import { type OrderedListOptions } from '@tiptap/extension-ordered-list';
 import { type ParagraphOptions } from '@tiptap/extension-paragraph';
 import { type PlaceholderOptions } from '@tiptap/extension-placeholder';
@@ -41,6 +43,7 @@ import { type InsEditorGroupOptions } from '../extensions/group';
 import { type EmojiOptions } from '@tiptap/extension-emoji';
 import { type LineHeightOptions } from '@tiptap/extension-text-style';
 import { type InsMentionOptions } from '../extensions/mention';
+import { INS_EDITOR_COLLABORATION } from '../common/editor-collaboration';
 
 interface Options {
   blockquote: Partial<BlockquoteOptions> | boolean;
@@ -54,6 +57,8 @@ interface Options {
   hardBreak: Partial<HardBreakOptions> | boolean;
   heading: Partial<HeadingOptions> | boolean;
   history: Partial<HistoryOptions> | boolean;
+  collaboration: Partial<CollaborationOptions> | boolean;
+  collaborationCaret: Partial<CollaborationCaretOptions> | boolean;
   horizontalRule: Partial<HorizontalRuleOptions> | boolean;
   italic: Partial<ItalicOptions> | boolean;
   taskList: Partial<TaskListOptions> | boolean;
@@ -108,6 +113,7 @@ interface Options {
   imageFigure: Partial<Record<string, unknown>> | boolean;
   tableFigure: Partial<Record<string, unknown>> | boolean;
   figcaption: Partial<Record<string, unknown>> | boolean;
+  commentThread: Partial<Record<string, unknown>> | boolean;
 }
 
 const EXTENSIONS = [
@@ -115,7 +121,7 @@ const EXTENSIONS = [
     key: 'listItem',
     default: true,
     async loader(options: Partial<ListItemOptions>) {
-      const { ListItem } = await import('@tiptap/extension-list-item');
+      const { ListItem } = await import('@tiptap/extension-list');
 
       return ListItem.configure(options);
     },
@@ -226,12 +232,60 @@ const EXTENSIONS = [
     },
   },
   {
+    key: 'collaboration',
+    default: false,
+    async loader(options: Partial<CollaborationOptions>, injector: Injector) {
+      const { Collaboration } = await import('@tiptap/extension-collaboration');
+      const collaboration = injector.get(INS_EDITOR_COLLABORATION);
+      const document = collaboration.document;
+
+      if (!document) {
+        const { Extension } = await import('@tiptap/core');
+        return Extension.create({ name: 'collaboration-disabled' });
+      }
+
+      return Collaboration.configure({
+        document,
+        field: collaboration.field,
+        ...options,
+      });
+    },
+  },
+  {
+    key: 'collaborationCaret',
+    default: false,
+    async loader(options: Partial<CollaborationCaretOptions>, injector: Injector) {
+      const { CollaborationCaret } = await import('@tiptap/extension-collaboration-caret');
+      const collaboration = injector.get(INS_EDITOR_COLLABORATION);
+      const provider = collaboration.provider;
+
+      if (!provider) {
+        const { Extension } = await import('@tiptap/core');
+        return Extension.create({ name: 'collaboration-caret-disabled' });
+      }
+
+      return CollaborationCaret.configure({
+        provider,
+        user: collaboration.user,
+        ...options,
+      });
+    },
+  },
+  {
     key: 'history',
     default: true,
     async loader(options: Partial<HistoryOptions>) {
       const { History } = await import('@tiptap/extension-history');
 
       return History.configure(options);
+    },
+  },
+  {
+    key: 'commentThread',
+    default: true,
+    async loader(options: Partial<Record<string, unknown>>) {
+      const { CommentThread } = await import('../extensions/comment-thread');
+      return CommentThread.configure(options);
     },
   },
   {
@@ -691,6 +745,9 @@ export function provideInsEditor<O, S>(
     typeof overrides === 'object' && !Array.isArray(overrides)
       ? { ...defaults, ...overrides }
       : defaults;
+  if (options.collaboration) {
+    options.history = false;
+  }
 
   return {
     provide: INS_EDITOR_EXTENSIONS,

@@ -419,6 +419,156 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       .run();
   }
 
+  public addCommentThread(threadId: string): void {
+    this.editor?.chain().focus().setCommentThread(threadId).run();
+  }
+
+  public removeCommentThread(): void {
+    this.editor?.chain().focus().unsetCommentThread().run();
+  }
+
+  public getActiveCommentThreadId(): string | null {
+    const threadId = this.editor?.getAttributes('commentThread')['threadId'];
+    return typeof threadId === 'string' && threadId.length > 0 ? threadId : null;
+  }
+
+  public getSelectedText(): string {
+    const state = this.editor?.state;
+    if (!state) {
+      return '';
+    }
+    const { from, to } = state.selection;
+    return state.doc.textBetween(from, to, ' ', ' ').trim();
+  }
+
+  public getSelectionRange(): { from: number; to: number } | null {
+    const state = this.editor?.state;
+    if (!state || state.selection.empty) {
+      return null;
+    }
+    return { from: state.selection.from, to: state.selection.to };
+  }
+
+  public getSelectionContext(maxChars = 16): { beforeText: string; afterText: string } | null {
+    const state = this.editor?.state;
+    if (!state || state.selection.empty) {
+      return null;
+    }
+    const { from, to } = state.selection;
+    const beforeFrom = Math.max(0, from - Math.max(0, maxChars));
+    const afterTo = Math.min(state.doc.content.size, to + Math.max(0, maxChars));
+    return {
+      beforeText: state.doc.textBetween(beforeFrom, from, ' ', ' ').trim(),
+      afterText: state.doc.textBetween(to, afterTo, ' ', ' ').trim(),
+    };
+  }
+
+  public focusCommentThread(
+    threadId: string,
+    fallbackQuote = '',
+    anchor: { from: number; to: number; beforeText?: string; afterText?: string } | null = null,
+  ): void {
+    const state = this.editor?.state;
+    if (!state || !threadId) {
+      return;
+    }
+    const commentMark = state.schema.marks['commentThread'];
+    if (!commentMark) {
+      return;
+    }
+
+    let from: number | null = null;
+    let to: number | null = null;
+
+    state.doc.descendants((node, pos) => {
+      if (!node.isText) {
+        return true;
+      }
+      const hasTargetMark = node.marks.some(
+        (mark) => mark.type === commentMark && mark.attrs['threadId'] === threadId,
+      );
+      if (!hasTargetMark) {
+        return true;
+      }
+      from = pos;
+      to = pos + node.nodeSize;
+      return false;
+    });
+
+    if (from !== null && to !== null) {
+      this.editor?.chain().focus().setTextSelection({ from, to }).run();
+      return;
+    }
+
+    const keyword = fallbackQuote.trim();
+    if (anchor && anchor.from < anchor.to && anchor.to <= state.doc.content.size) {
+      const anchorText = state.doc.textBetween(anchor.from, anchor.to, ' ', ' ').trim();
+      if (!keyword || anchorText.includes(keyword) || keyword.includes(anchorText)) {
+        this.editor?.chain().focus().setTextSelection({ from: anchor.from, to: anchor.to }).run();
+        return;
+      }
+    }
+
+    if (!keyword) {
+      return;
+    }
+
+    let bestCandidate: { from: number; to: number; score: number; distance: number } | null = null;
+    const beforeHint = anchor?.beforeText?.trim() ?? '';
+    const afterHint = anchor?.afterText?.trim() ?? '';
+    const beforeWindow = beforeHint.slice(-8);
+    const afterWindow = afterHint.slice(0, 8);
+
+    state.doc.descendants((node, pos) => {
+      if (!node.isText) {
+        return true;
+      }
+      const text = node.text ?? '';
+      let index = text.indexOf(keyword);
+
+      while (index >= 0) {
+        const candidateFrom = pos + index;
+        const candidateTo = candidateFrom + keyword.length;
+        const beforeSlice = text.slice(Math.max(0, index - beforeWindow.length), index);
+        const afterSlice = text.slice(index + keyword.length, index + keyword.length + afterWindow.length);
+        let score = 0;
+        if (beforeWindow && beforeSlice.endsWith(beforeWindow)) {
+          score += 1;
+        }
+        if (afterWindow && afterSlice.startsWith(afterWindow)) {
+          score += 1;
+        }
+        const distance = anchor ? Math.abs(candidateFrom - anchor.from) : 0;
+        if (
+          !bestCandidate ||
+          score > bestCandidate.score ||
+          (score === bestCandidate.score && distance < bestCandidate.distance)
+        ) {
+          bestCandidate = { from: candidateFrom, to: candidateTo, score, distance };
+        }
+        index = text.indexOf(keyword, index + keyword.length);
+      }
+
+      return true;
+    });
+
+    if (!bestCandidate) {
+      return;
+    }
+    this.editor
+      ?.chain()
+      .focus()
+      .setTextSelection({ from: bestCandidate.from, to: bestCandidate.to })
+      .run();
+  }
+
+  public focusCommentThreadByRange(from: number, to: number): void {
+    if (!this.editor || from >= to) {
+      return;
+    }
+    this.editor.chain().focus().setTextSelection({ from, to }).run();
+  }
+
   public mergeCells(): void {
     this.editor?.chain().focus().mergeCells().run();
   }

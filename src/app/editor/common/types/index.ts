@@ -1,45 +1,6 @@
-/* eslint-disable import/no-named-as-default */
-// import {
-//     type InsEditableIframe,
-//     type InsEditableImage,
-//     type InsEditorAttachedFile,
-// } from '@taiga-ui/editor/common';
-import type BulletList from '@tiptap/extension-bullet-list';
-// import type Highlight from '@tiptap/extension-highlight';
-import { type Image } from '@tiptap/extension-image';
-import type Link from '@tiptap/extension-link';
-import type ListItem from '@tiptap/extension-list-item';
-import type Subscript from '@tiptap/extension-subscript';
-import type Superscript from '@tiptap/extension-superscript';
-import type { Table } from '@tiptap/extension-table';
-import type TaskItem from '@tiptap/extension-task-item';
-import type TaskList from '@tiptap/extension-task-list';
-import type TextAlign from '@tiptap/extension-text-align';
-import type { TextStyle, TextStyleAttributes } from '@tiptap/extension-text-style';
-import type Underline from '@tiptap/extension-underline';
+
 
 import { InsEditorAttachedFile } from '../attached';
-
-// export type {
-//   BulletList,
-//   // Highlight,
-//   Image,
-//   Link,
-//   ListItem,
-//   StarterKit,
-//   Subscript,
-//   Superscript,
-//   Table,
-//   TableCell,
-//   TableHeader,
-//   TableRow,
-//   TaskItem,
-//   TaskList,
-//   TextAlign,
-//   TextStyle,
-//   Underline,
-//   // Youtube,
-// };
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {

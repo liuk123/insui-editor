@@ -10,6 +10,7 @@ export * from './tool-buttons/attach';
 export * from './tool-buttons/bold';
 export * from './tool-buttons/clear';
 export * from './tool-buttons/code';
+export * from './tool-buttons/comment';
 export * from './tool-buttons/details-add';
 export * from './tool-buttons/details-remove';
 export * from './tool-buttons/highlight-color';
