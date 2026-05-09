@@ -28,6 +28,7 @@ export const InsDetailsExtension = Details.extend<InsDetailsExtensionOptions>({
       persist: parentOptions.persist ?? true,
       openClassName: parentOptions.openClassName ?? '',
       HTMLAttributes: parentOptions.HTMLAttributes ?? {},
+      renderToggleButton: parentOptions.renderToggleButton ?? null,
     };
   },
 

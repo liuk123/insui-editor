@@ -16,6 +16,8 @@ import {
   ContentChild,
   TemplateRef,
   OnInit,
+  afterNextRender,
+  INJECTOR,
 } from '@angular/core';
 import {
   injectElement,
@@ -136,6 +138,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   private readonly collaboration = inject(INS_EDITOR_COLLABORATION);
   private readonly commentsStore = inject(InsEditorCommentsStore);
   private el = injectElement();
+  private injector = inject(INJECTOR);
 
   @ViewChild(InsTiptapEditor, { read: ElementRef })
   private readonly editorEl?: ElementRef<HTMLElement>;
@@ -184,8 +187,12 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     if (this.insDropdownOpen) {
       this.insDropdownOpen.isClickToggle = false;
     }
-    this.commentsStore.setCurrentAuthor(this.collaboration.user.name);
-    this.commentsStore.connectCollaboration(this.collaboration.document);
+    afterNextRender(() => {
+      this.commentsStore.setCurrentAuthor(this.collaboration.user.name);
+      this.commentsStore.connectCollaboration(this.collaboration.document);
+    }, {
+      injector: this.injector,
+    });
   }
   ngOnDestroy(): void {
     this.commentsStore.disconnectCollaboration();

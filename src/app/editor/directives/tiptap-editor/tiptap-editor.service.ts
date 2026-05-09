@@ -513,7 +513,10 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       return;
     }
 
-    let bestCandidate: { from: number; to: number; score: number; distance: number } | null = null;
+    let bestFrom = -1;
+    let bestTo = -1;
+    let bestScore = -1;
+    let bestDistance = Number.MAX_SAFE_INTEGER;
     const beforeHint = anchor?.beforeText?.trim() ?? '';
     const afterHint = anchor?.afterText?.trim() ?? '';
     const beforeWindow = beforeHint.slice(-8);
@@ -539,12 +542,11 @@ export class InsTiptapEditorService extends AbstractInsEditor {
           score += 1;
         }
         const distance = anchor ? Math.abs(candidateFrom - anchor.from) : 0;
-        if (
-          !bestCandidate ||
-          score > bestCandidate.score ||
-          (score === bestCandidate.score && distance < bestCandidate.distance)
-        ) {
-          bestCandidate = { from: candidateFrom, to: candidateTo, score, distance };
+        if (score > bestScore || (score === bestScore && distance < bestDistance)) {
+          bestFrom = candidateFrom;
+          bestTo = candidateTo;
+          bestScore = score;
+          bestDistance = distance;
         }
         index = text.indexOf(keyword, index + keyword.length);
       }
@@ -552,13 +554,13 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       return true;
     });
 
-    if (!bestCandidate) {
+    if (bestFrom < 0 || bestTo <= bestFrom) {
       return;
     }
     this.editor
       ?.chain()
       .focus()
-      .setTextSelection({ from: bestCandidate.from, to: bestCandidate.to })
+      .setTextSelection({ from: bestFrom, to: bestTo })
       .run();
   }
 
