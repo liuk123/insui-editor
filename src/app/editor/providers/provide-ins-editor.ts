@@ -20,16 +20,12 @@ import { type PlaceholderOptions } from '@tiptap/extension-placeholder';
 import { type StrikeOptions } from '@tiptap/extension-strike';
 import { type SubscriptExtensionOptions } from '@tiptap/extension-subscript';
 import { type SuperscriptExtensionOptions } from '@tiptap/extension-superscript';
-import { type TableOptions } from '@tiptap/extension-table';
-import { type TableCellOptions } from '@tiptap/extension-table-cell';
-import { type TableHeaderOptions } from '@tiptap/extension-table-header';
-import { type TableRowOptions } from '@tiptap/extension-table-row';
+import { type TableOptions, type TableCellOptions, type TableHeaderOptions, type TableRowOptions  } from '@tiptap/extension-table';
 import { type TaskItemOptions } from '@tiptap/extension-task-item';
 import { type TaskListOptions } from '@tiptap/extension-task-list';
 import { type TextAlignOptions } from '@tiptap/extension-text-align';
 import { type ColorOptions, type FontSizeOptions, type TextStyleOptions } from '@tiptap/extension-text-style';
 import { type UnderlineOptions } from '@tiptap/extension-underline';
-import { type StarterKitOptions } from '@tiptap/starter-kit';
 import { INS_EDITOR_EXTENSIONS } from '../common/editor-extensions';
 import { type TypographyOptions } from '@tiptap/extension-typography';
 import { type TrailingNodeOptions } from '@tiptap/extensions';
@@ -47,7 +43,6 @@ import { type LineHeightOptions } from '@tiptap/extension-text-style';
 import { type InsMentionOptions } from '../extensions/mention';
 
 interface Options {
-  starterKit: Partial<StarterKitOptions> | boolean;
   blockquote: Partial<BlockquoteOptions> | boolean;
   bold: Partial<BoldOptions> | boolean;
   bulletList: Partial<BulletListOptions> | boolean;
@@ -490,7 +485,7 @@ const EXTENSIONS = [
     key: 'tableRow',
     default: true,
     async loader(options: Partial<TableRowOptions>) {
-      const { TableRow } = await import('@tiptap/extension-table-row');
+      const { TableRow } = await import('@tiptap/extension-table/row');
 
       return TableRow.configure(options);
     },
@@ -499,7 +494,7 @@ const EXTENSIONS = [
     key: 'tableHeader',
     default: true,
     async loader(options: Partial<TableHeaderOptions>) {
-      const { TableHeader } = await import('@tiptap/extension-table-header');
+      const { TableHeader } = await import('@tiptap/extension-table/header');
 
       return TableHeader.configure(options);
     },
