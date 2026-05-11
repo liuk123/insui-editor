@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { InsEditorCommentAnchor, InsEditorCommentsStore } from '../../common/comments-store';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
-import { InsButton, InsCardLarge, InsHeader, InsTextarea, InsTextfield, InsTitle } from "@liuk123/insui";
+import { InsButton, InsCardLarge, InsTextarea, InsTextfield, InsTitle } from "@liuk123/insui";
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -14,7 +14,6 @@ import { FormsModule } from '@angular/forms';
   },
   imports: [
     InsButton,
-    InsHeader,
     InsTitle,
     InsCardLarge,
     InsTextfield,
