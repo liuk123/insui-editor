@@ -26,13 +26,16 @@ export interface InsEditorCommentThread {
 
 @Injectable()
 export class InsEditorCommentsStore {
+
   private readonly threadsState = signal<ReadonlyArray<InsEditorCommentThread>>([]);
   private readonly activeThreadIdState = signal<string | null>(null);
+
   private collaborationDoc: Doc | null = null;
   private collaborationKey = '';
   private collaborationThreads: YArray<InsEditorCommentThread> | null = null;
+
   private collaborationObserver: (() => void) | null = null;
-  private currentAuthor = 'Me';
+  private currentAuthor = '';
 
   public readonly threads = computed(() => this.threadsState());
   public readonly activeThreadId = computed(() => this.activeThreadIdState());
@@ -45,8 +48,7 @@ export class InsEditorCommentsStore {
   });
 
   public connectCollaboration(document: Doc | null, key = 'ins-comments'): void {
-    const isSameSource =
-      this.collaborationDoc === document && this.collaborationKey === key && !!this.collaborationThreads;
+    const isSameSource = this.collaborationDoc === document && this.collaborationKey === key && !!this.collaborationThreads;
     if (isSameSource) {
       return;
     }
@@ -70,8 +72,7 @@ export class InsEditorCommentsStore {
   }
 
   public setCurrentAuthor(author: string | null): void {
-    const trimmedAuthor = (author ?? '').trim();
-    this.currentAuthor = trimmedAuthor || 'Me';
+    this.currentAuthor = author ?? 'Unknown';
   }
 
   public disconnectCollaboration(): void {
@@ -86,31 +87,16 @@ export class InsEditorCommentsStore {
 
   public createThread(
     quote: string,
-    firstComment: string,
-    author = this.currentAuthor,
     anchor: InsEditorCommentAnchor | null = null,
   ): string {
-    const trimmedComment = firstComment.trim();
-    if (!trimmedComment) {
-      return '';
-    }
-
     const id = this.createId('thread');
-    const now = Date.now();
     const thread: InsEditorCommentThread = {
       id,
       quote: quote.trim(),
       anchor,
-      createdAt: now,
+      createdAt: Date.now(),
       resolved: false,
-      comments: [
-        {
-          id: this.createId('comment'),
-          content: trimmedComment,
-          author,
-          createdAt: now,
-        },
-      ],
+      comments: [],
     };
 
     if (this.collaborationThreads) {

@@ -59,8 +59,6 @@ export class InsCommentButtonTool extends InsToolbarTool {
 
     const threadId = this.commentsStore.createThread(
       quote,
-      '新评论',
-      undefined,
       range ?
         {
           from: range.from,

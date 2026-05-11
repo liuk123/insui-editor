@@ -3,48 +3,47 @@
   @for (thread of openThreads(); track thread.id) {
     <div
       insCardLarge
-      [class.ins-comments-panel__thread_active]="thread.id === activeThreadId()"
+      [class.ins-comments-thread_active]="thread.id === activeThreadId()"
       (click)="setActiveThread(thread.id, thread.quote, thread.anchor)"
     >
-      <div insHeader>
-        <div insTitle="s">
-          {{ thread.quote || '未命名引用' }}
-        </div>
-        <div insAccessories>
-          <button
-            insButton
-            appearance="flat"
-            size="s"
-            [disabled]="!canEdit()"
-            (click.stop)="resolveThread(thread.id, !thread.resolved)"
-          >
-            {{ thread.resolved ? '重新打开' : '标记已解决' }}
-          </button>
-        </div>
+      <div class="ins-comments-quote">
+        <div class="ins-comments-quote-text">{{ thread.quote || '未命名引用' }}</div>
+        <button
+          insIconButton
+          appearance="flat"
+          size="s"
+          [disabled]="!canEdit()"
+          (click.stop)="resolveThread(thread.id, !thread.resolved)"
+          [iconStart]="thread.resolved ? 'rotate-ccw' : 'check'"
+          [title]="thread.resolved ? '重新打开' : '标记已解决'"
+        >
+        </button>
       </div>
-      <ul class="ins-comments-panel__comments">
-        @for (comment of thread.comments; track comment.id) {
-          <li class="ins-comments-panel__comment">
-            <span class="ins-comments-panel__author">{{ comment.author }}</span>
-            <span class="ins-comments-panel__text">{{ comment.content }}</span>
-          </li>
-        }
-      </ul>
-      <div insCardFooter class="ins-comments-panel__reply">
-        <ins-textfield (click)="$event.stopPropagation()">
-          <textarea placeholder="回复评论" insTextarea [disabled]="!canEdit()" rows="4" [(ngModel)]="draft[thread.id]"></textarea>
-        </ins-textfield>
-        <div class="ins-comments-panel__reply-button">
-          <button
-            insButton
-            appearance="primary"
-            [disabled]="!canEdit()"
-            (click.stop)="addReply(thread.id)"
-          >
-            发送
-          </button>
+      @if (thread.comments.length > 0) {
+        <ul class="ins-comments-comments">
+          @for (comment of thread.comments; track comment.id) {
+            <li class="ins-comments-comment">
+              <span class="ins-comments-author">{{ comment.author }}:</span>
+              <span class="ins-comments-text">{{ comment.content }}</span>
+            </li>
+          }
+        </ul>
+      }
+      @if (thread.id === activeThreadId() && canEdit() && !thread.resolved) {
+        <div insCardFooter class="ins-comments-reply">
+          <ins-textfield (click)="$event.stopPropagation()">
+            <textarea
+              placeholder="回复评论"
+              insTextarea
+              rows="4"
+              [(ngModel)]="draft[thread.id]"
+            ></textarea>
+          </ins-textfield>
+          <div class="actions">
+            <button insButton appearance="primary" (click.stop)="addReply(thread.id)">发送</button>
+          </div>
         </div>
-      </div>
+      }
     </div>
   }
 }
