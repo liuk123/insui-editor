@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { Array as YArray, Doc } from 'yjs';
+import { Array as YArray, Doc, Map as YMap } from 'yjs';
 
 export interface InsEditorComment {
   readonly id: string;
@@ -32,7 +32,10 @@ export class InsEditorCommentsStore {
 
   private collaborationDoc: Doc | null = null;
   private collaborationKey = '';
-  private collaborationThreads: YArray<InsEditorCommentThread> | null = null;
+  private collaborationRoot: YMap<unknown> | null = null;
+  private collaborationThreadOrder: YArray<string> | null = null;
+  private collaborationThreadMeta: YMap<YMap<unknown>> | null = null;
+  private collaborationThreadComments: YMap<YArray<InsEditorComment>> | null = null;
 
   private collaborationObserver: (() => void) | null = null;
   private currentAuthor = '';
@@ -48,7 +51,14 @@ export class InsEditorCommentsStore {
   });
 
   public connectCollaboration(document: Doc | null, key = 'ins-comments'): void {
-    const isSameSource = this.collaborationDoc === document && this.collaborationKey === key && !!this.collaborationThreads;
+    const keyV2 = `${key}-v2`;
+    const isSameSource =
+      this.collaborationDoc === document &&
+      this.collaborationKey === keyV2 &&
+      !!this.collaborationRoot &&
+      !!this.collaborationThreadOrder &&
+      !!this.collaborationThreadMeta &&
+      !!this.collaborationThreadComments;
     if (isSameSource) {
       return;
     }
@@ -58,28 +68,39 @@ export class InsEditorCommentsStore {
       return;
     }
 
-    const threads = document.getArray<InsEditorCommentThread>(key);
+    const root = document.getMap<unknown>(keyV2);
+    const order = this.ensureYArray<string>(root, 'order');
+    const meta = this.ensureYMap<YMap<unknown>>(root, 'meta');
+    const comments = this.ensureYMap<YArray<InsEditorComment>>(root, 'comments');
+
     const observer = (): void => {
-      this.threadsState.set(threads.toArray().map((thread) => this.normalizeThread(thread)));
+      this.threadsState.set(this.buildThreadsFromCollaboration(order, meta, comments));
     };
 
-    threads.observe(observer);
+    root.observeDeep(observer);
     this.collaborationDoc = document;
-    this.collaborationKey = key;
-    this.collaborationThreads = threads;
+    this.collaborationKey = keyV2;
+    this.collaborationRoot = root;
+    this.collaborationThreadOrder = order;
+    this.collaborationThreadMeta = meta;
+    this.collaborationThreadComments = comments;
     this.collaborationObserver = observer;
     observer();
   }
 
   public setCurrentAuthor(author: string | null): void {
-    this.currentAuthor = author ?? 'Unknown';
+    const trimmedAuthor = (author ?? '').trim();
+    this.currentAuthor = trimmedAuthor || 'Unknown';
   }
 
   public disconnectCollaboration(): void {
-    if (this.collaborationThreads && this.collaborationObserver) {
-      this.collaborationThreads.unobserve(this.collaborationObserver);
+    if (this.collaborationRoot && this.collaborationObserver) {
+      this.collaborationRoot.unobserveDeep(this.collaborationObserver);
     }
-    this.collaborationThreads = null;
+    this.collaborationRoot = null;
+    this.collaborationThreadOrder = null;
+    this.collaborationThreadMeta = null;
+    this.collaborationThreadComments = null;
     this.collaborationObserver = null;
     this.collaborationDoc = null;
     this.collaborationKey = '';
@@ -99,8 +120,14 @@ export class InsEditorCommentsStore {
       comments: [],
     };
 
-    if (this.collaborationThreads) {
-      this.collaborationThreads.insert(0, [thread]);
+    if (
+      this.collaborationThreadOrder &&
+      this.collaborationThreadMeta &&
+      this.collaborationThreadComments
+    ) {
+      this.collaborationThreadOrder.insert(0, [id]);
+      this.collaborationThreadMeta.set(id, this.toThreadMeta(thread));
+      this.collaborationThreadComments.set(id, new YArray<InsEditorComment>());
     } else {
       this.threadsState.update((threads) => [thread, ...threads]);
     }
@@ -114,30 +141,19 @@ export class InsEditorCommentsStore {
       return;
     }
 
-    if (this.collaborationThreads) {
-      const threads = this.collaborationThreads.toArray();
-      const index = threads.findIndex((thread) => thread.id === threadId);
-      if (index < 0) {
+    if (this.collaborationThreadComments) {
+      const commentsArray = this.collaborationThreadComments.get(threadId);
+      if (!commentsArray) {
         return;
       }
-      const current = threads[index];
-      if (!current) {
-        return;
-      }
-      const updated: InsEditorCommentThread = {
-        ...current,
-        comments: [
-          ...current.comments,
-          {
-            id: this.createId('comment'),
-            content: trimmedComment,
-            author,
-            createdAt: Date.now(),
-          },
-        ],
-      };
-      this.collaborationThreads.delete(index, 1);
-      this.collaborationThreads.insert(index, [updated]);
+      commentsArray.push([
+        {
+          id: this.createId('comment'),
+          content: trimmedComment,
+          author: author.trim() || 'Unknown',
+          createdAt: Date.now(),
+        },
+      ]);
       return;
     }
 
@@ -166,18 +182,12 @@ export class InsEditorCommentsStore {
   }
 
   public resolveThread(threadId: string, resolved: boolean): void {
-    if (this.collaborationThreads) {
-      const threads = this.collaborationThreads.toArray();
-      const index = threads.findIndex((thread) => thread.id === threadId);
-      if (index < 0) {
+    if (this.collaborationThreadMeta) {
+      const meta = this.collaborationThreadMeta.get(threadId);
+      if (!meta) {
         return;
       }
-      const current = threads[index];
-      if (!current) {
-        return;
-      }
-      this.collaborationThreads.delete(index, 1);
-      this.collaborationThreads.insert(index, [{ ...current, resolved }]);
+      meta.set('resolved', resolved);
       return;
     }
 
@@ -199,6 +209,86 @@ export class InsEditorCommentsStore {
           }
         : null,
       comments: [...thread.comments],
+    };
+  }
+
+  private buildThreadsFromCollaboration(
+    order: YArray<string>,
+    metaById: YMap<YMap<unknown>>,
+    commentsById: YMap<YArray<InsEditorComment>>,
+  ): ReadonlyArray<InsEditorCommentThread> {
+    return order.toArray().flatMap((threadId) => {
+      const meta = metaById.get(threadId);
+      if (!meta) {
+        return [];
+      }
+
+      const quote = String(meta.get('quote') ?? '').trim();
+      const createdAt = this.toSafeNumber(meta.get('createdAt'));
+      const resolved = Boolean(meta.get('resolved'));
+      const anchor = this.normalizeAnchor(meta.get('anchor'));
+      const comments = commentsById.get(threadId)?.toArray() ?? [];
+
+      return [
+        this.normalizeThread({
+          id: threadId,
+          quote,
+          anchor,
+          createdAt,
+          resolved,
+          comments,
+        }),
+      ];
+    });
+  }
+
+  private toThreadMeta(thread: InsEditorCommentThread): YMap<unknown> {
+    const meta = new YMap<unknown>();
+    meta.set('quote', thread.quote);
+    meta.set('anchor', thread.anchor);
+    meta.set('createdAt', thread.createdAt);
+    meta.set('resolved', thread.resolved);
+    return meta;
+  }
+
+  private ensureYArray<T>(root: YMap<unknown>, key: string): YArray<T> {
+    const current = root.get(key);
+    if (current instanceof YArray) {
+      return current as YArray<T>;
+    }
+    const created = new YArray<T>();
+    root.set(key, created);
+    return created;
+  }
+
+  private ensureYMap<T>(root: YMap<unknown>, key: string): YMap<T> {
+    const current = root.get(key);
+    if (current instanceof YMap) {
+      return current as YMap<T>;
+    }
+    const created = new YMap<T>();
+    root.set(key, created);
+    return created;
+  }
+
+  private toSafeNumber(value: unknown): number {
+    const num = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(num) ? num : Date.now();
+  }
+
+  private normalizeAnchor(anchor: unknown): InsEditorCommentAnchor | null {
+    if (!anchor || typeof anchor !== 'object') {
+      return null;
+    }
+    const rawAnchor = anchor as Partial<InsEditorCommentAnchor>;
+    if (typeof rawAnchor.from !== 'number' || typeof rawAnchor.to !== 'number') {
+      return null;
+    }
+    return {
+      from: rawAnchor.from,
+      to: rawAnchor.to,
+      beforeText: rawAnchor.beforeText ?? '',
+      afterText: rawAnchor.afterText ?? '',
     };
   }
 

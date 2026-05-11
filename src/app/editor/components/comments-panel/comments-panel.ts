@@ -45,7 +45,7 @@ export class InsCommentsPanel {
     if (!this.canEdit()) {
       return;
     }
-    const draft = this.draft[threadId].trim();
+    const draft = (this.draft[threadId] ?? '').trim();
     this.draft[threadId] = '';
     if (!draft) {
       return;
