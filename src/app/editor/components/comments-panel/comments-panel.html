@@ -2,6 +2,7 @@
   @for (thread of threads(); track thread.id) {
     <div
       insCardLarge
+      class="ins-comments-thread"
       [class.ins-comments-thread_active]="thread.id === activeThreadId()"
       [class.ins-comments-thread_detached]="thread.detached"
       (click)="setActiveThread(thread.id, thread.quote, thread.anchor, thread.detached)"

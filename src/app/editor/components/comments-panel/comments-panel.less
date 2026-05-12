@@ -1,15 +1,18 @@
 :host {
   width: var(--ins-sidebar-width, 340px);
-  max-height: 100%;
+  max-height: min(calc(100vh - var(--ins-sticky-header-height, 60px)), 100%);
   padding: var(--ins-padding-m);
   overflow: auto;
   z-index: 6;
   pointer-events: auto;
   box-sizing: border-box;
 
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 8px;
+  height: fit-content;
+  position: sticky;
+  top: var(--ins-sticky-header-height, 60px);
+  scroll-behavior: none;
 
   .ins-comments-quote {
     display: flex;
