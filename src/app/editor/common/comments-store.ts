@@ -15,14 +15,14 @@ export interface InsEditorCommentAnchor {
   readonly afterText: string;
 }
 
-export type InsEditorCommentThreadState = 'open' | 'closed';
+export type InsEditorCommentThreadStatus = 'open' | 'closed';
 
 export interface InsEditorCommentThread {
   readonly id: string;
   readonly quote: string;
   readonly anchor: InsEditorCommentAnchor | null;
   readonly createdAt: number;
-  readonly state: InsEditorCommentThreadState;
+  readonly status: InsEditorCommentThreadStatus;
   readonly detached: boolean;
   readonly comments: ReadonlyArray<InsEditorComment>;
 }
@@ -119,7 +119,7 @@ export class InsEditorCommentsStore {
       quote: quote.trim(),
       anchor,
       createdAt: Date.now(),
-      state: 'open',
+      status: 'open',
       detached: false,
       comments: [],
     };
@@ -185,18 +185,18 @@ export class InsEditorCommentsStore {
     this.activeThreadIdState.set(threadId);
   }
 
-  public setThreadState(threadId: string, state: InsEditorCommentThreadState): void {
+  public setThreadStatus(threadId: string, status: InsEditorCommentThreadStatus): void {
     if (this.collaborationThreadMeta) {
       const meta = this.collaborationThreadMeta.get(threadId);
       if (!meta) {
         return;
       }
-      meta.set('state', state);
+      meta.set('status', status);
       return;
     }
 
     this.setThreadsState(
-      this.threadsState().map((thread) => (thread.id === threadId ? { ...thread, state } : thread)),
+      this.threadsState().map((thread) => (thread.id === threadId ? { ...thread, status } : thread)),
     );
   }
 
@@ -253,7 +253,7 @@ export class InsEditorCommentsStore {
             afterText: thread.anchor.afterText ?? '',
           }
         : null,
-      state: thread.state,
+      status: thread.status,
       detached: thread.detached,
       comments: [...thread.comments],
     };
@@ -272,7 +272,7 @@ export class InsEditorCommentsStore {
 
       const quote = String(meta.get('quote') ?? '').trim();
       const createdAt = this.toSafeNumber(meta.get('createdAt'));
-      const state = meta.get('state') === 'open'?'open':'closed';
+      const status = meta.get('status') === 'open'?'open':'closed';
       const detached = Boolean(meta.get('detached'));
       const anchor = this.normalizeAnchor(meta.get('anchor'));
       const comments = commentsById.get(threadId)?.toArray() ?? [];
@@ -283,7 +283,7 @@ export class InsEditorCommentsStore {
           quote,
           anchor,
           createdAt,
-          state,
+          status,
           detached,
           comments,
         }),
@@ -296,7 +296,7 @@ export class InsEditorCommentsStore {
     meta.set('quote', thread.quote);
     meta.set('anchor', thread.anchor);
     meta.set('createdAt', thread.createdAt);
-    meta.set('state', thread.state);
+    meta.set('status', thread.status);
     meta.set('detached', thread.detached);
     return meta;
   }

@@ -1,13 +1,13 @@
 import { Mark, mergeAttributes } from '@tiptap/core';
 import { MarkType, Node as ProseMirrorNode } from '@tiptap/pm/model';
 
-export type CommentThreadState = 'open' | 'closed';
+export type CommentThreadStatus = 'open' | 'closed';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     commentThread: {
-      setCommentThread: (threadId: string, state?: CommentThreadState) => ReturnType;
-      setCommentThreadState: (threadId: string, state: CommentThreadState) => ReturnType;
+      setCommentThread: (threadId: string, status?: CommentThreadStatus) => ReturnType;
+      setCommentThreadStatus: (threadId: string, status: CommentThreadStatus) => ReturnType;
       unsetCommentThread: () => ReturnType;
       unsetCommentThreadById: (threadId: string) => ReturnType;
     };
@@ -20,7 +20,7 @@ export interface CommentThreadOptions {
 
 interface CommentThreadAttrs {
   readonly threadId?: string | null;
-  readonly state?: CommentThreadState | null;
+  readonly status?: CommentThreadStatus | null;
 }
 
 const collectCommentThreadRanges = (
@@ -75,12 +75,12 @@ export const CommentThread = Mark.create<CommentThreadOptions>({
         renderHTML: (attributes: CommentThreadAttrs) =>
           attributes.threadId ? { 'data-comment-thread-id': attributes.threadId } : {},
       },
-      state: {
+      status: {
         default: 'open',
         parseHTML: (element: HTMLElement) =>
-          element.getAttribute('data-comment-thread-state') === 'closed' ? 'closed' : 'open',
+          element.getAttribute('data-comment-thread-status') === 'closed' ? 'closed' : 'open',
         renderHTML: (attributes: CommentThreadAttrs) => ({
-          'data-comment-thread-state': attributes.state === 'closed' ? 'closed' : 'open',
+          'data-comment-thread-status': attributes.status === 'closed' ? 'closed' : 'open',
         }),
       },
     };
@@ -97,11 +97,11 @@ export const CommentThread = Mark.create<CommentThreadOptions>({
   addCommands() {
     return {
       setCommentThread:
-        (threadId: string, state: CommentThreadState = 'open') =>
+        (threadId: string, status: CommentThreadStatus = 'open') =>
         ({ commands }) =>
-          commands.setMark(this.name, { threadId, state }),
-      setCommentThreadState:
-        (threadId: string, state: CommentThreadState) =>
+          commands.setMark(this.name, { threadId, status }),
+      setCommentThreadStatus:
+        (threadId: string, status: CommentThreadStatus) =>
         ({ tr, state: editorState, dispatch }) => {
           const markType = editorState.schema.marks[this.name];
           if (!markType) {
@@ -120,7 +120,7 @@ export const CommentThread = Mark.create<CommentThreadOptions>({
               range.to,
               markType.create({
                 threadId,
-                state,
+                status,
               }),
             );
           }

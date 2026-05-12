@@ -419,8 +419,8 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       .run();
   }
 
-  public addCommentThread(threadId: string, state: 'open' | 'closed' = 'open'): void {
-    this.editor?.chain().focus().setCommentThread(threadId, state).run();
+  public addCommentThread(threadId: string, status: 'open' | 'closed' = 'open'): void {
+    this.editor?.chain().focus().setCommentThread(threadId, status).run();
   }
 
   public removeCommentThread(): void {
@@ -431,8 +431,8 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.chain().focus().unsetCommentThreadById(threadId).run();
   }
 
-  public setCommentThreadState(threadId: string, state: 'open' | 'closed'): void {
-    this.editor?.chain().focus().setCommentThreadState(threadId, state).run();
+  public setCommentThreadStatus(threadId: string, status: 'open' | 'closed'): void {
+    this.editor?.chain().focus().setCommentThreadStatus(threadId, status).run();
   }
 
   public getCommentThreadIds(): ReadonlySet<string> {

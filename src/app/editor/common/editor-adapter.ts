@@ -190,7 +190,7 @@ export abstract class AbstractInsEditor {
     public abstract addCommentThread(threadId: string, state?: 'open' | 'closed'): void;
     public abstract removeCommentThread(): void;
     public abstract removeCommentThreadById(threadId: string): void;
-    public abstract setCommentThreadState(threadId: string, state: 'open' | 'closed'): void;
+    public abstract setCommentThreadStatus(threadId: string, status: 'open' | 'closed'): void;
     public abstract getCommentThreadIds(): ReadonlySet<string>;
     public abstract getActiveCommentThreadId(): string | null;
     public abstract getSelectedText(): string;

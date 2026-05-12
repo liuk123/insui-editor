@@ -63,14 +63,14 @@ export class InsCommentsPanel {
     this.commentsStore.addComment(threadId, draft);
   }
 
-  protected toggleThreadState(threadId: string, currentState: 'open' | 'closed'): void {
+  protected toggleThreadStatus(threadId: string, currentStatus: 'open' | 'closed'): void {
     if (!this.canEdit()) {
       return;
     }
 
-    const nextState = currentState === 'closed' ? 'open' : 'closed';
-    this.commentsStore.setThreadState(threadId, nextState);
-    this.editor?.setCommentThreadState(threadId, nextState);
+    const nextStatus = currentStatus === 'closed' ? 'open' : 'closed';
+    this.commentsStore.setThreadStatus(threadId, nextStatus);
+    this.editor?.setCommentThreadStatus(threadId, nextStatus);
   }
 
   protected deleteThread(threadId: string): void {
