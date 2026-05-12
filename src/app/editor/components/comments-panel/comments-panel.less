@@ -7,6 +7,11 @@
   z-index: 6;
   pointer-events: auto;
   box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
   .ins-comments-quote {
     display: flex;
     align-items: center;
@@ -25,6 +30,30 @@
   .ins-comments-thread_active {
     outline: 1px solid var(--ins-background-accent-1);
     outline-offset: 2px;
+  }
+  .ins-comments-thread_detached {
+    opacity: 0.85;
+  }
+  .ins-comments-meta {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .ins-comments-badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--ins-text-secondary);
+    background: var(--ins-background-base-alt);
+  }
+  .ins-comments-badge_closed {
+    color: var(--ins-text-warning);
+  }
+  .ins-comments-badge_detached {
+    color: var(--ins-text-danger);
   }
   .ins-comments-comments {
     list-style: none;

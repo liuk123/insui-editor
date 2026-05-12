@@ -1,10 +1,10 @@
-@if (openThreads().length > 0) {
-  <h3 insTitle="s">评论</h3>
-  @for (thread of openThreads(); track thread.id) {
+@if (hasThreads()) {
+  @for (thread of threads(); track thread.id) {
     <div
       insCardLarge
       [class.ins-comments-thread_active]="thread.id === activeThreadId()"
-      (click)="setActiveThread(thread.id, thread.quote, thread.anchor)"
+      [class.ins-comments-thread_detached]="thread.detached"
+      (click)="setActiveThread(thread.id, thread.quote, thread.anchor, thread.detached)"
     >
       <div class="ins-comments-quote">
         <div class="ins-comments-quote-text">{{ thread.quote || '未命名引用' }}</div>
@@ -13,11 +13,29 @@
           appearance="flat"
           size="s"
           [disabled]="!canEdit()"
-          (click.stop)="resolveThread(thread.id, !thread.resolved)"
-          [iconStart]="thread.resolved ? 'rotate-ccw' : 'check'"
-          [title]="thread.resolved ? '重新打开' : '标记已解决'"
+          (click.stop)="toggleThreadState(thread.id, thread.state)"
+          [iconStart]="thread.state === 'closed' ? 'rotate-ccw' : 'check'"
+          [title]="thread.state === 'closed' ? '重新打开' : '标记已关闭'"
         >
         </button>
+        <button
+          insIconButton
+          appearance="flat"
+          size="s"
+          [disabled]="!canEdit()"
+          iconStart="x"
+          title="删除"
+          (click.stop)="deleteThread(thread.id)"
+        >
+        </button>
+      </div>
+      <div class="ins-comments-meta">
+        <span class="ins-comments-badge" [class.ins-comments-badge_closed]="thread.state === 'closed'">
+          {{ thread.state === 'closed' ? '已关闭' : '打开中' }}
+        </span>
+        @if (thread.detached) {
+          <span class="ins-comments-badge ins-comments-badge_detached">引用已删除</span>
+        }
       </div>
       @if (thread.comments.length > 0) {
         <ul class="ins-comments-comments">
@@ -29,7 +47,7 @@
           }
         </ul>
       }
-      @if (thread.id === activeThreadId() && canEdit() && !thread.resolved) {
+      @if (thread.id === activeThreadId() && canEdit() && thread.state !== 'closed') {
         <div insCardFooter class="ins-comments-reply">
           <ins-textfield (click)="$event.stopPropagation()">
             <textarea

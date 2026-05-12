@@ -419,12 +419,47 @@ export class InsTiptapEditorService extends AbstractInsEditor {
       .run();
   }
 
-  public addCommentThread(threadId: string): void {
-    this.editor?.chain().focus().setCommentThread(threadId).run();
+  public addCommentThread(threadId: string, state: 'open' | 'closed' = 'open'): void {
+    this.editor?.chain().focus().setCommentThread(threadId, state).run();
   }
 
   public removeCommentThread(): void {
     this.editor?.chain().focus().unsetCommentThread().run();
+  }
+
+  public removeCommentThreadById(threadId: string): void {
+    this.editor?.chain().focus().unsetCommentThreadById(threadId).run();
+  }
+
+  public setCommentThreadState(threadId: string, state: 'open' | 'closed'): void {
+    this.editor?.chain().focus().setCommentThreadState(threadId, state).run();
+  }
+
+  public getCommentThreadIds(): ReadonlySet<string> {
+    const state = this.editor?.state;
+    const commentMark = state?.schema.marks['commentThread'];
+    if (!state || !commentMark) {
+      return new Set<string>();
+    }
+
+    const threadIds = new Set<string>();
+    state.doc.descendants((node) => {
+      if (!node.isText) {
+        return true;
+      }
+
+      for (const mark of node.marks) {
+        if (mark.type !== commentMark) {
+          continue;
+        }
+        const threadId = mark.attrs['threadId'];
+        if (typeof threadId === 'string' && threadId) {
+          threadIds.add(threadId);
+        }
+      }
+      return true;
+    });
+    return threadIds;
   }
 
   public getActiveCommentThreadId(): string | null {

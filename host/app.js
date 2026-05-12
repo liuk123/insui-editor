@@ -96,7 +96,9 @@ const extractComments = (document) => {
         quote: String(threadMeta.get('quote') ?? ''),
         anchor: threadMeta.get('anchor') ?? null,
         createdAt: Number(threadMeta.get('createdAt') ?? Date.now()),
-        resolved: Boolean(threadMeta.get('resolved')),
+        state:
+          threadMeta.get('state') ??'open',
+        detached: Boolean(threadMeta.get('detached')),
         comments: commentList,
       },
     ];

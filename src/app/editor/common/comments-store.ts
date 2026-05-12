@@ -15,12 +15,15 @@ export interface InsEditorCommentAnchor {
   readonly afterText: string;
 }
 
+export type InsEditorCommentThreadState = 'open' | 'closed';
+
 export interface InsEditorCommentThread {
   readonly id: string;
   readonly quote: string;
   readonly anchor: InsEditorCommentAnchor | null;
   readonly createdAt: number;
-  readonly resolved: boolean;
+  readonly state: InsEditorCommentThreadState;
+  readonly detached: boolean;
   readonly comments: ReadonlyArray<InsEditorComment>;
 }
 
@@ -74,7 +77,7 @@ export class InsEditorCommentsStore {
     const comments = this.ensureYMap<YArray<InsEditorComment>>(root, 'comments');
 
     const observer = (): void => {
-      this.threadsState.set(this.buildThreadsFromCollaboration(order, meta, comments));
+      this.setThreadsState(this.buildThreadsFromCollaboration(order, meta, comments));
     };
 
     root.observeDeep(observer);
@@ -116,7 +119,8 @@ export class InsEditorCommentsStore {
       quote: quote.trim(),
       anchor,
       createdAt: Date.now(),
-      resolved: false,
+      state: 'open',
+      detached: false,
       comments: [],
     };
 
@@ -129,10 +133,9 @@ export class InsEditorCommentsStore {
       this.collaborationThreadMeta.set(id, this.toThreadMeta(thread));
       this.collaborationThreadComments.set(id, new YArray<InsEditorComment>());
     } else {
-      this.threadsState.update((threads) => [thread, ...threads]);
+      this.setThreadsState([thread, ...this.threadsState()]);
     }
     this.activeThreadIdState.set(id);
-    // this.collaborationObserver?.();
     return id;
   }
 
@@ -155,26 +158,25 @@ export class InsEditorCommentsStore {
           createdAt: Date.now(),
         },
       ]);
-      // this.collaborationObserver?.();
       return;
     }
 
-    this.threadsState.update((threads) =>
-      threads.map((thread) =>
-        thread.id === threadId
-          ? {
-              ...thread,
-              comments: [
-                ...thread.comments,
-                {
-                  id: this.createId('comment'),
-                  content: trimmedComment,
-                  author,
-                  createdAt: Date.now(),
-                },
-              ],
-            }
-          : thread,
+    this.setThreadsState(
+      this.threadsState().map((thread) =>
+        thread.id === threadId ?
+          {
+            ...thread,
+            comments: [
+              ...thread.comments,
+              {
+                id: this.createId('comment'),
+                content: trimmedComment,
+                author,
+                createdAt: Date.now(),
+              },
+            ],
+          }
+        : thread,
       ),
     );
   }
@@ -183,20 +185,60 @@ export class InsEditorCommentsStore {
     this.activeThreadIdState.set(threadId);
   }
 
-  public resolveThread(threadId: string, resolved: boolean): void {
+  public setThreadState(threadId: string, state: InsEditorCommentThreadState): void {
     if (this.collaborationThreadMeta) {
       const meta = this.collaborationThreadMeta.get(threadId);
       if (!meta) {
         return;
       }
-      meta.set('resolved', resolved);
-      // this.collaborationObserver?.();
+      meta.set('state', state);
       return;
     }
 
-    this.threadsState.update((threads) =>
-      threads.map((thread) => (thread.id === threadId ? { ...thread, resolved } : thread)),
+    this.setThreadsState(
+      this.threadsState().map((thread) => (thread.id === threadId ? { ...thread, state } : thread)),
     );
+  }
+
+  public deleteThread(threadId: string): void {
+    if (
+      this.collaborationThreadOrder &&
+      this.collaborationThreadMeta &&
+      this.collaborationThreadComments
+    ) {
+      const threadIndex = this.collaborationThreadOrder.toArray().indexOf(threadId);
+      if (threadIndex >= 0) {
+        this.collaborationThreadOrder.delete(threadIndex, 1);
+      }
+      this.collaborationThreadMeta.delete(threadId);
+      this.collaborationThreadComments.delete(threadId);
+    } else {
+      this.setThreadsState(this.threadsState().filter((thread) => thread.id !== threadId));
+    }
+
+    if (this.activeThreadIdState() === threadId) {
+      this.activeThreadIdState.set(null);
+    }
+  }
+
+  public syncDetachedThreads(attachedThreadIds: ReadonlySet<string>): void {
+    if (this.collaborationThreadMeta) {
+      for (const thread of this.threadsState()) {
+        const meta = this.collaborationThreadMeta.get(thread.id);
+        const detached = !attachedThreadIds.has(thread.id);
+        if (!meta || Boolean(meta.get('detached')) === detached) {
+          continue;
+        }
+        meta.set('detached', detached);
+      }
+      return;
+    }
+
+    const nextThreads = this.threadsState().map((thread) => {
+      const detached = !attachedThreadIds.has(thread.id);
+      return thread.detached === detached ? thread : { ...thread, detached };
+    });
+    this.setThreadsState(nextThreads);
   }
 
   private normalizeThread(thread: InsEditorCommentThread): InsEditorCommentThread {
@@ -211,6 +253,8 @@ export class InsEditorCommentsStore {
             afterText: thread.anchor.afterText ?? '',
           }
         : null,
+      state: thread.state,
+      detached: thread.detached,
       comments: [...thread.comments],
     };
   }
@@ -228,7 +272,8 @@ export class InsEditorCommentsStore {
 
       const quote = String(meta.get('quote') ?? '').trim();
       const createdAt = this.toSafeNumber(meta.get('createdAt'));
-      const resolved = Boolean(meta.get('resolved'));
+      const state = meta.get('state') === 'open'?'open':'closed';
+      const detached = Boolean(meta.get('detached'));
       const anchor = this.normalizeAnchor(meta.get('anchor'));
       const comments = commentsById.get(threadId)?.toArray() ?? [];
 
@@ -238,7 +283,8 @@ export class InsEditorCommentsStore {
           quote,
           anchor,
           createdAt,
-          resolved,
+          state,
+          detached,
           comments,
         }),
       ];
@@ -250,8 +296,17 @@ export class InsEditorCommentsStore {
     meta.set('quote', thread.quote);
     meta.set('anchor', thread.anchor);
     meta.set('createdAt', thread.createdAt);
-    meta.set('resolved', thread.resolved);
+    meta.set('state', thread.state);
+    meta.set('detached', thread.detached);
     return meta;
+  }
+
+  private setThreadsState(threads: ReadonlyArray<InsEditorCommentThread>): void {
+    this.threadsState.set(threads);
+    const activeThreadId = this.activeThreadIdState();
+    if (activeThreadId && !threads.some((thread) => thread.id === activeThreadId)) {
+      this.activeThreadIdState.set(null);
+    }
   }
 
   private ensureYArray<T>(root: YMap<unknown>, key: string): YArray<T> {

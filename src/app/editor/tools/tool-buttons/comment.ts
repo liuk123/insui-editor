@@ -100,7 +100,7 @@ export class InsCommentButtonTool extends InsToolbarTool {
       return;
     }
 
-    this.editor.addCommentThread(threadId);
+    this.editor.addCommentThread(threadId, 'open');
     this.commentsStore.setActiveThreadId(threadId);
   }
 }

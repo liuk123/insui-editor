@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { InsEditorCommentAnchor, InsEditorCommentsStore } from '../../common/comments-store';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
-import { InsButton, InsCardLarge, InsTextarea, InsTextfield, InsTitle } from "@liuk123/insui";
+import { InsButton, InsCardLarge, InsTextarea, InsTextfield } from '@liuk123/insui';
 import { FormsModule } from '@angular/forms';
+import { startWith } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ins-comments-panel',
@@ -14,7 +16,6 @@ import { FormsModule } from '@angular/forms';
   },
   imports: [
     InsButton,
-    InsTitle,
     InsCardLarge,
     InsTextfield,
     InsTextarea,
@@ -22,7 +23,6 @@ import { FormsModule } from '@angular/forms';
   ],
 })
 export class InsCommentsPanel {
-
   private readonly commentsStore = inject(InsEditorCommentsStore);
   private readonly editor = inject(InsTiptapEditorService, { optional: true });
   protected draft: Record<string, string> = {};
@@ -30,16 +30,20 @@ export class InsCommentsPanel {
   protected readonly threads = this.commentsStore.threads;
   protected readonly activeThreadId = this.commentsStore.activeThreadId;
   protected readonly canEdit = computed(() => this.editor?.editable ?? false);
-  protected readonly openThreads = computed(() =>
-    this.threads().filter((thread) => !thread.resolved || thread.id === this.activeThreadId()),
-  );
+  protected readonly hasThreads = computed(() => this.threads().length > 0);
 
-  protected setActiveThread(threadId: string, quote: string, anchor: InsEditorCommentAnchor | null): void {
+  protected setActiveThread(
+    threadId: string,
+    quote: string,
+    anchor: InsEditorCommentAnchor | null,
+    detached: boolean,
+  ): void {
     this.commentsStore.setActiveThreadId(threadId);
+    if (detached) {
+      return;
+    }
     this.editor?.focusCommentThread(threadId, quote, anchor);
   }
-
-
 
   protected addReply(threadId: string): void {
     if (!this.canEdit()) {
@@ -53,10 +57,28 @@ export class InsCommentsPanel {
     this.commentsStore.addComment(threadId, draft);
   }
 
-  protected resolveThread(threadId: string, resolved: boolean): void {
+  protected toggleThreadState(threadId: string, currentState: 'open' | 'closed'): void {
     if (!this.canEdit()) {
       return;
     }
-    this.commentsStore.resolveThread(threadId, resolved);
+
+    const nextState = currentState === 'closed' ? 'open' : 'closed';
+    this.commentsStore.setThreadState(threadId, nextState);
+    this.editor?.setCommentThreadState(threadId, nextState);
   }
+
+  protected deleteThread(threadId: string): void {
+    if (!this.canEdit()) {
+      return;
+    }
+
+    this.editor?.removeCommentThreadById(threadId);
+    this.commentsStore.deleteThread(threadId);
+    delete this.draft[threadId];
+  }
+   protected readonly commentsSync$ = this.editor?.transactionPathChange$
+    .pipe(startWith(null), takeUntilDestroyed())
+    .subscribe(() => {
+      this.commentsStore.syncDetachedThreads(this.editor?.getCommentThreadIds()!);
+    });
 }

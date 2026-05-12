@@ -34,7 +34,7 @@ import {
 import { INS_EDITOR_OPTIONS } from '../../common/editor-options';
 import { InsEditorAttachedFile } from '../../common/attached';
 import { TIPTAP_EDITOR } from '../../common/tiptap-editor';
-import { delay, fromEvent, map, merge } from 'rxjs';
+import { delay, fromEvent, map, merge, startWith } from 'rxjs';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { INS_EDITOR_VALUE_TRANSFORMER } from '../../common/editor-value-transformer';
@@ -169,8 +169,10 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     this.editorLoaded.set(true);
 
     this.patchContentEditableElement();
+
     this.commentsStore.setCurrentAuthor(this.collaboration.user.name);
     this.commentsStore.connectCollaboration(this.collaboration.document);
+    // this.commentsStore.syncDetachedThreads(this.editorService.getCommentThreadIds());
   });
 
   public readonly hovered = toSignal(
@@ -182,6 +184,15 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   protected readonly a1 = effect(() => this.appearance.insAppearanceState.set(this.state()));
   protected readonly a2 = effect(() => this.appearance.insAppearanceMode.set(this.mode()));
   protected readonly a3 = effect(() => this.appearance.insAppearanceFocus.set(this.focused()));
+  // protected readonly commentsSync$ = this.editorService.transaction$
+  //   .pipe(startWith(undefined), takeUntilDestroyed())
+  //   .subscribe(() => {
+  //     if (!this.editorLoaded()) {
+  //       return;
+  //     }
+
+  //     this.commentsStore.syncDetachedThreads(this.editorService.getCommentThreadIds());
+  //   });
 
   ngOnInit(): void {
     if (this.insDropdownOpen) {

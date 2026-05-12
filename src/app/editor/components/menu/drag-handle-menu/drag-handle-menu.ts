@@ -16,13 +16,13 @@ export class InsDragHandleMenu {
     optional: true,
   });
 
-  get isDeleteGroup() {
-    return this.editor?.isActive('group') ?? false;
-  }
-  get isDeleteTable() {
-    return this.editor?.isActive('table') ?? false;
-  }
-  get isDeleteDetail() {
-    return this.editor?.isActive('detail') ?? false;
-  }
+  // get isDeleteGroup() {
+  //   return this.editor?.isActive('group') ?? false;
+  // }
+  // get isDeleteTable() {
+  //   return this.editor?.isActive('table') ?? false;
+  // }
+  // get isDeleteDetail() {
+  //   return this.editor?.isActive('detail') ?? false;
+  // }
 }
