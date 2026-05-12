@@ -6,11 +6,13 @@ import { Doc } from 'yjs';
 export interface InsEditorCollaborationUser {
   readonly name: string;
   readonly color: string;
+  readonly token?: string | null;
 }
 
 const DEFAULT_COLLABORATION_USER: InsEditorCollaborationUser = {
   name: 'Anonymous',
   color: '#5B8FF9',
+  token: null,
 };
 
 export interface InsEditorCollaborationConfig {
@@ -83,12 +85,13 @@ export function provideInsEditorCollaboration(setup: InsEditorCollaborationSetup
         };
       }
 
-      const document = new Doc();
-      const provider = new HocuspocusProvider({
-        url: setup.url,
-        name: setup.documentName,
-        document,
-      });
+        const document = new Doc();
+        const provider = new HocuspocusProvider({
+          url: setup.url,
+          name: setup.documentName,
+          document,
+          token: injectedUser?.token ?? '',
+        });
 
       destroyRef.onDestroy(() => {
         provider.destroy();

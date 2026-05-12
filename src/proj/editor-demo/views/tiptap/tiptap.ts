@@ -49,6 +49,7 @@ export class HttpMockUploader {
     provideInsEditorCollaborationUser({
       name: 'Demo User',
       color: '#5B8FF9',
+      token: 'write',
     }),
     {
       provide: INS_ATTACH_FILES_LOADER,
