@@ -435,6 +435,20 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.chain().focus().setCommentThreadStatus(threadId, status).run();
   }
 
+  public syncCommentThreadStates(
+    selectedThreadId: string | null,
+    hoveredThreadId: string | null = null,
+  ): void {
+    const states: Record<string, 'default' | 'hovered' | 'selected'> = {};
+    if (hoveredThreadId && hoveredThreadId !== selectedThreadId) {
+      states[hoveredThreadId] = 'hovered';
+    }
+    if (selectedThreadId) {
+      states[selectedThreadId] = 'selected';
+    }
+    this.editor?.chain().focus().syncCommentThreadStates(states).run();
+  }
+
   public getCommentThreadIds(): ReadonlySet<string> {
     const state = this.editor?.state;
     const commentMark = state?.schema.marks['commentThread'];

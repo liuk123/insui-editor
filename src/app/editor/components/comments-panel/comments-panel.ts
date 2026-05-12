@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { InsEditorCommentAnchor, InsEditorCommentsStore } from '../../common/comments-store';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { InsEditorCommentsStore } from '../../common/comments-store';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
 import { InsButton, InsCardLarge, InsTextarea, InsTextfield, InsChip } from '@liuk123/insui';
 import { FormsModule } from '@angular/forms';
@@ -28,11 +28,15 @@ export class InsCommentsPanel {
   private readonly commentsStore = inject(InsEditorCommentsStore);
   private readonly editor = inject(InsTiptapEditorService, { optional: true });
   protected draft: Record<string, string> = {};
+  private readonly hoveredThreadId = signal<string | null>(null);
 
   protected readonly threads = this.commentsStore.threads;
   protected readonly activeThreadId = this.commentsStore.activeThreadId;
   protected readonly canEdit = computed(() => this.editor?.editable ?? false);
   protected readonly hasThreads = computed(() => this.threads().length > 0);
+  protected readonly syncThreadStates = effect(() => {
+    this.editor?.syncCommentThreadStates(this.activeThreadId(), this.hoveredThreadId());
+  });
 
   protected setActiveThread(
     threadId: string,
@@ -41,14 +45,17 @@ export class InsCommentsPanel {
   }
   protected setFocus(
     threadId: string,
-    quote: string,
-    anchor: InsEditorCommentAnchor | null,
-    detached: boolean
-  ){
+    detached: boolean,
+  ): void {
+    this.commentsStore.setActiveThreadId(threadId);
     if (detached) {
       return;
     }
-    this.editor?.focusCommentThread(threadId, quote, anchor);
+    this.editor?.syncCommentThreadStates(threadId, this.hoveredThreadId());
+  }
+
+  protected setHoveredThread(threadId: string | null): void {
+    this.hoveredThreadId.set(threadId);
   }
 
   protected addReply(threadId: string): void {
@@ -82,7 +89,7 @@ export class InsCommentsPanel {
     this.commentsStore.deleteThread(threadId);
     delete this.draft[threadId];
   }
-   protected readonly commentsSync$ = this.editor?.transaction$
+  protected readonly commentsSync$ = this.editor?.transaction$
     .pipe(startWith(null),debounceTime(1000), takeUntilDestroyed())
     .subscribe(() => {
       this.commentsStore.syncDetachedThreads(this.editor?.getCommentThreadIds()!);

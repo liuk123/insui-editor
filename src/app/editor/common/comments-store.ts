@@ -27,6 +27,13 @@ export interface InsEditorCommentThread {
   readonly comments: ReadonlyArray<InsEditorComment>;
 }
 
+const toThreadStatus = (status: unknown): InsEditorCommentThreadStatus => {
+  if (status === 'open' || status === 'closed') {
+    return status;
+  }
+  return 'open';
+};
+
 @Injectable({ providedIn: 'root' })
 export class InsEditorCommentsStore {
 
@@ -272,7 +279,7 @@ export class InsEditorCommentsStore {
 
       const quote = String(meta.get('quote') ?? '').trim();
       const createdAt = this.toSafeNumber(meta.get('createdAt'));
-      const status = meta.get('status') === 'open'?'open':'closed';
+      const status = toThreadStatus(meta.get('status'));
       const detached = Boolean(meta.get('detached'));
       const anchor = this.normalizeAnchor(meta.get('anchor'));
       const comments = commentsById.get(threadId)?.toArray() ?? [];

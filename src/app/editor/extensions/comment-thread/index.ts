@@ -2,12 +2,14 @@ import { Mark, mergeAttributes } from '@tiptap/core';
 import { MarkType, Node as ProseMirrorNode } from '@tiptap/pm/model';
 
 export type CommentThreadStatus = 'open' | 'closed';
+export type CommentThreadState = 'default' | 'hovered' | 'selected';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     commentThread: {
       setCommentThread: (threadId: string, status?: CommentThreadStatus) => ReturnType;
       setCommentThreadStatus: (threadId: string, status: CommentThreadStatus) => ReturnType;
+      syncCommentThreadStates: (states: Record<string, CommentThreadState>) => ReturnType;
       unsetCommentThread: () => ReturnType;
       unsetCommentThreadById: (threadId: string) => ReturnType;
     };
@@ -21,31 +23,34 @@ export interface CommentThreadOptions {
 interface CommentThreadAttrs {
   readonly threadId?: string | null;
   readonly status?: CommentThreadStatus | null;
+  readonly state?: CommentThreadState | null;
 }
 
 const collectCommentThreadRanges = (
   doc: ProseMirrorNode,
   markType: MarkType,
-  threadId: string,
-): Array<{ from: number; to: number }> => {
-  const ranges: Array<{ from: number; to: number }> = [];
+  threadId?: string,
+): Array<{ from: number; to: number; attrs: CommentThreadAttrs }> => {
+  const ranges: Array<{ from: number; to: number; attrs: CommentThreadAttrs }> = [];
 
   doc.descendants((node, pos) => {
     if (!node.isText) {
       return true;
     }
 
-    const hasMark = node.marks.some(
+    const mark = node.marks.find(
       (currentMark) =>
-        currentMark.type === markType && currentMark.attrs['threadId'] === threadId,
+        currentMark.type === markType &&
+        (!threadId || currentMark.attrs['threadId'] === threadId),
     );
-    if (!hasMark) {
+    if (!mark) {
       return true;
     }
 
     ranges.push({
       from: pos,
       to: pos + node.nodeSize,
+      attrs: mark.attrs as CommentThreadAttrs,
     });
     return true;
   });
@@ -83,6 +88,19 @@ export const CommentThread = Mark.create<CommentThreadOptions>({
           'data-comment-thread-status': attributes.status === 'closed' ? 'closed' : 'open',
         }),
       },
+      state: {
+        default: 'default',
+        parseHTML: (element: HTMLElement) => {
+          const state = element.getAttribute('data-comment-thread-state');
+          return state === 'hovered' || state === 'selected' ? state : 'default';
+        },
+        renderHTML: (attributes: CommentThreadAttrs) => ({
+          'data-comment-thread-state':
+            attributes.state === 'hovered' || attributes.state === 'selected' ?
+              attributes.state
+            : 'default',
+        }),
+      },
     };
   },
 
@@ -99,7 +117,7 @@ export const CommentThread = Mark.create<CommentThreadOptions>({
       setCommentThread:
         (threadId: string, status: CommentThreadStatus = 'open') =>
         ({ commands }) =>
-          commands.setMark(this.name, { threadId, status }),
+          commands.setMark(this.name, { threadId, status, state: 'default' }),
       setCommentThreadStatus:
         (threadId: string, status: CommentThreadStatus) =>
         ({ tr, state: editorState, dispatch }) => {
@@ -119,8 +137,42 @@ export const CommentThread = Mark.create<CommentThreadOptions>({
               range.from,
               range.to,
               markType.create({
+                ...range.attrs,
                 threadId,
                 status,
+              }),
+            );
+          }
+
+          dispatch?.(tr);
+          return true;
+        },
+      syncCommentThreadStates:
+        (states: Record<string, CommentThreadState>) =>
+        ({ tr, state: editorState, dispatch }) => {
+          const markType = editorState.schema.marks[this.name];
+          if (!markType) {
+            return false;
+          }
+
+          const ranges = collectCommentThreadRanges(editorState.doc, markType);
+          if (ranges.length === 0) {
+            return false;
+          }
+
+          for (const range of ranges) {
+            const threadId = range.attrs.threadId;
+            if (!threadId) {
+              continue;
+            }
+            const nextState = states[threadId] ?? 'default';
+            tr.removeMark(range.from, range.to, markType);
+            tr.addMark(
+              range.from,
+              range.to,
+              markType.create({
+                ...range.attrs,
+                state: nextState,
               }),
             );
           }

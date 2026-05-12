@@ -191,6 +191,10 @@ export abstract class AbstractInsEditor {
     public abstract removeCommentThread(): void;
     public abstract removeCommentThreadById(threadId: string): void;
     public abstract setCommentThreadStatus(threadId: string, status: 'open' | 'closed'): void;
+    public abstract syncCommentThreadStates(
+      selectedThreadId: string | null,
+      hoveredThreadId?: string | null,
+    ): void;
     public abstract getCommentThreadIds(): ReadonlySet<string>;
     public abstract getActiveCommentThreadId(): string | null;
     public abstract getSelectedText(): string;
