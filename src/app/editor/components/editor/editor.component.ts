@@ -117,7 +117,7 @@ interface ServerSideGlobal extends Global {
     class: 't-wrapper',
     '(insActiveZoneChange)': 'onActiveZone($event)',
     '(click)': 'focus($event)',
-    '[class.view-comment]': 'collaboration.enabled',
+    '[class.has-sidebar]': 'collaboration.enabled',
   },
 })
 export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {

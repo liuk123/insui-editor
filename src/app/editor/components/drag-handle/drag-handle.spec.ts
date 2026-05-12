@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DragHandle } from './drag-handle';
+import { InsDragHandle } from './drag-handle';
 
 describe('DragHandle', () => {
-  let component: DragHandle;
-  let fixture: ComponentFixture<DragHandle>;
+  let component: InsDragHandle;
+  let fixture: ComponentFixture<InsDragHandle>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DragHandle]
+      imports: [InsDragHandle]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DragHandle);
+    fixture = TestBed.createComponent(InsDragHandle);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
