@@ -435,18 +435,25 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     this.editor?.chain().focus().setCommentThreadStatus(threadId, status).run();
   }
 
-  public syncCommentThreadStates(
-    selectedThreadId: string | null,
-    hoveredThreadId: string | null = null,
+  public setCommentThreadUiState(
+    curThreadId: string | null,
+    value: 'default' | 'selected' | 'hovered' = 'default',
   ): void {
-    const states: Record<string, 'default' | 'hovered' | 'selected'> = {};
-    if (hoveredThreadId && hoveredThreadId !== selectedThreadId) {
-      states[hoveredThreadId] = 'hovered';
+    const rootElement = this.editor?.view.dom;
+    if (!rootElement) {
+      return;
     }
-    if (selectedThreadId) {
-      states[selectedThreadId] = 'selected';
-    }
-    this.editor?.chain().focus().syncCommentThreadStates(states).run();
+
+    const commentNodes = Array.from(rootElement.querySelectorAll<HTMLElement>('[data-comment-thread-id]'));
+    commentNodes.forEach((node) => {
+      const threadId = node.dataset['commentThreadId'];
+
+      if (threadId === curThreadId) {
+        node.dataset['commentThreadState'] = value;
+      }else if(node.dataset['commentThreadState']!=='default') {
+        node.dataset['commentThreadState'] = 'default';
+      }
+    });
   }
 
   public getCommentThreadIds(): ReadonlySet<string> {
@@ -512,106 +519,6 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     };
   }
 
-  public focusCommentThread(
-    threadId: string,
-    fallbackQuote = '',
-    anchor: { from: number; to: number; beforeText?: string; afterText?: string } | null = null,
-  ): void {
-    const state = this.editor?.state;
-    if (!state || !threadId) {
-      return;
-    }
-    const commentMark = state.schema.marks['commentThread'];
-    if (!commentMark) {
-      return;
-    }
-
-    let from: number | null = null;
-    let to: number | null = null;
-
-    state.doc.descendants((node, pos) => {
-      if (!node.isText) {
-        return true;
-      }
-      const hasTargetMark = node.marks.some(
-        (mark) => mark.type === commentMark && mark.attrs['threadId'] === threadId,
-      );
-      if (!hasTargetMark) {
-        return true;
-      }
-      from = pos;
-      to = pos + node.nodeSize;
-      return false;
-    });
-
-    if (from !== null && to !== null) {
-      this.editor?.chain().focus().setTextSelection({ from, to }).run();
-      return;
-    }
-
-    const keyword = fallbackQuote.trim();
-    if (anchor && anchor.from < anchor.to && anchor.to <= state.doc.content.size) {
-      const anchorText = state.doc.textBetween(anchor.from, anchor.to, ' ', ' ').trim();
-      if (!keyword || anchorText.includes(keyword) || keyword.includes(anchorText)) {
-        this.editor?.chain().focus().setTextSelection({ from: anchor.from, to: anchor.to }).run();
-        return;
-      }
-    }
-
-    if (!keyword) {
-      return;
-    }
-
-    let bestFrom = -1;
-    let bestTo = -1;
-    let bestScore = -1;
-    let bestDistance = Number.MAX_SAFE_INTEGER;
-    const beforeHint = anchor?.beforeText?.trim() ?? '';
-    const afterHint = anchor?.afterText?.trim() ?? '';
-    const beforeWindow = beforeHint.slice(-8);
-    const afterWindow = afterHint.slice(0, 8);
-
-    state.doc.descendants((node, pos) => {
-      if (!node.isText) {
-        return true;
-      }
-      const text = node.text ?? '';
-      let index = text.indexOf(keyword);
-
-      while (index >= 0) {
-        const candidateFrom = pos + index;
-        const candidateTo = candidateFrom + keyword.length;
-        const beforeSlice = text.slice(Math.max(0, index - beforeWindow.length), index);
-        const afterSlice = text.slice(index + keyword.length, index + keyword.length + afterWindow.length);
-        let score = 0;
-        if (beforeWindow && beforeSlice.endsWith(beforeWindow)) {
-          score += 1;
-        }
-        if (afterWindow && afterSlice.startsWith(afterWindow)) {
-          score += 1;
-        }
-        const distance = anchor ? Math.abs(candidateFrom - anchor.from) : 0;
-        if (score > bestScore || (score === bestScore && distance < bestDistance)) {
-          bestFrom = candidateFrom;
-          bestTo = candidateTo;
-          bestScore = score;
-          bestDistance = distance;
-        }
-        index = text.indexOf(keyword, index + keyword.length);
-      }
-
-      return true;
-    });
-
-    if (bestFrom < 0 || bestTo <= bestFrom) {
-      return;
-    }
-    this.editor
-      ?.chain()
-      .focus()
-      .setTextSelection({ from: bestFrom, to: bestTo })
-      .run();
-  }
 
   public focusCommentThreadByRange(from: number, to: number): void {
     if (!this.editor || from >= to) {

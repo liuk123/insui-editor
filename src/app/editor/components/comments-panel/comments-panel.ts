@@ -28,15 +28,12 @@ export class InsCommentsPanel {
   private readonly commentsStore = inject(InsEditorCommentsStore);
   private readonly editor = inject(InsTiptapEditorService, { optional: true });
   protected draft: Record<string, string> = {};
-  private readonly hoveredThreadId = signal<string | null>(null);
 
   protected readonly threads = this.commentsStore.threads;
   protected readonly activeThreadId = this.commentsStore.activeThreadId;
   protected readonly canEdit = computed(() => this.editor?.editable ?? false);
   protected readonly hasThreads = computed(() => this.threads().length > 0);
-  protected readonly syncThreadStates = effect(() => {
-    this.editor?.syncCommentThreadStates(this.activeThreadId(), this.hoveredThreadId());
-  });
+
 
   protected setActiveThread(
     threadId: string,
@@ -51,12 +48,9 @@ export class InsCommentsPanel {
     if (detached) {
       return;
     }
-    this.editor?.syncCommentThreadStates(threadId, this.hoveredThreadId());
+    this.editor?.setCommentThreadUiState(threadId, 'selected');
   }
 
-  protected setHoveredThread(threadId: string | null): void {
-    this.hoveredThreadId.set(threadId);
-  }
 
   protected addReply(threadId: string): void {
     if (!this.canEdit()) {
@@ -90,7 +84,7 @@ export class InsCommentsPanel {
     delete this.draft[threadId];
   }
   protected readonly commentsSync$ = this.editor?.transaction$
-    .pipe(startWith(null),debounceTime(1000), takeUntilDestroyed())
+    .pipe(startWith(null), debounceTime(50), takeUntilDestroyed())
     .subscribe(() => {
       this.commentsStore.syncDetachedThreads(this.editor?.getCommentThreadIds()!);
     });

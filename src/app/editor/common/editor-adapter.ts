@@ -191,20 +191,16 @@ export abstract class AbstractInsEditor {
     public abstract removeCommentThread(): void;
     public abstract removeCommentThreadById(threadId: string): void;
     public abstract setCommentThreadStatus(threadId: string, status: 'open' | 'closed'): void;
-    public abstract syncCommentThreadStates(
-      selectedThreadId: string | null,
-      hoveredThreadId?: string | null,
+    public abstract setCommentThreadUiState(
+      curThreadId: string | null,
+      value: 'default' | 'selected' | 'hovered',
     ): void;
     public abstract getCommentThreadIds(): ReadonlySet<string>;
     public abstract getActiveCommentThreadId(): string | null;
     public abstract getSelectedText(): string;
     public abstract getSelectionRange(): { from: number; to: number } | null;
     public abstract getSelectionContext(maxChars?: number): { beforeText: string; afterText: string } | null;
-    public abstract focusCommentThread(
-      threadId: string,
-      fallbackQuote?: string,
-      anchor?: { from: number; to: number; beforeText?: string; afterText?: string } | null,
-    ): void;
+
     // ======================= 评论 =======================
 
     public abstract mergeCells(): void;
