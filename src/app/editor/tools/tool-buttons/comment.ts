@@ -14,11 +14,12 @@ import { InsEditorCommentsStore } from '../../common/comments-store';
   host: {
     '[attr.automation-id]': '"toolbar__comment-button"',
     '[attr.title]': 'insHint()',
+    // '(pointerdown)': 'captureSelection($event)',
     '(click)': 'toggleCommentThread()',
   },
 })
 export class InsCommentButtonTool extends InsToolbarTool {
-  private readonly commentsStore = inject(InsEditorCommentsStore, { optional: true });
+  private readonly commentsStore = inject(InsEditorCommentsStore);
 
   protected override isActive(): boolean {
     return this.editor?.isActive('commentThread') ?? false;
@@ -39,10 +40,37 @@ export class InsCommentButtonTool extends InsToolbarTool {
     return texts?.comment ?? '';
   }
 
+  // protected captureSelection(event: PointerEvent): void {
+  //   event.preventDefault();
+  //   this.editor?.takeSelectionSnapshot();
+  // }
+
+  // private tryRestoreSelectionFromSnapshot(): void {
+  //   if (!this.editor || !(this.editor.state?.selection.empty ?? true)) {
+  //     return;
+  //   }
+
+  //   const snapshot = this.editor.getSelectionSnapshot();
+  //   if (!snapshot) {
+  //     return;
+  //   }
+
+  //   const from = Math.min(snapshot.anchor, snapshot.head);
+  //   const to = Math.max(snapshot.anchor, snapshot.head);
+  //   if (from >= to) {
+  //     return;
+  //   }
+
+  //   this.editor.setTextSelection({ from, to });
+  //   this.editor.focus();
+  // }
+
   protected toggleCommentThread(): void {
-    if (!this.editor || !this.commentsStore) {
+    if (!this.editor) {
       return;
     }
+
+    // this.tryRestoreSelectionFromSnapshot();
 
     if (this.editor.isActive('commentThread')) {
       this.editor.removeCommentThread();

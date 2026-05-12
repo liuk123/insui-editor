@@ -24,7 +24,7 @@ export interface InsEditorCommentThread {
   readonly comments: ReadonlyArray<InsEditorComment>;
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class InsEditorCommentsStore {
 
   private readonly threadsState = signal<ReadonlyArray<InsEditorCommentThread>>([]);
@@ -132,6 +132,7 @@ export class InsEditorCommentsStore {
       this.threadsState.update((threads) => [thread, ...threads]);
     }
     this.activeThreadIdState.set(id);
+    // this.collaborationObserver?.();
     return id;
   }
 
@@ -154,6 +155,7 @@ export class InsEditorCommentsStore {
           createdAt: Date.now(),
         },
       ]);
+      // this.collaborationObserver?.();
       return;
     }
 
@@ -188,6 +190,7 @@ export class InsEditorCommentsStore {
         return;
       }
       meta.set('resolved', resolved);
+      // this.collaborationObserver?.();
       return;
     }
 

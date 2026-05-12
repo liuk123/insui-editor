@@ -16,8 +16,6 @@ import {
   ContentChild,
   TemplateRef,
   OnInit,
-  afterNextRender,
-  INJECTOR,
 } from '@angular/core';
 import {
   injectElement,
@@ -105,7 +103,6 @@ interface ServerSideGlobal extends Global {
     },
     INS_EDITOR_PROVIDERS,
     INS_EDITOR_LANGUAGE_PROVIDERS,
-    InsEditorCommentsStore,
   ],
   hostDirectives: [
     InsAppearance,
@@ -138,7 +135,6 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   private readonly collaboration = inject(INS_EDITOR_COLLABORATION);
   private readonly commentsStore = inject(InsEditorCommentsStore);
   private el = injectElement();
-  private injector = inject(INJECTOR);
 
   @ViewChild(InsTiptapEditor, { read: ElementRef })
   private readonly editorEl?: ElementRef<HTMLElement>;
@@ -167,10 +163,14 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   protected readonly $ = this.editorLoaded$.pipe(delay(0), takeUntilDestroyed()).subscribe(() => {
     const processed =
       this.contentProcessor?.fromControlValue(this.control.value) ?? this.control.value ?? '';
-    this.editorService.setValue(processed, { clearsHistory: true });
+    if (!this.collaboration.enabled) {
+      this.editorService.setValue(processed, { clearsHistory: true });
+    }
     this.editorLoaded.set(true);
 
     this.patchContentEditableElement();
+    this.commentsStore.setCurrentAuthor(this.collaboration.user.name);
+    this.commentsStore.connectCollaboration(this.collaboration.document);
   });
 
   public readonly hovered = toSignal(
@@ -187,12 +187,6 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
     if (this.insDropdownOpen) {
       this.insDropdownOpen.isClickToggle = false;
     }
-    afterNextRender(() => {
-      this.commentsStore.setCurrentAuthor(this.collaboration.user.name);
-      this.commentsStore.connectCollaboration(this.collaboration.document);
-    }, {
-      injector: this.injector,
-    });
   }
   ngOnDestroy(): void {
     this.commentsStore.disconnectCollaboration();
@@ -326,7 +320,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
 
     super.writeValue(processed);
 
-    if (this.editorLoaded()) {
+    if (this.editorLoaded() && !this.collaboration.enabled) {
       this.editorService.setValue(processed);
     }
   }
