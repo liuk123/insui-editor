@@ -117,6 +117,7 @@ interface ServerSideGlobal extends Global {
     class: 't-wrapper',
     '(insActiveZoneChange)': 'onActiveZone($event)',
     '(click)': 'focus($event)',
+    '[class.view-comment]': 'collaboration.enabled',
   },
 })
 export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
@@ -124,6 +125,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   protected readonly editorLoaded = signal(false);
   protected readonly editorLoaded$ = inject(TIPTAP_EDITOR);
   public readonly editorService = inject(InsTiptapEditorService);
+
   private readonly contentProcessor = inject<InsValueTransformer<string | null, string | null>>(
     INS_EDITOR_VALUE_TRANSFORMER,
     { optional: true },
@@ -132,7 +134,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   protected readonly insDropdownOpen = inject(InsDropdownOpen, { optional: true });
   private readonly doc: Document | null =
     inject<ServerSideGlobal | undefined>(WINDOW)?.document ?? null;
-  private readonly collaboration = inject(INS_EDITOR_COLLABORATION);
+  protected readonly collaboration = inject(INS_EDITOR_COLLABORATION);
   private readonly commentsStore = inject(InsEditorCommentsStore);
   private el = injectElement();
 
@@ -165,13 +167,15 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
       this.contentProcessor?.fromControlValue(this.control.value) ?? this.control.value ?? '';
     if (!this.collaboration.enabled) {
       this.editorService.setValue(processed, { clearsHistory: true });
+    } else {
+
+      this.commentsStore.setCurrentAuthor(this.collaboration.user.name);
+      this.commentsStore.connectCollaboration(this.collaboration.document);
     }
     this.editorLoaded.set(true);
 
     this.patchContentEditableElement();
 
-    this.commentsStore.setCurrentAuthor(this.collaboration.user.name);
-    this.commentsStore.connectCollaboration(this.collaboration.document);
     // this.commentsStore.syncDetachedThreads(this.editorService.getCommentThreadIds());
   });
 

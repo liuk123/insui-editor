@@ -1,41 +1,40 @@
 ins-editor {
-    position: relative;
-    isolation: isolate;
-    font: var(--ins-font-text-m);
-    border-radius: var(--ins-radius-m);
-    max-block-size: inherit;
-    min-block-size: 10rem;
-    box-sizing: border-box;
+  position: relative;
+  isolation: isolate;
+  font: var(--ins-font-text-m);
+  border-radius: var(--ins-radius-m);
+  max-block-size: inherit;
+  min-block-size: 10rem;
+  box-sizing: border-box;
 
-    display: flex;
-    flex-direction: column;
-    .ins-editor-socket{
-      flex-grow: 1;
-      overflow: auto;
-    }
+  display: flex;
+  flex-direction: column;
+  .ins-editor-socket {
+    flex-grow: 1;
+    overflow: auto;
+  }
 }
-ins-editor[data-state='disabled']{
-  pointer-events: none;
-}
+// ins-editor[data-state='disabled'] {
+//   pointer-events: none;
+// }
 
-ins-editor::after {
-    content: '';
-    display: table;
-    clear: both;
-}
-
+// ins-editor::after {
+//   content: '';
+//   display: table;
+//   clear: both;
+// }
 
 ins-editor > ins-editor-socket {
-    display: none !important;
-    visibility: hidden;
-    opacity: 0;
-    block-size: 0;
-    inline-size: 100%;
-    margin: 0;
-    padding: 0;
+  display: none !important;
+  visibility: hidden;
+  opacity: 0;
+  block-size: 0;
+  inline-size: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 [insTiptapEditor][data-contenteditable='false'] * {
-    -webkit-user-drag: none;
-    cursor: default;
+  -webkit-user-drag: none;
+  cursor: default;
 }

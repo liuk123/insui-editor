@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { InsEditorCommentAnchor, InsEditorCommentsStore } from '../../common/comments-store';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
-import { InsButton, InsCardLarge, InsTextarea, InsTextfield } from '@liuk123/insui';
+import { InsButton, InsCardLarge, InsTextarea, InsTextfield, InsChip } from '@liuk123/insui';
 import { FormsModule } from '@angular/forms';
-import { startWith } from 'rxjs';
+import { debounceTime, startWith } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -13,14 +13,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     role: 'complementary',
+    '(click)': '$event.stopPropagation()'
   },
   imports: [
     InsButton,
     InsCardLarge,
     InsTextfield,
     InsTextarea,
-    FormsModule
-  ],
+    FormsModule,
+    InsChip
+],
 })
 export class InsCommentsPanel {
   private readonly commentsStore = inject(InsEditorCommentsStore);
@@ -34,11 +36,15 @@ export class InsCommentsPanel {
 
   protected setActiveThread(
     threadId: string,
-    quote: string,
-    anchor: InsEditorCommentAnchor | null,
-    detached: boolean,
   ): void {
     this.commentsStore.setActiveThreadId(threadId);
+  }
+  protected setFocus(
+    threadId: string,
+    quote: string,
+    anchor: InsEditorCommentAnchor | null,
+    detached: boolean
+  ){
     if (detached) {
       return;
     }
@@ -76,8 +82,8 @@ export class InsCommentsPanel {
     this.commentsStore.deleteThread(threadId);
     delete this.draft[threadId];
   }
-   protected readonly commentsSync$ = this.editor?.transactionPathChange$
-    .pipe(startWith(null), takeUntilDestroyed())
+   protected readonly commentsSync$ = this.editor?.transaction$
+    .pipe(startWith(null),debounceTime(1000), takeUntilDestroyed())
     .subscribe(() => {
       this.commentsStore.syncDetachedThreads(this.editor?.getCommentThreadIds()!);
     });
