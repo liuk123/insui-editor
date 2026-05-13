@@ -86,10 +86,20 @@ export class InsCommentsPanel {
     this.commentsStore.deleteThread(threadId);
     delete this.draft[threadId];
   }
-  protected readonly commentsSync$ = this.editor?.transaction$
-    .pipe(startWith(null), debounceTime(50), takeUntilDestroyed())
-    .subscribe(() => {
+  protected readonly commentsSync$ = this.editor?.selectionContext$
+    .pipe(takeUntilDestroyed())
+    .subscribe((v) => {
       this.commentsStore.syncDetachedThreads(this.editor?.getCommentThreadIds()!);
-      // this.editor?.setCommentThreadUiState(this.activeThreadId(), 'selected');
+      if (v.markNames.includes('commentThread')) {
+        const threadId = this.editor?.getActiveCommentThreadId();
+        if (!threadId) {
+          return;
+        }
+        this.commentsStore.setActiveThreadId(threadId);
+        this.editor?.setCommentThreadUiState(threadId, 'selected');
+      } else {
+        this.commentsStore.setActiveThreadId(null);
+        this.editor?.setCommentThreadUiState(null, 'default');
+      }
     });
 }
