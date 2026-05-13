@@ -33,6 +33,9 @@ export class InsCommentsPanel {
   protected readonly activeThreadId = this.commentsStore.activeThreadId;
   protected readonly canEdit = computed(() => this.editor?.editable ?? false);
   protected readonly hasThreads = computed(() => this.threads().length > 0);
+  // protected readonly syncCommentUiState = effect(() => {
+  //   this.editor?.setCommentThreadUiState(this.activeThreadId(), 'selected');
+  // });
 
 
   protected setActiveThread(
@@ -87,5 +90,6 @@ export class InsCommentsPanel {
     .pipe(startWith(null), debounceTime(50), takeUntilDestroyed())
     .subscribe(() => {
       this.commentsStore.syncDetachedThreads(this.editor?.getCommentThreadIds()!);
+      // this.editor?.setCommentThreadUiState(this.activeThreadId(), 'selected');
     });
 }

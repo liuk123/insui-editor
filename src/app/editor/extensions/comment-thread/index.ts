@@ -1,12 +1,37 @@
 import { Mark, mergeAttributes } from '@tiptap/core';
 import { MarkType, Node as ProseMirrorNode } from '@tiptap/pm/model';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { Decoration, DecorationSet } from '@tiptap/pm/view';
 
 export type CommentThreadStatus = 'open' | 'closed';
+export type CommentThreadUiState = 'default' | 'selected' | 'hovered';
+
+interface CommentThreadUiPluginState {
+  readonly selectedThreadId: string | null;
+  readonly hoveredThreadId: string | null;
+  readonly decorations: DecorationSet;
+}
+
+interface CommentThreadUiPluginMeta {
+  readonly selectedThreadId?: string | null;
+  readonly hoveredThreadId?: string | null;
+}
+
+const COMMENT_THREAD_HOVERED_CLASS = 'ins-comment-thread--hovered';
+const COMMENT_THREAD_SELECTED_CLASS = 'ins-comment-thread--selected';
+
+export const commentThreadUiPluginKey = new PluginKey<CommentThreadUiPluginState>(
+  'ins-comment-thread-ui',
+);
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     commentThread: {
       setCommentThread: (threadId: string, status?: CommentThreadStatus) => ReturnType;
+      setCommentThreadUiState: (
+        threadId: string | null,
+        value?: CommentThreadUiState,
+      ) => ReturnType;
       setCommentThreadStatus: (threadId: string, status: CommentThreadStatus) => ReturnType;
       unsetCommentThread: () => ReturnType;
       unsetCommentThreadById: (threadId: string) => ReturnType;
@@ -21,7 +46,6 @@ export interface CommentThreadOptions {
 interface CommentThreadAttrs {
   readonly threadId?: string | null;
   readonly status?: CommentThreadStatus | null;
-  readonly state?: string | null;
 }
 
 const collectCommentThreadRanges = (
@@ -56,6 +80,54 @@ const collectCommentThreadRanges = (
   return ranges;
 };
 
+const createCommentThreadDecorations = (
+  doc: ProseMirrorNode,
+  markType: MarkType | undefined,
+  uiState: Pick<CommentThreadUiPluginState, 'selectedThreadId' | 'hoveredThreadId'>,
+): DecorationSet => {
+  if (!markType) {
+    return DecorationSet.empty;
+  }
+
+  const decorations: Decoration[] = [];
+
+  doc.descendants((node, pos) => {
+    if (!node.isText) {
+      return true;
+    }
+
+    const mark = node.marks.find((currentMark) => currentMark.type === markType);
+    if (!mark) {
+      return true;
+    }
+
+    const threadId = mark.attrs['threadId'];
+    if (typeof threadId !== 'string' || !threadId) {
+      return true;
+    }
+
+    const classNames: string[] = [];
+    if (threadId === uiState.hoveredThreadId) {
+      classNames.push(COMMENT_THREAD_HOVERED_CLASS);
+    }
+    if (threadId === uiState.selectedThreadId) {
+      classNames.push(COMMENT_THREAD_SELECTED_CLASS);
+    }
+
+    if (classNames.length > 0) {
+      decorations.push(
+        Decoration.inline(pos, pos + node.nodeSize, {
+          class: classNames.join(' '),
+        }),
+      );
+    }
+
+    return true;
+  });
+
+  return DecorationSet.create(doc, decorations);
+};
+
 export const CommentThread = Mark.create<CommentThreadOptions>({
   name: 'commentThread',
   inclusive: false,
@@ -86,19 +158,6 @@ export const CommentThread = Mark.create<CommentThreadOptions>({
           'data-comment-thread-status': attributes.status === 'closed' ? 'closed' : 'open',
         }),
       },
-      state: {
-        default: 'default',
-        parseHTML: (element: HTMLElement) => {
-          const state = element.getAttribute('data-comment-thread-state');
-          return state === 'hovered' || state === 'selected' ? state : 'default';
-        },
-        renderHTML: (attributes: CommentThreadAttrs) => ({
-          'data-comment-thread-state':
-            attributes['state'] === 'hovered' || attributes['state'] === 'selected' ?
-              attributes['state']
-            : 'default',
-        }),
-      },
     };
   },
 
@@ -116,6 +175,41 @@ export const CommentThread = Mark.create<CommentThreadOptions>({
         (threadId: string, status: CommentThreadStatus = 'open') =>
         ({ commands }) =>
           commands.setMark(this.name, { threadId, status }),
+      setCommentThreadUiState:
+        (threadId: string | null, value: CommentThreadUiState = 'default') =>
+        ({ state: editorState, dispatch }) => {
+          const currentState = commentThreadUiPluginKey.getState(editorState) ?? {
+            selectedThreadId: null,
+            hoveredThreadId: null,
+            decorations: DecorationSet.empty,
+          };
+          const shouldClearAll = threadId === null;
+          const shouldClearSelected =
+            shouldClearAll ||
+            (value === 'default' && currentState.selectedThreadId === threadId);
+          const shouldClearHovered =
+            shouldClearAll ||
+            (value === 'default' && currentState.hoveredThreadId === threadId);
+          const nextSelectedThreadId =
+            value === 'selected' ? threadId : shouldClearSelected ? null : currentState.selectedThreadId;
+          const nextHoveredThreadId =
+            value === 'hovered' ? threadId : shouldClearHovered ? null : currentState.hoveredThreadId;
+
+          if (
+            currentState.selectedThreadId === nextSelectedThreadId &&
+            currentState.hoveredThreadId === nextHoveredThreadId
+          ) {
+            return true;
+          }
+
+          dispatch?.(
+            editorState.tr.setMeta(commentThreadUiPluginKey, {
+              selectedThreadId: nextSelectedThreadId,
+              hoveredThreadId: nextHoveredThreadId,
+            } satisfies CommentThreadUiPluginMeta),
+          );
+          return true;
+        },
       setCommentThreadStatus:
         (threadId: string, status: CommentThreadStatus) =>
         ({ tr, state: editorState, dispatch }) => {
@@ -170,5 +264,60 @@ export const CommentThread = Mark.create<CommentThreadOptions>({
           return true;
         },
     };
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      ...(this.parent?.() ?? []),
+      new Plugin<CommentThreadUiPluginState>({
+        key: commentThreadUiPluginKey,
+        state: {
+          init: (_, editorState) => ({
+            selectedThreadId: null,
+            hoveredThreadId: null,
+            decorations: createCommentThreadDecorations(
+              editorState.doc,
+              editorState.schema.marks[this.name],
+              {
+                selectedThreadId: null,
+                hoveredThreadId: null,
+              },
+            ),
+          }),
+          apply: (tr, pluginState, _oldState, newState) => {
+            const meta = tr.getMeta(commentThreadUiPluginKey) as CommentThreadUiPluginMeta | undefined;
+            const nextSelectedThreadId =
+              meta?.selectedThreadId !== undefined ? meta.selectedThreadId : pluginState.selectedThreadId;
+            const nextHoveredThreadId =
+              meta?.hoveredThreadId !== undefined ? meta.hoveredThreadId : pluginState.hoveredThreadId;
+
+            if (
+              !tr.docChanged &&
+              !meta &&
+              nextSelectedThreadId === pluginState.selectedThreadId &&
+              nextHoveredThreadId === pluginState.hoveredThreadId
+            ) {
+              return pluginState;
+            }
+
+            return {
+              selectedThreadId: nextSelectedThreadId,
+              hoveredThreadId: nextHoveredThreadId,
+              decorations: createCommentThreadDecorations(
+                newState.doc,
+                newState.schema.marks[this.name],
+                {
+                  selectedThreadId: nextSelectedThreadId,
+                  hoveredThreadId: nextHoveredThreadId,
+                },
+              ),
+            };
+          },
+        },
+        props: {
+          decorations: (editorState) => commentThreadUiPluginKey.getState(editorState)?.decorations,
+        },
+      }),
+    ];
   },
 });

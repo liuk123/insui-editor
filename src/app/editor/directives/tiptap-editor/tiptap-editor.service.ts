@@ -439,21 +439,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
     curThreadId: string | null,
     value: 'default' | 'selected' | 'hovered' = 'default',
   ): void {
-    const rootElement = this.editor?.view.dom;
-    if (!rootElement) {
-      return;
-    }
-
-    const commentNodes = Array.from(rootElement.querySelectorAll<HTMLElement>('[data-comment-thread-id]'));
-    commentNodes.forEach((node) => {
-      const threadId = node.dataset['commentThreadId'];
-
-      if (threadId === curThreadId) {
-        node.dataset['commentThreadState'] = value;
-      }else if(node.dataset['commentThreadState']!=='default') {
-        node.dataset['commentThreadState'] = 'default';
-      }
-    });
+    this.editor?.commands.setCommentThreadUiState(curThreadId, value);
   }
 
   public getCommentThreadIds(): ReadonlySet<string> {
