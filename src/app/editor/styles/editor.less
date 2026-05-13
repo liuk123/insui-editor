@@ -50,11 +50,12 @@ ins-editor{
     max-height: min(calc(100vh - var(--ins-sticky-header-height, 60px) - 4px), 100%);
     padding: var(--ins-padding-m);
     overflow: auto;
-    scroll-behavior: none;
     position: sticky;
     top: var(--ins-sticky-header-height, 60px);
     pointer-events: auto;
     box-sizing: border-box;
+    margin: 4px;
+    scrollbar-gutter: stable;
   }
 }
 
