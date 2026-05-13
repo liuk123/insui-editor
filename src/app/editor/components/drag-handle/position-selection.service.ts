@@ -4,7 +4,7 @@ import { Fragment, Node as ProseMirrorNode, ResolvedPos } from '@tiptap/pm/model
 import { NodeSelection } from '@tiptap/pm/state';
 import { MultipleNodeSelection } from './MultipleNodeSelection';
 import { getHTMLFromFragment } from '@tiptap/core';
-import { ActiveNodePath } from '../../common/editor-adapter';
+import { ActiveNodePath, InsEditorSelectionContext } from '../../common/editor-adapter';
 import { INS_EDITOR_OPTIONS, InsEditorOptions } from '../../common/editor-options';
 
 @Injectable({ providedIn: 'root' })
@@ -36,20 +36,12 @@ export class PositionSelectionService {
     ];
     return allowedNodes.includes(nodeName);
   };
-  public refreshActiveNode(view: EditorView, path: ActiveNodePath[]) {
+  public refreshActiveNode(view: EditorView, context: InsEditorSelectionContext) {
     this.view = view;
-    let item =
-      path.find((v, index) => {
-        if (v.node === 'listItem' || v.node === 'taskItem') {
-          return true;
-        }
-        if (index === path.length - 1 && this.nodeFilter(v.node)) {
-          return true;
-        }
-        return false;
-      }) || null;
-    if (item) {
-      this.activeNode.set(item);
+    const item = this.resolveActiveNode(context);
+    this.activeNode.set(item);
+    if (!item) {
+      this.visible.set(false);
     }
   }
   constructor() {
@@ -218,6 +210,27 @@ export class PositionSelectionService {
       }
     }
     return { node, nodePos };
+  }
+
+  private resolveActiveNode(context: InsEditorSelectionContext): ActiveNodePath | null {
+    const listItem =
+      context.anchorPath.find((entry) => entry.node === 'listItem' || entry.node === 'taskItem') ?? null;
+    if (listItem) {
+      return listItem;
+    }
+
+    if (context.activeNode && this.nodeFilter(context.activeNode.node)) {
+      return context.activeNode;
+    }
+
+    for (let index = context.anchorPath.length - 1; index >= 0; index -= 1) {
+      const entry = context.anchorPath[index];
+      if (entry && this.nodeFilter(entry.node)) {
+        return entry;
+      }
+    }
+
+    return null;
   }
 
   private resolveInsertIcon(path: ActiveNodePath): string {

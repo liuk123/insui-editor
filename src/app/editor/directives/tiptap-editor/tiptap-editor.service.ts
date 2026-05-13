@@ -44,8 +44,7 @@ export class InsTiptapEditorService extends AbstractInsEditor {
         this.transaction$.next();
       });
       // editor.on('selectionUpdate', () => {
-      // this.selectionChange$.next()
-      // console.log('selectionUpdate');
+      //   this.selectionUpdate$.next();
       // });
       editor.on('drop', ({ event }) => {
         this.drop$.next(event);

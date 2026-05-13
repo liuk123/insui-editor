@@ -26,7 +26,7 @@ import {
   take,
 } from 'rxjs';
 import { InsTiptapEditorService } from '../../directives/tiptap-editor/tiptap-editor.service';
-import { AbstractInsEditor, ActiveNodePath } from '../../common/editor-adapter';
+import { AbstractInsEditor, InsEditorTableSelectionContext } from '../../common/editor-adapter';
 import { InsButton, InsDropdown, insDropdownOptionsProvider } from '@liuk123/insui';
 import {
   findTableInResolvedPos,
@@ -130,14 +130,13 @@ export class InsTableHandle implements OnInit {
         distinctUntilChanged(),
         switchMap((editor) => {
           return editor
-            ? editor.transactionPathChange$
+            ? editor.tableSelectionContext$
             : of(null);
         }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((path) => {
-        if (!path) return;
-        this.refreshActiveNode(path);
+      .subscribe((tableContext) => {
+        this.refreshActiveNode(tableContext);
       });
 
     this.editor$
@@ -213,11 +212,9 @@ export class InsTableHandle implements OnInit {
         this.handleDragOver(event);
       });
   }
-  refreshActiveNode(path: ActiveNodePath[]) {
-    let { node, nodePos } =
-      path.find((item) => item.node === 'tableCell' || item.node === 'tableHeader') || {};
-
-    if (!node || nodePos==undefined || nodePos < 0) {
+  refreshActiveNode(tableContext: InsEditorTableSelectionContext | null) {
+    const nodePos = tableContext?.cellPos ?? null;
+    if (nodePos === null || nodePos < 0) {
       this.hide();
       return;
     }

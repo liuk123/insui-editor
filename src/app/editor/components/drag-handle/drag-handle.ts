@@ -76,14 +76,14 @@ export class InsDragHandle implements OnInit, OnDestroy {
         distinctUntilChanged(),
         switchMap((editor) => {
           return editor
-            ? editor.transactionPathChange$
+            ? editor.selectionContext$
             : of(null);
         }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((path) => {
-        if (!path || !this.editorView) return;
-        this.positionSelectionSrv.refreshActiveNode(this.editorView, path);
+      .subscribe((context) => {
+        if (!context || !this.editorView) return;
+        this.positionSelectionSrv.refreshActiveNode(this.editorView, context);
       });
 
     this.editor$
