@@ -39,6 +39,7 @@ export interface InsLanguageEditor extends InsLanguage {
         insertAnchor: string;
         insertGroup: string;
         insertHorizontalRule: string;
+        insertColumns: string;
         insertTable: string;
         italic: string;
         justify: string;

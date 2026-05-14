@@ -26,6 +26,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
     readonly code: string;
     readonly comment: string;
     readonly codeBlock: string;
+    readonly columns: string;
     readonly colorSelectorDropdownCheck: string;
     readonly colorSelectorDropdownChevron: string;
     readonly detailsAdd: string;
@@ -82,6 +83,7 @@ export interface InsEditorOptions extends Partial<EditorOptions> {
       readonly alignCenter: string;
       readonly alignLeft: string;
       readonly alignRight: string;
+      readonly caption: string;
     };
     readonly dragVerticalHandle: string;
     readonly dragHorizontalHandle: string;
@@ -183,6 +185,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
     code: 'code',
     comment: 'message-square',
     codeBlock: 'code',
+    columns: 'columns-2',
     fontStylePreview: 'type-outline',
     fontStyleBold: 'bold',
     fontStyleItalic: 'italic',
@@ -198,6 +201,7 @@ export const INS_EDITOR_DEFAULT_OPTIONS: InsEditorOptions = {
       alignCenter: 'align-center',
       alignLeft: 'align-left',
       alignRight: 'align-right',
+      caption: 'gallery-thumbnails',
     },
     dragVerticalHandle: 'grip-vertical',
     dragHorizontalHandle: 'grip-horizontal',

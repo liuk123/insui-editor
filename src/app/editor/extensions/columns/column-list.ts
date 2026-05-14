@@ -1,8 +1,11 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 
 export interface ColumnListOptions {
-  HTMLAttributes: Record<string, any>;
+  readonly HTMLAttributes: Record<string, string>;
 }
+
+const MIN_COLUMNS_NUMBER = 2;
+const MAX_COLUMNS_NUMBER = 6;
 
 export const ColumnList = Node.create<ColumnListOptions>({
   name: 'columnList',
@@ -24,10 +27,19 @@ export const ColumnList = Node.create<ColumnListOptions>({
       setColumns:
         (n: number = 2) =>
         ({ commands }) => {
+          const columnsCount = Math.min(
+            MAX_COLUMNS_NUMBER,
+            Math.max(MIN_COLUMNS_NUMBER, Math.trunc(n) || MIN_COLUMNS_NUMBER),
+          );
+          const defaultWidth = 1 / columnsCount;
+
           return commands.insertContent({
             type: this.name,
-            content: Array.from({ length: n }, () => ({
+            content: Array.from({ length: columnsCount }, () => ({
               type: 'column',
+              attrs: {
+                width: defaultWidth,
+              },
               content: [{ type: 'paragraph' }],
             })),
           });
@@ -48,12 +60,12 @@ export const ColumnList = Node.create<ColumnListOptions>({
     ];
   },
 
-  renderHTML({ HTMLAttributes }) {
+  renderHTML({ HTMLAttributes, node }) {
     return [
       'div',
       mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, {
         'data-type': 'columnList',
-        style: 'display: flex; gap: 0.5rem;',
+        'data-columns': `${Math.max(2, node.childCount)}`,
       }),
       0,
     ];

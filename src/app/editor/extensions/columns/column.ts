@@ -1,7 +1,7 @@
 import { Node, mergeAttributes } from '@tiptap/core';
 
 export interface ColumnOptions {
-  HTMLAttributes: Record<string, any>;
+  readonly HTMLAttributes: Record<string, string>;
 }
 
 export const Column = Node.create<ColumnOptions>({
@@ -32,9 +32,12 @@ export const Column = Node.create<ColumnOptions>({
           return isFinite(parsed) ? parsed : null;
         },
         renderHTML: (attributes) => {
+          const width = Number(attributes['width']);
+          const normalizedWidth = Number.isFinite(width) && width > 0 ? width : 1;
+
           return {
-            'data-width': attributes['width'],
-            style: `flex-grow: ${attributes['width']}; flex-basis: 0; min-width: 2rem;`,
+            'data-width': `${normalizedWidth}`,
+            style: `flex-grow: ${normalizedWidth}; flex-basis: 0; min-width: 6rem;`,
           };
         },
       },
