@@ -213,6 +213,11 @@ export class PositionSelectionService {
   }
 
   private resolveActiveNode(context: InsEditorSelectionContext): ActiveNodePath | null {
+    const tableNode = this.resolveTableActiveNode(context);
+    if (tableNode) {
+      return tableNode;
+    }
+
     const listItem =
       context.anchorPath.find((entry) => entry.node === 'listItem' || entry.node === 'taskItem') ?? null;
     if (listItem) {
@@ -231,6 +236,28 @@ export class PositionSelectionService {
     }
 
     return null;
+  }
+
+  private resolveTableActiveNode(context: InsEditorSelectionContext): ActiveNodePath | null {
+    const tablePos = context.table?.tablePos;
+    if (tablePos === null || tablePos === undefined || !this.view) {
+      return null;
+    }
+
+    const tableNode = this.view.state.doc.nodeAt(tablePos);
+    if (!tableNode || tableNode.type.name !== 'table') {
+      return null;
+    }
+
+    return new ActiveNodePath(
+      tableNode.type.name,
+      tablePos,
+      tableNode.attrs as Record<string, unknown>,
+      false,
+      context.table?.tableDepth ?? 0,
+      tableNode.isBlock,
+      tableNode.isAtom,
+    );
   }
 
   private resolveInsertIcon(path: ActiveNodePath): string {
