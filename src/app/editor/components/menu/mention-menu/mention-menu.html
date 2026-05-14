@@ -1,0 +1,7 @@
+<ins-data-list>
+  @for (item of filter(suggestion); track item.id) {
+    <button insOption type="button" (click)="command(item)">
+      {{ item.label }}
+    </button>
+  }
+</ins-data-list>

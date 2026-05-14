@@ -64,6 +64,7 @@ import { TableCellMenu } from '../menu/table-cell-menu/table-cell-menu';
 import { InsCommentsPanel } from '../comments-panel/comments-panel';
 import { INS_EDITOR_COLLABORATION } from '../../common/editor-collaboration';
 import { InsEditorCommentsStore } from '../../common/comments-store';
+import { InsMentionMenu } from '../menu/mention-menu/mention-menu';
 
 interface ServerSideGlobal extends Global {
   document: Document | undefined;
@@ -92,6 +93,7 @@ interface ServerSideGlobal extends Global {
     TableColMenu,
     TableCellMenu,
     InsCommentsPanel,
+    InsMentionMenu,
   ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -251,6 +253,7 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   private readonly openDropdownWhen = (range: Range): boolean =>
     this.currentFocusedNodeIsTextAnchor(range) ||
     this.isFloatMenu ||
+    this.isMentionMenu ||
     Boolean(this.insDropdownOpen?.insDropdownOpen());
 
   private currentFocusedNodeIsTextAnchor(range: Range): boolean {
@@ -293,6 +296,9 @@ export class InsEditor extends InsControl<string> implements OnDestroy, OnInit {
   // }
   public get isFloatMenu(): boolean {
     return this.selectionState.before.startsWith('/');
+  }
+  public get isMentionMenu(): boolean {
+    return this.selectionState.before.startsWith('@');
   }
   public get isBubbleMenu(): boolean {
     if (this.editor?.state?.selection.empty) {

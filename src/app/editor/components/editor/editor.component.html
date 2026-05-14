@@ -33,6 +33,11 @@
       <ins-toolbar-host [disabled]="!interactive()">
         <ins-float-menu></ins-float-menu>
       </ins-toolbar-host>
+    }@else if (isMentionMenu) {
+      <!-- @提及菜单 -->
+      <ins-toolbar-host [disabled]="!interactive()">
+        <ins-mention-menu></ins-mention-menu>
+      </ins-toolbar-host>
     }@else if(isImageMenu){
       <!-- 图片菜单 -->
       <ins-toolbar-host [disabled]="!interactive()">

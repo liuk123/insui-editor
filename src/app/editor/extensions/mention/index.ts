@@ -1,10 +1,42 @@
 import { type Attributes, mergeAttributes, Node } from '@tiptap/core';
 import { type DOMOutputSpec, type Node as ProseMirrorNode } from '@tiptap/pm/model';
 
-export interface InsMentionOptions {
-  HTMLAttributes: Record<string, any>;
-  renderHTML(props: { options: InsMentionOptions; node: ProseMirrorNode }): DOMOutputSpec;
+export interface InsMentionItem {
+  readonly id: string;
+  readonly label: string;
+  readonly color?: string;
+  readonly dataAttributes?: Record<string, string>;
 }
+
+interface InsMentionAttrs {
+  readonly id?: string | null;
+  readonly label?: string | null;
+  readonly class?: string | null;
+  readonly dataAttributes?: Record<string, string | null> | null;
+}
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    mention: {
+      setMention: (item: InsMentionItem) => ReturnType;
+    };
+  }
+}
+
+export interface InsMentionOptions {
+  readonly HTMLAttributes: Record<string, string>;
+  readonly items: ReadonlyArray<InsMentionItem>;
+  readonly renderHTML: (props: {
+    options: InsMentionOptions;
+    node: ProseMirrorNode;
+    label: string;
+  }) => DOMOutputSpec;
+}
+
+const getMentionLabel = (attrs: InsMentionAttrs): string => {
+  const label = `${attrs.label ?? attrs.id ?? ''}`.trim().replace(/^@+/, '');
+  return label.length > 0 ? `@${label}` : '@';
+};
 
 export const InsMention = Node.create<InsMentionOptions>({
   name: 'mention',
@@ -15,12 +47,15 @@ export const InsMention = Node.create<InsMentionOptions>({
 
   addOptions(): InsMentionOptions {
     return {
-      HTMLAttributes: {},
-      renderHTML({ node }) {
+      HTMLAttributes: {
+        class: 'ins-mention',
+      },
+      items: [],
+      renderHTML({ label }) {
         return [
           'span',
           this.HTMLAttributes,
-          `@${node.attrs['label'] ?? node.attrs['id']}`.replaceAll(/@+/g, '@'),
+          label,
         ];
       },
     };
@@ -31,12 +66,25 @@ export const InsMention = Node.create<InsMentionOptions>({
       id: {
         default: null,
         keepOnSplit: true,
-        parseHTML: (element) => element.innerText,
-        renderHTML: () => ({ 'data-type': this.name }),
+        parseHTML: (element) =>
+          element.getAttribute('data-mention-id') ?? '',
+        renderHTML: ({ id }: InsMentionAttrs) =>
+          typeof id === 'string' && id.length > 0 ? { 'data-mention-id': id } : {},
+      },
+      label: {
+        default: null,
+        keepOnSplit: true,
+        parseHTML: (element) =>
+          element.getAttribute('data-mention-label') ??
+          element.innerText.trim().replace(/^@+/, ''),
+        renderHTML: ({ label }: InsMentionAttrs) =>
+          typeof label === 'string' && label.length > 0 ? { 'data-mention-label': label } : {},
       },
       class: {
         default: null,
         keepOnSplit: true,
+        renderHTML: ({ class: className }: InsMentionAttrs) =>
+          typeof className === 'string' && className.length > 0 ? { class: className } : {},
       },
       dataAttributes: {
         default: {},
@@ -44,7 +92,13 @@ export const InsMention = Node.create<InsMentionOptions>({
         parseHTML: (element) =>
           element
             .getAttributeNames()
-            .filter((attribute) => attribute.startsWith('data-') && attribute !== 'data-type')
+            .filter(
+              (attribute) =>
+                attribute.startsWith('data-') &&
+                attribute !== 'data-type' &&
+                attribute !== 'data-mention-id' &&
+                attribute !== 'data-mention-label',
+            )
             .reduce<Record<string, string | null>>(
               (attributes, attribute) => ({
                 ...attributes,
@@ -62,23 +116,50 @@ export const InsMention = Node.create<InsMentionOptions>({
   },
 
   renderHTML({ node, HTMLAttributes }): DOMOutputSpec {
+    const attrs = node.attrs as InsMentionAttrs;
+    const label = getMentionLabel(attrs);
     const html = this.options.renderHTML({
       options: this.options,
       node,
+      label,
     });
+    const baseAttributes = mergeAttributes(
+      { 'data-type': this.name },
+      this.options.HTMLAttributes,
+      HTMLAttributes,
+    );
 
     if (typeof html === 'string') {
       return [
         'span',
-        mergeAttributes({ 'data-type': this.name }, this.options.HTMLAttributes, HTMLAttributes),
+        baseAttributes,
         html,
       ];
     }
 
     return [
       'span',
-      mergeAttributes({ 'data-type': this.name }, this.options.HTMLAttributes, HTMLAttributes),
-      (html as any)?.[2],
+      baseAttributes,
+      (html as readonly unknown[])?.[2] ?? label,
     ];
+  },
+
+  addCommands() {
+    return {
+      setMention:
+        (item: InsMentionItem) =>
+        ({ commands }) =>
+          commands.insertContent({
+            type: this.name,
+            attrs: {
+              id: item.id,
+              label: item.label,
+              dataAttributes: {
+                ...(item.dataAttributes ?? {}),
+                ...(item.color ? { 'data-mention-color': item.color } : {}),
+              },
+            },
+          }),
+    };
   },
 });
